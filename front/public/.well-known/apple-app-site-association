@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appID": "A37Q5VM7ZA.com.ovalcampus.yuancity",
+        "paths": [ "/m/*", "/s/*", "/u/*" ]
+      }
+    ]
+  }
+}
+

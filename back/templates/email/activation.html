@@ -1,0 +1,39 @@
+{% load i18n %}
+
+{% block subject %}
+  {% blocktrans %}Account Activation at CINE CALIFORNIA X{% endblocktrans %}
+{% endblock subject %}
+
+{% block html_body %}
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; }
+    .container { background-color: #fff; margin: auto; padding: 20px; max-width: 600px; border: 1px solid #ddd; }
+    .header { background-color: #004d99; color: white; text-align: center; padding: 10px; }
+    .footer { font-size: 0.8em; text-align: center; padding: 20px; }
+    a { color: #004d99; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://cinecaliforniax.com/static/icon-512x512.png" alt="CINE CALIFORNIA X Logo" width="100px" />
+    </div>
+    <p>{% blocktrans %}Hello{% endblocktrans %} {{ first_name }} {{ last_name }},</p>
+    <p>{% blocktrans %}You are receiving this email because you need to complete the activation process at CINE CALIFORNIA X.{% endblocktrans %}</p>
+    <p>{% with domain="cinecaliforniax.com" %}
+       {% trans "Please visit the following page to activate your account:" %}
+       <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}">{{ protocol }}://{{ domain }}/{{ url|safe }}</a>
+    {% endwith %}</p>
+    <p>{% trans "Thank you for using our site!" %}</p>
+    <p>{% blocktrans %}With love,{% endblocktrans %}</p>
+    <p>{% blocktrans %}The CINE CALIFORNIA X Team{% endblocktrans %}</p>
+    <div class="footer">
+      <p>{% trans "Follow us on social media:" %} <a href="URL">Facebook</a> | <a href="URL">Twitter</a></p>
+      <p>&copy; 2025 CINE CALIFORNIA X, {% trans "All rights reserved" %}</p>
+    </div>
+  </div>
+</body>
+</html>
+{% endblock html_body %}
