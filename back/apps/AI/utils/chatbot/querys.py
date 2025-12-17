@@ -64,7 +64,7 @@ def get_client_case(user: User) -> str:
     """
     client_case = Case.objects.filter(client=user).order_by('-created_at').first()
     if client_case:
-        abogado = client_case.assigned_lawyer.get_full_name() if client_case.assigned_lawyer else 'No asignado'
+        abogado = client_case.assigned_lawyer.full_name if client_case.assigned_lawyer else 'No asignado'
         # Formatea los documentos en una lista Markdown.
         documentos = "\n".join([f"- {doc}" for doc in client_case.required_documents])
         return (

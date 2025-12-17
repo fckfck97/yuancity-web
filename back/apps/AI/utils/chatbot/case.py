@@ -26,12 +26,12 @@ def create_sms_message(user: User, case: Case) -> str:
     """
     if user.rol == "client":
         message = (
-            f"Felicidades {user.get_full_name()}, hemos tomado tu caso en humanlaw. "
+            f"Felicidades {user.full_name}, hemos tomado tu caso en humanlaw. "
             "El abogado encargado se comunicará contigo pronto."
         )
     elif user.rol == "lawyer":
         message = (
-            f"{user.get_full_name()}, se ha creado tu caso en humanlaw.ai: #{case.id}."
+            f"{user.full_name}, se ha creado tu caso en humanlaw.ai: #{case.id}."
         )
     else:
         message = f"Se ha creado el caso #{case.id} en humanlaw."
@@ -60,7 +60,7 @@ def process_case_creation(response_text: str, original_text: str, user: User) ->
         f"- **Jurisdicción:** {new_case.jurisdiction}\n"
         f"- **Resumen:**\n{new_case.summary}\n\n"
         f"- **Documentos requeridos:** {', '.join(new_case.required_documents)}\n"
-        f"- **Abogado asignado:** {assigned_lawyer.get_full_name() if assigned_lawyer else 'No asignado'}\n\n"
+        f"- **Abogado asignado:** {assigned_lawyer.full_name if assigned_lawyer else 'No asignado'}\n\n"
         "Ya tienes el caso creado."
       )
 

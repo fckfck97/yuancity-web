@@ -87,7 +87,7 @@ def create_case_creation_email(user, case) -> tuple[str, str]:
     if user.rol == "client":
         subject = f"Hemos tomado tu caso #{case.id}"
         body = (
-            f"<h3>Felicidades {user.get_full_name()}</h3>"
+            f"<h3>Felicidades {user.full_name}</h3>"
             f"<p>Hemos tomado tu caso en humanlaw. El abogado asignado se comunicará contigo pronto.</p>"
             f"<p><strong>Detalles del caso:</strong></p>"
             f"<ul>"
@@ -99,7 +99,7 @@ def create_case_creation_email(user, case) -> tuple[str, str]:
     elif user.rol == "lawyer":
         subject = f"Nuevo caso asignado #{case.id} en humanlaw.ai"
         body = (
-            f"<p>{user.get_full_name()}, se ha creado un caso en humanlaw.ai.</p>"
+            f"<p>{user.full_name}, se ha creado un caso en humanlaw.ai.</p>"
             f"<p><strong>Detalles del caso:</strong></p>"
             f"<ul>"
             f"<li><strong>Área:</strong> {case.area}</li>"

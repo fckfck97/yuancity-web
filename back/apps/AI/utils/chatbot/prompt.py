@@ -36,7 +36,7 @@ case_evaluation_chain = case_evaluation_prompt | llm
 # Sistema de prompts adaptativos
 # ===============================
 def build_adaptive_system_prompt(user):
-    nombre = user.get_full_name() if user else "Usuario"
+    nombre = user.full_name if user else "Usuario"
     
     if user and user.rol == 'lawyer':
         return f"""
@@ -147,7 +147,7 @@ def build_adaptive_base_chain(user):
 
 
 def build_default_system_prompt(user):
-    nombre = user.get_full_name() if user else "Usuario"
+    nombre = user.full_name if user else "Usuario"
     
     if user and user.rol == 'lawyer':
         # Instrucciones para abogados: verificar datos, listar casos o sugerir acciones
