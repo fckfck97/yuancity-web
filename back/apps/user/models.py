@@ -285,3 +285,28 @@ def delete_old_profile_images(sender, instance, **kwargs):
     if old_profile.cover_image and old_profile.cover_image != instance.cover_image:
         if os.path.isfile(old_profile.cover_image.path):
             os.remove(old_profile.cover_image.path)
+
+class LawyerProfile(models.Model):
+    SPECIALTIES = (
+        ('Derecho Penal', 'Derecho Penal'),
+        ('Derecho Laboral', 'Derecho Laboral'),
+        ('Derecho Civil', 'Derecho Civil'),
+        ('Derecho Comercial', 'Derecho Comercial')
+    )
+    
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE, related_name='lawyer_profile')
+    specialties = models.CharField(max_length=100, choices=SPECIALTIES, blank=True, null=True)
+    bar_association_id = models.CharField(max_length=50, blank=True, null=True)
+    experience_years = models.IntegerField(blank=True, null=True)
+    current_caseload = models.IntegerField(default=0, blank=True, null=True)
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name = 'Perfil de Abogado'
+        verbose_name_plural = 'Perfiles de Abogados'
+        ordering = ['-created_at']
+    def __str__(self):
+        return f"{self.user.email} - {self.specialties}"
+    def current_cases(self):
+        return self.user.cases_assigned.all().order_by('-created_at')
