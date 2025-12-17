@@ -8,7 +8,7 @@ urlpatterns = [
     path('authentication/', include('djoser.urls')),
     path('authentication/', include('djoser.urls.jwt')),
     path('authentication/', include('djoser.social.urls')),
-    
+    path('api/AI/', include('apps.AI.urls')),
     path('api/category/', include('apps.category.urls')),
     path('api/products/', include('apps.product.urls')),
     path('api/cart/', include('apps.cart.urls')),

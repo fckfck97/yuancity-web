@@ -73,6 +73,7 @@ PROJECT_APPS = [
     'apps.count',
 ]
 ECOMMERCE_APPS = [
+      'apps.AI',
     'apps.category',
     'apps.product',
     'apps.cart', 
