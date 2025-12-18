@@ -8,7 +8,7 @@ export default function Hero() {
       <div className="absolute inset-0">
         <Image
           src="/img/hero.jpg"
-          alt="Personas usando GreenCloset, comprando y vendiendo productos sostenibles"
+          alt="Personas usando YuanCity, comprando productos importados de China"
           fill
           className="object-cover"
           priority
@@ -33,10 +33,10 @@ export default function Hero() {
         <div className="mb-8">
           <div className="border-4 border-border shadow-brutal-3xl p-8 -rotate-1">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-none">
-              VÍSTETE VERDE.
+              LO MEJOR DE CHINA.
             </h1>
             <h2 className="text-4xl md:text-6xl font-bold text-white leading-none">
-              VIVE GREENCLOSET.
+              CERCA DE TI.
             </h2>
           </div>
         </div>
@@ -44,8 +44,8 @@ export default function Hero() {
         <div>
           <div className="border-4 border-border shadow-brutal-2xl p-6 rotate-1">
             <p className="text-lg md:text-2xl text-white/95 font-medium mb-6">
-              Para ver todo en <span className="font-bold">GreenCloset</span>
-              descarga la app.
+              Descubre miles de productos exclusivos importados en <span className="font-bold">YuanCity</span>.
+              Calidad y variedad a un solo clic.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

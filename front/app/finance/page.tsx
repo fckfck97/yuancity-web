@@ -111,8 +111,8 @@ type Banner = {
 }
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? 'https://greencloset.shop'
-const STORAGE_KEY = 'greencloset-finance-portal'
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? 'https://yuancity.shop'
+const STORAGE_KEY = 'yuancity-finance-portal'
 
 const payoutStatusOptions = [
   { value: 'waiting_confirmation', label: 'Esperando confirmación' },
@@ -446,7 +446,7 @@ export default function FinancePortalPage() {
                   <span>Correo autorizado</span>
                   <Input
                     type="email"
-                    placeholder="finanzas@greencloset.shop"
+                    placeholder="finanzas@yuancity.shop"
                     value={loginEmail}
                     onChange={(event) => setLoginEmail(event.target.value)}
                     required

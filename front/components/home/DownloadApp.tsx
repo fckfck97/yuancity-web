@@ -4,10 +4,11 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaApple, FaGooglePlay } from "react-icons/fa";
+import { ShoppingBag, Globe, ShieldCheck, Truck } from "lucide-react";
 
 function PhoneCarousel() {
   const slides = useMemo(
-    () => Array.from({ length: 6 }, (_, i) => `/img/movil/${i + 1}.png`),
+    () => Array.from({ length: 4 }, (_, i) => `/img/movil/${i + 1}.png`),
     []
   );
 
@@ -84,7 +85,7 @@ function PhoneCarousel() {
             >
               <Image
                 src={src}
-                alt={`Vista previa de la app GreenCloset ${i + 1}`}
+                alt={`Vista previa de la app YuanCity ${i + 1}`}
                 width={260}
                 height={520}
                 className="rounded-2xl"
@@ -132,22 +133,22 @@ export default function DownloadApp() {
         </div>
 
         {/* Fila superior: Descarga + Mockup (lado a lado) */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          {/* Texto + botones (compacto, sin estirar) */}
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          {/* Texto + botones */}
           <div className="lg:col-span-1">
-            <div className="bg-black text-white border-4 border-border shadow-brutal-xl p-8">
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold">Compra y vende en GreenCloset</h3>
-                <p className="text-white/90 font-medium">
-                  Descubre moda de segunda mano, publica tus prendas y cobra con
-                  seguridad. Todo desde tu celular.
-                </p>
+            <div className="bg-chart-2 border-4 border-border shadow-brutal-colored-xl p-8 -rotate-1">
+              <div className="flex items-center gap-3 mb-4">
+                <ShoppingBag className="h-10 w-10 text-white" />
+                <h3 className="text-2xl font-bold text-white">Compra en YuanCity</h3>
               </div>
+              <p className="text-lg font-medium mb-6 text-white/95">
+                Lleva lo mejor del mercado chino en tu bolsillo. Una experiencia de compra diseñada para darte variedad, calidad y ahorro desde cualquier lugar.
+              </p>
 
-              {/* Botones de tiendas (con íconos, manteniendo tus clases) */}
-              <div className="mt-8 grid sm:grid-cols-2 gap-4">
+              {/* Botones de tiendas */}
+              <div className="grid sm:grid-cols-2 gap-4">
                 <a
-                  href="https://play.google.com/store/apps/details?id=com.ovalcampus.greencloset" // TODO: reemplaza
+                  href="https://play.google.com/store/apps/details?id=com.ovalcampus.yuancity"
                   target="_blank"
                   rel="noreferrer"
                   className="group bg-white text-black border-4 border-border shadow-brutal hover:shadow-brutal-lg transition-all flex items-center justify-center gap-3 px-6 py-3 font-bold"
@@ -160,7 +161,7 @@ export default function DownloadApp() {
                 </a>
 
                 <a
-                  href="https://apps.apple.com/app/idXXXXXXXXX" // TODO: reemplaza
+                  href="https://apps.apple.com/app/idXXXXXXXXX"
                   target="_blank"
                   rel="noreferrer"
                   className="group bg-white text-black border-4 border-border shadow-brutal hover:shadow-brutal-lg transition-all flex items-center justify-center gap-3 px-6 py-3 font-bold"
@@ -172,29 +173,44 @@ export default function DownloadApp() {
                   <span>App Store</span>
                 </a>
               </div>
-
-              {/* Aviso pequeño */}
-              <p className="mt-6 text-sm text-white/70">
-                ¿No encuentras tu tienda? Próximamente en más regiones.
-              </p>
             </div>
+
+            {/* Aviso pequeño */}
+            <p className="mt-6 text-sm text-foreground/70">
+              ¿No encuentras tu tienda? Próximamente en más regiones.
+            </p>
           </div>
 
-
-<div className="bg-secondary-background border-4 border-border shadow-brutal-l p-6 flex items-center justify-center">
+          {/* Carousel de celular */}
+          <div className="bg-secondary-background border-4 border-border shadow-brutal-2xl p-6 flex items-center justify-center rotate-1">
             <PhoneCarousel />
           </div>
         </div>
 
-        {/* Fila inferior: beneficios (ocupan todo el ancho) */}
+        {/* Fila inferior: beneficios */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           {[
-            { title: "Publica rápido", desc: "Sube fotos, pon precio y listo." },
-            { title: "Compra segura", desc: "Chatea y paga con confianza." },
-            { title: "Cobra al entregar", desc: "Confirmamos y liberamos tu pago." },
+            {
+              title: "Catálogo Global",
+              desc: "Acceso a miles de productos directos de fábrica.",
+              icon: Globe
+            },
+            {
+              title: "Compra Protegida",
+              desc: "Tus pagos y datos siempre seguros con nosotros.",
+              icon: ShieldCheck
+            },
+            {
+              title: "Envío Garantizado",
+              desc: "Logística profesional para que todo llegue a tu puerta.",
+              icon: Truck
+            },
           ].map((b, i) => (
-            <div key={i} className="bg-black text-white border-4 border-border shadow-brutal p-6">
-              <h5 className="text-lg font-bold mb-2">{b.title}</h5>
+            <div key={i} className="bg-black text-white border-4 border-border shadow-brutal p-6 hover:translate-y-[-4px] transition-transform">
+              <div className="flex items-center gap-3 mb-3">
+                <b.icon className="h-6 w-6 text-white" />
+                <h5 className="text-xl font-bold">{b.title}</h5>
+              </div>
               <p className="text-white/90 font-medium">{b.desc}</p>
             </div>
           ))}

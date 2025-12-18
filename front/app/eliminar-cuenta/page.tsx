@@ -43,15 +43,15 @@ export default function DeleteAccountPage() {
         {/* CARD 0: Header */}
         <section className="bg-black text-white border-4 border-border shadow-brutal-3xl p-10 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <div className="-rotate-1">
-            <div className="bg-chart-1 border-4 border-border shadow-brutal-colored-lg inline-block px-4 py-2 -rotate-1 mb-6">
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight text-main-foreground">
+            <div className="bg-main border-4 border-border shadow-brutal-colored-lg inline-block px-4 py-2 -rotate-1 mb-6">
+              <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
                 Eliminar tu cuenta
               </h1>
             </div>
             <p className="text-lg md:text-xl text-white/90 font-medium">
-              Elimina permanentemente tu cuenta de GreenCloset Shop
+              Elimina permanentemente tu cuenta de YuanCity
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 bg-chart-4 border-2 border-border text-main-foreground px-4 py-2 shadow-brutal">
+            <div className="mt-6 inline-flex items-center gap-2 bg-main border-2 border-border text-white px-4 py-2 shadow-brutal">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -61,12 +61,12 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 1: Descripción */}
-        <section className="bg-secondary-background border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-4 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">1</span>
             ¿Qué significa eliminar tu cuenta?
           </h2>
-          <p className="text-foreground">
+          <p className="text-white">
             Al eliminar tu cuenta, tus datos personales, historial de pedidos y preferencias se eliminarán de nuestros
             sistemas, salvo ciertos datos mínimos que debamos conservar por motivos legales o de seguridad. Esta acción
             no se puede deshacer.
@@ -74,8 +74,8 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 2: Advertencia */}
-        <section className="bg-chart-3 border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-4 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">2</span>
             Advertencia
           </h2>
@@ -91,8 +91,8 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 3: Verificación rápida (Formulario) */}
-        <section className="bg-chart-2 border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-6 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">3</span>
             Verificación rápida
           </h2>
@@ -104,10 +104,10 @@ export default function DeleteAccountPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu-correo@GreenCloset Shop.com.co"
+                placeholder="tu-correo@YuanCity.com"
                 className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black"
               />
-              <p className="text-xs text-foreground/70 mt-1">Debe coincidir con el correo registrado en GreenCloset Shop.</p>
+              <p className="text-xs text-foreground/70 mt-1">Debe coincidir con el correo registrado en YuanCity.</p>
             </div>
 
             <div className="col-span-2 md:col-span-1">
@@ -149,24 +149,24 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 4: Contacto */}
-        <section className="bg-chart-4 border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-4 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">4</span>
             Contáctanos
           </h2>
-          <p className="text-foreground mb-3">¿Dudas antes de eliminar tu cuenta? Escríbenos:</p>
+          <p className="text-white mb-3">¿Dudas antes de eliminar tu cuenta? Escríbenos:</p>
           <a
-            href="mailto:contact@GreenCloset Shop.com.co"
-            className="text-main-foreground underline font-bold inline-flex items-center"
+            href="mailto:contacto@yuancity.com"
+            className="text-white underline font-bold inline-flex items-center"
           >
             <Mail size={18} className="mr-2" />
-            contact@GreenCloset Shop.com.co
+            contacto@yuancity.com
           </a>
         </section>
 
         {/* CARD 5: Qué se eliminará */}
-        <section className="bg-chart-1 border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-6 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">5</span>
             Qué se eliminará
           </h2>
@@ -181,12 +181,12 @@ export default function DeleteAccountPage() {
             </li>
             <li className="flex items-start">
               <span className="text-foreground mr-3 mt-1">•</span>
-              <span className="text-foreground">Vendedores favoritos y listas guardadas.</span>
+              <span className="text-white">Artículos favoritos y listas guardadas.</span>
             </li>
             <li className="flex items-start">
               <span className="text-foreground mr-3 mt-1">•</span>
               <span className="text-foreground">
-                Datos de suscripción administrados por GreenCloset Shop (las suscripciones externas deben cancelarse por separado).
+                Datos de suscripción administrados por YuanCity (las suscripciones externas deben cancelarse por separado).
               </span>
             </li>
             <li className="flex items-start">
@@ -197,8 +197,8 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 6: Pasos para eliminar */}
-        <section className="bg-chart-2 border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-6 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">6</span>
             Pasos para eliminar tu cuenta
           </h2>
@@ -207,14 +207,14 @@ export default function DeleteAccountPage() {
             <div className="bg-white border-2 border-border p-6 shadow-brutal">
               <h3 className="font-black text-foreground mb-2">Desde la app</h3>
               <p className="text-foreground/90">
-                Abre GreenCloset Shop → Configuración → Cuenta → Eliminar cuenta y sigue los pasos. Confirma tu identidad (PIN/biometría/OTP).
+                Abre YuanCity → Configuración → Cuenta → Eliminar cuenta y sigue los pasos. Confirma tu identidad (PIN/biometría/OTP).
               </p>
             </div>
 
             <div className="bg-white border-2 border-border p-6 shadow-brutal">
               <h3 className="font-black text-foreground mb-2">Por correo</h3>
               <p className="text-foreground/90">
-                Envía a <strong>contact@GreenCloset Shop.com.co</strong> el asunto «Eliminar mi cuenta» con tu correo registrado y país.
+                Envía a <strong>contact@YuanCity.com</strong> el asunto «Eliminar mi cuenta» con tu correo registrado y país.
               </p>
             </div>
 
@@ -228,8 +228,8 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 7: Datos que pueden conservarse */}
-        <section className="bg-chart-3 border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-6 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">7</span>
             Datos que pueden conservarse
           </h2>
@@ -266,8 +266,8 @@ export default function DeleteAccountPage() {
         </section>
 
         {/* CARD 8: Suscripciones y facturación */}
-        <section className="bg-chart-4 border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
-          <h2 className="text-2xl md:text-3xl font-black text-main-foreground mb-6 flex items-center gap-3">
+        <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">8</span>
             Suscripciones y facturación
           </h2>
@@ -286,18 +286,18 @@ export default function DeleteAccountPage() {
 
         {/* CARD 9: Estado (success/error) */}
         {status === "success" && (
-          <section className="bg-chart-2 border-4 border-border shadow-brutal-2xl p-6 -rotate-1">
+          <section className="bg-main border-4 border-border shadow-brutal-2xl p-6 -rotate-1">
             <div className="bg-white border-2 border-border p-4 shadow-brutal flex items-start gap-3">
               <CheckCircle className="text-green-600 flex-shrink-0" size={24} />
-              <p className="text-foreground font-bold">Tu cuenta ha sido eliminada correctamente.</p>
+              <p className="text-black font-bold">Tu cuenta ha sido eliminada correctamente.</p>
             </div>
           </section>
         )}
         {status === "error" && (
-          <section className="bg-chart-1 border-4 border-border shadow-brutal-2xl p-6 rotate-1">
+          <section className="bg-main border-4 border-border shadow-brutal-2xl p-6 rotate-1">
             <div className="bg-white border-2 border-border p-4 shadow-brutal flex items-start gap-3">
               <XCircle className="text-red-600 flex-shrink-0" size={24} />
-              <p className="text-foreground font-bold">Hubo un error al eliminar tu cuenta. Inténtalo de nuevo.</p>
+              <p className="text-black font-bold">Hubo un error al eliminar tu cuenta. Inténtalo de nuevo.</p>
             </div>
           </section>
         )}
@@ -306,7 +306,7 @@ export default function DeleteAccountPage() {
         <section className="bg-black text-white border-4 border-border shadow-brutal-3xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <p className="leading-relaxed">
             Para tu seguridad, podemos solicitar verificación adicional en algunos casos. Si necesitas ayuda, escribe a{" "}
-            <a href="mailto:contact@GreenCloset Shop.com.co" className="underline text-white font-bold">contact@GreenCloset Shop.com.co</a>.
+            <a href="mailto:contact@YuanCity.com" className="underline text-white font-bold">contact@YuanCity.com</a>.
           </p>
         </section>
       </main>

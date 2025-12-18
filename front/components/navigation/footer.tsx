@@ -56,22 +56,22 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.png"
-                alt="Logo de GreenCloset"
+                alt="Logo de YuanCity"
                 width={32}
                 height={32}
                 className="h-8 w-8"
               />
-              <span className="text-xl font-bold text-foreground">GreenCloset</span>
+              <span className="text-xl font-bold text-foreground">YuanCity</span>
             </div>
             <p className="text-foreground/90 font-medium mb-4 leading-relaxed">
               Información para descargar la app y unirte a nuestra comunidad.
             </p>
             <p className="text-foreground font-medium">
               <a
-                href="mailto:contacto@greencloset.com"
+                href="mailto:contacto@yuancity.com"
                 className="underline underline-offset-2 hover:text-main"
               >
-                contacto@greencloset.com
+                contacto@yuancity.com
               </a>
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function Footer() {
             <h3 className="text-lg font-bold text-foreground mb-4">SÍGUENOS</h3>
             <div className="flex items-center gap-4 mb-6">
               <a
-                href="https://instagram.com/greencloset"
+                href="https://instagram.com/yuancity"
                 aria-label="Instagram"
                 target="_blank"
                 rel="noreferrer"
@@ -134,7 +134,7 @@ export default function Footer() {
                 <Instagram className="h-6 w-6 text-foreground hover:text-main transition-colors" />
               </a>
               <a
-                href="https://facebook.com/greencloset"
+                href="https://facebook.com/yuancity"
                 aria-label="Facebook"
                 target="_blank"
                 rel="noreferrer"
@@ -142,7 +142,7 @@ export default function Footer() {
                 <Facebook className="h-6 w-6 text-foreground hover:text-main transition-colors" />
               </a>
               <a
-                href="https://x.com/greencloset"
+                href="https://x.com/yuancity"
                 aria-label="Twitter/X"
                 target="_blank"
                 rel="noreferrer"
@@ -204,7 +204,7 @@ export default function Footer() {
 
         {/* Línea inferior opcional */}
         <div className="mt-10 pt-6 border-t-2 border-border/60 text-xs text-foreground/70 text-center">
-          © {new Date().getFullYear()} GreenCloset · Todos los derechos reservados
+          © {new Date().getFullYear()} YuanCity · Todos los derechos reservados
         </div>
       </div>
     </footer>

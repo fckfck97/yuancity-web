@@ -54,7 +54,7 @@ export default function JoinSubscribe() {
             ¿LISTO PARA UNIRTE?
           </h2>
           <p className="text-xl text-white font-medium mb-8">
-            Suscríbete y recibe novedades de GreenCloset.
+            Suscríbete y recibe novedades de YuanCity.
           </p>
 
           {/* Formulario (mismos estilos/endpoint que el footer) */}

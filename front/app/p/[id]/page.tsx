@@ -43,7 +43,7 @@ interface ProductResponse {
   vendor_detail?: VendorDetail | null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://greencloset.shop";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://yuancity.shop";
 const SITE_ORIGIN = SITE_BASE_URL.replace(/\/$/, "");
 
 async function fetchProductById(id: string): Promise<ProductResponse | null> {
@@ -98,7 +98,7 @@ export async function generateMetadata({
   const product = await fetchProductById(params.id);
   if (!product) {
     return {
-      title: "Producto no disponible | GreenCloset",
+      title: "Producto no disponible | YuanCity",
     };
   }
 
@@ -110,7 +110,7 @@ export async function generateMetadata({
   const description =
     product.description?.trim() ??
     `Descubre esta prenda publicada por ${
-      vendorName ?? "una vendedora de GreenCloset"
+      vendorName ?? "una vendedora de YuanCity"
     }.`;
   const ogImage =
     product.images?.[0]?.image ?? product.first_image ?? "/banner.png";
@@ -150,7 +150,7 @@ export default async function ProductDeepLinkPage({
   const vendorName =
     product.vendor_detail?.full_name?.trim() ||
     product.vendor_detail?.email ||
-    "Vendedora GreenCloset";
+    "Vendedora YuanCity";
   const vendorInitials =
     vendorName
       .split(" ")

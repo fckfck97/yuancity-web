@@ -1,27 +1,27 @@
 // components/HowItWorks.tsx
-import { Upload, MessageCircle, Package, CheckCircle2 } from "lucide-react";
+import { Search, ShoppingBag, CreditCard, Truck } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
-      title: "Publica tus prendas",
-      desc: "Toma fotos, describe el estado y fija tu precio. Sube tus artículos en minutos.",
-      Icon: Upload,
+      title: "Explora y elige",
+      desc: "Navega por miles de productos importados de China. Encuentra tecnología, hogar, moda y más.",
+      Icon: Search,
     },
     {
-      title: "Recibe contacto",
-      desc: "Usuarios interesados te escriben por la app para resolver dudas y coordinar.",
-      Icon: MessageCircle,
+      title: "Agrega al carrito",
+      desc: "Selecciona tus artículos favoritos y agrégalos a tu carrito de compras de forma sencilla.",
+      Icon: ShoppingBag,
     },
     {
-      title: "Vende y envía",
-      desc: "Cuando acuerdes la venta, prepara el paquete y envíalo con tu operador preferido.",
-      Icon: Package,
+      title: "Pago seguro",
+      desc: "Realiza tu pago a través de nuestra plataforma protegida con múltiples métodos disponibles.",
+      Icon: CreditCard,
     },
     {
-      title: "Confirma y cobra",
-      desc: "Al confirmar la entrega, liberamos tu pago. ¡Así de fácil usar GreenCloset!",
-      Icon: CheckCircle2,
+      title: "Recibe en casa",
+      desc: "Nos encargamos de la logística para que tus productos lleguen seguros a tu puerta. ¡Así de fácil!",
+      Icon: Truck,
     },
   ] as const;
 

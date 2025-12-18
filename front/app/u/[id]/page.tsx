@@ -37,7 +37,7 @@ interface SocialProfile {
   products?: SocialProduct[] | null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://greencloset.shop";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://yuancity.shop";
 const SITE_ORIGIN = SITE_BASE_URL.replace(/\/$/, "");
 
 async function fetchSocialProfile(
@@ -95,7 +95,7 @@ export async function generateMetadata({
   const profile = await fetchSocialProfile(params.id);
   if (!profile) {
     return {
-      title: "Perfil no disponible | GreenCloset",
+      title: "Perfil no disponible | YuanCity",
     };
   }
 
@@ -148,7 +148,7 @@ export default async function PublicProfileFallback({
   const deepLink = `${APP_SCHEME}://u/${encodeURIComponent(params.id)}`;
   const canonicalUrl = `${SITE_ORIGIN}/u/${encodeURIComponent(params.id)}`;
   const displayName =
-    profile.full_name?.trim() || profile.email || "Vendedora GreenCloset";
+    profile.full_name?.trim() || profile.email || "Vendedora YuanCity";
   const emailDisplay = profile.email || "";
   const location = profile.city || profile.department;
 

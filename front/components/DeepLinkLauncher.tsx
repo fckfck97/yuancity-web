@@ -26,7 +26,7 @@ export default function DeepLinkLauncher({
   appStoreUrl,
   playStoreUrl,
   autolaunch = false,
-  label = "Abrir en GreenCloset",
+  label = "Abrir en YuanCity",
 }: DeepLinkLauncherProps) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelRef = useRef<(() => void) | null>(null);
