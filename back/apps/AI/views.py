@@ -1,8 +1,10 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import permissions
+from django.core.paginator import EmptyPage, Paginator
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import ChatMessage, ClientCase
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Case, ChatMessage, ClientCase
 from langchain_community.tools import DuckDuckGoSearchRun
 import os
 import threading
@@ -19,7 +21,7 @@ from .utils.vectorstore.document_loader import read_doc
 from .utils.clientcasefree.chains import process_case_free
 
 
-from .serializers import ClientCaseSerializer
+from .serializers import CaseSerializer, ClientCaseSerializer
 class ChatAPIView(APIView):
 
     def get_permissions(self):
@@ -148,6 +150,98 @@ class ClientCaseAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+class CaseListView(APIView):
+    """
+    Lista los casos creados desde el chat legal usando la paginación de Django.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, user):
+        if getattr(user, "rol", None) == "lawyer":
+            return Case.objects.filter(assigned_lawyer=user)
+        return Case.objects.filter(client=user)
+
+    def get(self, request):
+        queryset = self.get_queryset(request.user).order_by("-updated_at")
+        try:
+            page_number = int(request.query_params.get("page", "1"))
+            if page_number < 1:
+                raise ValueError
+        except (TypeError, ValueError):
+            page_number = 1
+
+        try:
+            page_size = int(request.query_params.get("page_size", "10"))
+        except (TypeError, ValueError):
+            page_size = 10
+        page_size = max(1, min(page_size, 50))
+
+        paginator = Paginator(queryset, page_size)
+        try:
+            page_obj = paginator.page(page_number)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
+        serializer = CaseSerializer(page_obj.object_list, many=True, context={"request": request})
+        payload = {
+            "count": paginator.count,
+            "page": page_obj.number,
+            "page_size": paginator.per_page,
+            "num_pages": paginator.num_pages,
+            "has_next": page_obj.has_next(),
+            "has_previous": page_obj.has_previous(),
+            "next_page": page_obj.next_page_number() if page_obj.has_next() else None,
+            "previous_page": page_obj.previous_page_number() if page_obj.has_previous() else None,
+            "results": serializer.data,
+        }
+        return Response(payload)
+
+
+class CaseDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        return get_object_or_404(Case, pk=pk)
+
+    def has_access(self, request, case):
+        user = request.user
+        if getattr(user, "is_staff", False) or getattr(user, "is_superuser", False):
+            return True
+        if case.client_id and case.client_id == user.id:
+            return True
+        if case.assigned_lawyer_id and case.assigned_lawyer_id == user.id:
+            return True
+        return False
+
+    def get(self, request, pk):
+        case = self.get_object(pk)
+        if not self.has_access(request, case):
+            return Response({"detail": "No tienes permiso para ver este caso."}, status=status.HTTP_403_FORBIDDEN)
+        serializer = CaseSerializer(case, context={"request": request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        case = self.get_object(pk)
+        if not self.has_access(request, case):
+            return Response({"detail": "No tienes permiso para modificar este caso."}, status=status.HTTP_403_FORBIDDEN)
+
+        if case.client_id != request.user.id:
+            return Response(
+                {"detail": "Sólo el cliente que creó el caso puede eliminarlo."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if case.status != "nuevo":
+            return Response(
+                {"detail": "Sólo puedes eliminar casos en estado 'nuevo'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        case.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FreeCaseChatAPIView(APIView):
   permission_classes = [AllowAny]
