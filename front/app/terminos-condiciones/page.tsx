@@ -1,16 +1,17 @@
+'use client';
 // app/terminos-condiciones/page.tsx
 import Footer from '@/components/navigation/footer';
 import Navbar from '@/components/navigation/navbar';
-import { Metadata } from 'next';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: `Términos y Condiciones`,
-  description: 'Términos y condiciones de uso de la plataforma YuanCity (Ovalcampus) y EULA.',
-};
+import { useTranslation } from 'react-i18next';
 
 export default function TerminosCondicionesPage() {
-  const ultimaActualizacion = '11 de noviembre de 2025';
+  const { t, i18n } = useTranslation();
+  const withLanguage = (path: string) => {
+    const separator = path.includes('?') ? '&' : '?';
+    const language = i18n.language || i18n.resolvedLanguage || 'en';
+    return `${path}${separator}lng=${encodeURIComponent(language)}`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -22,17 +23,17 @@ export default function TerminosCondicionesPage() {
           <div className="-rotate-1">
             <div className="bg-main border-4 border-border shadow-brutal-colored-lg inline-block px-4 py-2 -rotate-1 mb-6">
               <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
-                Eliminar tu cuenta
+                {t('terms.header.title')}
               </h1>
             </div>
             <p className="text-lg md:text-xl text-white/90 font-medium">
-              Elimina permanentemente tu cuenta de YuanCity
+              {t('terms.header.description')}
             </p>
             <div className="mt-6 inline-flex items-center gap-2 bg-main border-2 border-border text-white px-4 py-2 shadow-brutal">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-sm font-semibold">Última actualización: 11 de noviembre de 2025</span>
+              <span className="text-sm font-semibold">{t('terms.header.lastUpdate')}</span>
             </div>
           </div>
         </section>
@@ -40,30 +41,33 @@ export default function TerminosCondicionesPage() {
         {/* 1. Introducción */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">1</span>
-            Introducción
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.introduction.number')}</span>
+            {t('terms.sections.introduction.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            Bienvenido a <strong className="text-main-foreground">YuanCity</strong>, una plataforma de <strong className="text-main-foreground">Ovalcampus</strong> para
-            explorar catálogos, realizar pedidos y adquirir productos importados de forma segura. Al usar nuestro sitio
-            web o aplicación móvil, usted acepta estos Términos y Condiciones de Uso y el <strong>EULA</strong>. Si no está
-            de acuerdo, no utilice YuanCity.
+            {t('terms.sections.introduction.content').split('YuanCity')[0]}
+            <strong className="text-main-foreground">{t('terms.sections.introduction.yuanCity')}</strong>
+            {t('terms.sections.introduction.content').split('YuanCity')[1].split('Ovalcampus')[0]}
+            <strong className="text-main-foreground">{t('terms.sections.introduction.ovalcampus')}</strong>
+            {t('terms.sections.introduction.content').split('Ovalcampus')[1].split('EULA')[0]}
+            <strong>{t('terms.sections.introduction.eula')}</strong>
+            {t('terms.sections.introduction.content').split('EULA')[1]}
           </p>
         </section>
 
         {/* 2. Definiciones */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">2</span>
-            Definiciones
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.definitions.number')}</span>
+            {t('terms.sections.definitions.title')}
           </h2>
           <ul className="ml-12 space-y-3">
             {[
-              ['Usuario/Cliente', 'Persona que crea una cuenta o utiliza YuanCity.'],
-              ['Proveedor', 'Entidad que suministra los productos importados vía YuanCity.'],
-              ['Pedido', 'Solicitud de productos realizada por el Usuario a través de la plataforma.'],
-              ['Plataforma', 'Sitio web y app móvil de YuanCity.'],
-              ['Servicios', 'Funcionalidades provistas por YuanCity (exploración de productos, gestión de pedidos, pagos, soporte, etc.).'],
+              [t('terms.sections.definitions.user'), t('terms.sections.definitions.userDefinition')],
+              [t('terms.sections.definitions.provider'), t('terms.sections.definitions.providerDefinition')],
+              [t('terms.sections.definitions.order'), t('terms.sections.definitions.orderDefinition')],
+              [t('terms.sections.definitions.platform'), t('terms.sections.definitions.platformDefinition')],
+              [t('terms.sections.definitions.services'), t('terms.sections.definitions.servicesDefinition')],
             ].map(([term, desc], i) => (
               <li key={i} className="bg-white border-2 border-border p-4 shadow-brutal flex gap-3">
                 <span className="font-bold text-main-foreground">→</span>
@@ -78,38 +82,40 @@ export default function TerminosCondicionesPage() {
         {/* 3. Registro y seguridad */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">3</span>
-            Registro y Seguridad de la Cuenta
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.registration.number')}</span>
+            {t('terms.sections.registration.title')}
           </h2>
           <ul className="ml-12 space-y-3 text-foreground">
-            <li className="flex items-start gap-3"><span className="mt-1.5">🔐</span><span>Debe proporcionar información veraz y mantenerla actualizada.</span></li>
-            <li className="flex items-start gap-3"><span className="mt-1.5">🔒</span><span>Usted es responsable de sus credenciales y actividad.</span></li>
-            <li className="flex items-start gap-3"><span className="mt-1.5">👤</span><span>Mayor de 18 años o autorización parental conforme a la ley.</span></li>
-            <li className="flex items-start gap-3"><span className="mt-1.5">⚠️</span><span>Podemos suspender/cerrar cuentas por incumplimientos o fraude.</span></li>
+            {['🔐', '🔒', '👤', '⚠️'].map((emoji, index) => (
+              <li key={index} className="flex items-start gap-3">
+                <span className="mt-1.5">{emoji}</span>
+                <span>{t(`terms.sections.registration.points.${index}`)}</span>
+              </li>
+            ))}
           </ul>
         </section>
 
         {/* 4. Uso de la plataforma */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">4</span>
-            Uso de la Plataforma
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.platformUse.number')}</span>
+            {t('terms.sections.platformUse.title')}
           </h2>
           <div className="ml-12 grid md:grid-cols-2 gap-6">
             <div className="bg-white border-2 border-border p-6 shadow-brutal">
-              <h3 className="text-xl font-black text-foreground mb-3">4.1 Uso permitido</h3>
+              <h3 className="text-xl font-black text-foreground mb-3">{t('terms.sections.platformUse.allowed.title')}</h3>
               <ul className="space-y-2 text-foreground/90 ml-1">
-                <li>• Consultar catálogos, disponibilidad y precios.</li>
-                <li>• Realizar pedidos y pagos de forma segura.</li>
-                <li>• Recibir actualizaciones del pedido y soporte.</li>
+                {t('terms.sections.platformUse.allowed.points', { returnObjects: true }).map((point: string, i: number) => (
+                  <li key={i}>• {point}</li>
+                ))}
               </ul>
             </div>
             <div className="bg-white border-2 border-border p-6 shadow-brutal">
-              <h3 className="text-xl font-black text-foreground mb-3">4.2 Uso prohibido</h3>
+              <h3 className="text-xl font-black text-foreground mb-3">{t('terms.sections.platformUse.prohibited.title')}</h3>
               <ul className="space-y-2 text-foreground/90 ml-1">
-                <li>• Pedidos fraudulentos o que perturben la operación.</li>
-                <li>• Acceder/interferir con sistemas o datos no autorizados.</li>
-                <li>• Publicar contenido ilegal, ofensivo o infractor.</li>
+                {t('terms.sections.platformUse.prohibited.points', { returnObjects: true }).map((point: string, i: number) => (
+                  <li key={i}>• {point}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -118,56 +124,54 @@ export default function TerminosCondicionesPage() {
         {/* 5. Pedidos, precios y pagos */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">5</span>
-            Pedidos, Precios y Pagos
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.orders.number')}</span>
+            {t('terms.sections.orders.title')}
           </h2>
           <ul className="ml-12 space-y-3 text-foreground">
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">💰 Los precios, disponibilidad y tiempos dependen del Proveedor y la logística de importación.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">✅ El pedido se confirma al ser procesado; los tiempos de entrega son estimados.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">💳 Pagos con proveedores certificados; pueden aplicar impuestos/tasas de importación.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">📄 Comprobantes/facturas según normativa aplicable.</li>
+            {['💰', '✅', '💳', '📄'].map((emoji, index) => (
+              <li key={index} className="bg-white border-2 border-border p-4 shadow-brutal">
+                {emoji} {t(`terms.sections.orders.points.${index}`)}
+              </li>
+            ))}
           </ul>
         </section>
 
         {/* 6. Cancelaciones y reembolsos */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">6</span>
-            Cancelaciones y Reembolsos
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.cancellations.number')}</span>
+            {t('terms.sections.cancellations.title')}
           </h2>
           <ul className="ml-12 space-y-3 text-foreground">
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">• Dependen del Proveedor y de la ley aplicable.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">• Si el sistema cancela por falta de stock o logística, reembolso conforme al flujo del proveedor de pago.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">• Compras en App Store/Google Play se rigen por sus políticas.</li>
+            {t('terms.sections.cancellations.points', { returnObjects: true }).map((point: string, i: number) => (
+              <li key={i} className="bg-white border-2 border-border p-4 shadow-brutal">• {point}</li>
+            ))}
           </ul>
         </section>
 
         {/* 7. Suscripciones e IAP */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">7</span>
-            Suscripciones y Compras Dentro de la App (IAP)
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.subscriptions.number')}</span>
+            {t('terms.sections.subscriptions.title')}
           </h2>
           <div className="ml-12 space-y-4 text-foreground">
             <p className="leading-relaxed">
-              Si YuanCity ofrece suscripciones o IAP, verás precios, beneficios y períodos antes del pago. Las suscripciones pueden
-              ser <strong>auto-renovables</strong> a menos que se cancelen con 24h de antelación al final del período. Gestión/cancelación
-              desde la tienda correspondiente. <em className="font-bold">Restaurar compras</em> estará disponible cuando aplique.
+              {t('terms.sections.subscriptions.content')}
             </p>
             <div className="bg-white border-2 border-border p-4 shadow-brutal">
-              Para iOS, también aplica el{' '}
+              {t('terms.sections.subscriptions.appleEula')}{' '}
               <a
                 href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
                 target="_blank"
                 rel="noreferrer"
                 className="underline text-main-foreground font-bold"
               >
-                Apple Standard EULA
+                {t('terms.sections.subscriptions.appleEulaLink')}
               </a>.
             </div>
             <div className="bg-white border-2 border-border p-4 shadow-brutal">
-              <strong>Apple y Google no son parte</strong> de este contrato entre usted y Ovalcampus respecto de YuanCity; no son responsables
-              del soporte o mantenimiento del servicio.
+              <strong>{t('terms.sections.subscriptions.notResponsible')}</strong>
             </div>
           </div>
         </section>
@@ -175,124 +179,125 @@ export default function TerminosCondicionesPage() {
         {/* 8. Calificaciones y contenido */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">8</span>
-            Calificaciones, Reseñas y Contenido del Usuario
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.reviews.number')}</span>
+            {t('terms.sections.reviews.title')}
           </h2>
           <ul className="ml-12 space-y-3 text-foreground">
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">⭐ El contenido debe ser veraz, lícito y respetuoso.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">📝 Concedes a YuanCity licencia no exclusiva para usar/reproducir el contenido en la plataforma.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">🛡️ Podemos moderar o retirar contenido que incumpla estos términos.</li>
+            {['⭐', '📝', '🛡️'].map((emoji, index) => (
+              <li key={index} className="bg-white border-2 border-border p-4 shadow-brutal">
+                {emoji} {t(`terms.sections.reviews.points.${index}`)}
+              </li>
+            ))}
           </ul>
         </section>
 
         {/* 9. Propiedad intelectual */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">9</span>
-            Propiedad Intelectual y Licencia
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.intellectualProperty.number')}</span>
+            {t('terms.sections.intellectualProperty.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            YuanCity, su software, marcas, diseños y contenidos son propiedad de Ovalcampus o sus licenciantes. Recibes una licencia
-            limitada, personal, no exclusiva e intransferible para usar la app con el único fin de adquirir productos
-            conforme a estos términos.
+            {t('terms.sections.intellectualProperty.content')}
           </p>
         </section>
 
         {/* 10. Dispositivos y servicios */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">10</span>
-            Dispositivos, Permisos y Servicios de Terceros
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.devices.number')}</span>
+            {t('terms.sections.devices.title')}
           </h2>
           <ul className="ml-12 space-y-3">
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">📱 La app puede solicitar permisos (ubicación, cámara, notificaciones).</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">🔗 Integramos proveedores (pagos, mensajería, hosting, analítica) con sus propios términos.</li>
+            {['📱', '🔗'].map((emoji, index) => (
+              <li key={index} className="bg-white border-2 border-border p-4 shadow-brutal">
+                {emoji} {t(`terms.sections.devices.points.${index}`)}
+              </li>
+            ))}
           </ul>
         </section>
 
         {/* 11. Garantías y limitación */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">11</span>
-            Garantías y Limitación de Responsabilidad
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.warranties.number')}</span>
+            {t('terms.sections.warranties.title')}
           </h2>
           <ul className="ml-12 space-y-3">
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">→ Servicio “tal cual” y “según disponibilidad”.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">→ No nos hacemos responsables por la calidad final brindada por el fabricante o Proveedor mas allá de nuestras garantías de plataforma.</li>
-            <li className="bg-white border-2 border-border p-4 shadow-brutal">→ La responsabilidad se limita al importe pagado en la transacción de la reclamación.</li>
+            {['→', '→', '→'].map((arrow, index) => (
+              <li key={index} className="bg-white border-2 border-border p-4 shadow-brutal">
+                {arrow} {t(`terms.sections.warranties.points.${index}`)}
+              </li>
+            ))}
           </ul>
         </section>
 
         {/* 12. Indemnidad */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">12</span>
-            Indemnidad
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.indemnity.number')}</span>
+            {t('terms.sections.indemnity.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            Usted acepta mantener indemne a Ovalcampus/YuanCity frente a reclamaciones de terceros derivadas del uso indebido de la
-            plataforma, incumplimientos de estos términos o violaciones de derechos de terceros.
+            {t('terms.sections.indemnity.content')}
           </p>
         </section>
 
         {/* 13. Suspensión y terminación */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">13</span>
-            Suspensión y Terminación
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.suspension.number')}</span>
+            {t('terms.sections.suspension.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            Podemos suspender o terminar el acceso por incumplimientos graves, fraude, riesgos de seguridad o requerimientos legales.
-            Usted puede dejar de usar el servicio en cualquier momento.
+            {t('terms.sections.suspension.content')}
           </p>
         </section>
 
         {/* 14. Ley aplicable */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">14</span>
-            Ley Aplicable y Resolución de Disputas
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.law.number')}</span>
+            {t('terms.sections.law.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            Estos términos se rigen por las leyes de <strong>Colombia</strong>. Las disputas se resolverán preferentemente por negociación; en su defecto,
-            ante la jurisdicción competente.
+            {t('terms.sections.law.content')}
           </p>
         </section>
 
         {/* 15. Cambios */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">15</span>
-            Cambios a estos Términos/EULA
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.changes.number')}</span>
+            {t('terms.sections.changes.title')}
           </h2>
           <p className="ml-12 text-foreground leading-relaxed">
-            Podemos actualizar estos Términos/EULA por cambios de servicio o exigencias legales. Notificaremos cambios sustanciales
-            en la app o por correo. Revisa la fecha de “Última actualización”.
+            {t('terms.sections.changes.content')}
           </p>
         </section>
 
         {/* 16. Privacidad y docs */}
         <section className="bg-main border-4 border-border shadow-brutal-2xl p-8 rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">16</span>
-            Privacidad y Documentos Relacionados
+            <span className="flex items-center justify-center w-12 h-12 bg-black text-white font-black text-xl border-2 border-border">{t('terms.sections.privacy.number')}</span>
+            {t('terms.sections.privacy.title')}
           </h2>
           <div className="ml-12 space-y-3 text-foreground">
             <p>
-              El uso de la plataforma también se rige por nuestra{' '}
-              <Link href="/politica-privacidad" className="text-main-foreground font-bold underline">
-                Política de Privacidad
+              {t('terms.sections.privacy.content1')}{' '}
+              <Link href={withLanguage('/politicas-privacidad')} className="text-main-foreground font-bold underline">
+                {t('terms.sections.privacy.privacyPolicyLink')}
               </Link>.
             </p>
             <p>
-              Para iOS, consulta el{' '}
+              {t('terms.sections.privacy.content2')}{' '}
               <a
                 href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
                 target="_blank"
                 rel="noreferrer"
                 className="text-main-foreground font-bold underline"
               >
-                Apple Standard EULA
+                {t('terms.sections.privacy.appleEulaLink')}
               </a>.
             </p>
           </div>
@@ -301,20 +306,20 @@ export default function TerminosCondicionesPage() {
         {/* 17. Contacto */}
         <section className="bg-black text-white border-4 border-border shadow-brutal-3xl p-8 -rotate-1 hover:shadow-[20px_20px_0px_0px_var(--color-border)] transition-all">
           <h2 className="text-2xl md:text-3xl font-black mb-6 flex items-center gap-3">
-            <span className="flex items-center justify-center w-12 h-12 bg-white text-black font-black text-xl border-2 border-border">17</span>
-            Contacto
+            <span className="flex items-center justify-center w-12 h-12 bg-white text-black font-black text-xl border-2 border-border">{t('terms.sections.contact.number')}</span>
+            {t('terms.sections.contact.title')}
           </h2>
           <div className="ml-12 grid md:grid-cols-2 gap-6">
             <div className="bg-white/10 p-5 shadow-brutal border-2 border-white/20">
-              <p className="font-bold mb-2 text-lg">📧 Email Legal</p>
-              <a href="mailto:legal@YuanCity.com" className="underline text-white">
-                legal@YuanCity.com
+              <p className="font-bold mb-2 text-lg">📧 {t('terms.sections.contact.emailTitle')}</p>
+              <a href={`mailto:${t('terms.sections.contact.email')}`} className="underline text-white">
+                {t('terms.sections.contact.email')}
               </a>
             </div>
             <div className="bg-white/10 p-5 shadow-brutal border-2 border-white/20">
-              <p className="font-bold mb-2 text-lg">📍 Dirección (Ovalcampus USA)</p>
-              <p className="text-white/90 leading-relaxed">
-                1129 N Saint Lucas St<br />Allentown, PA 18104<br />Estados Unidos
+              <p className="font-bold mb-2 text-lg">📍 {t('terms.sections.contact.addressTitle')}</p>
+              <p className="text-white/90 leading-relaxed whitespace-pre-line">
+                {t('terms.sections.contact.address')}
               </p>
             </div>
           </div>

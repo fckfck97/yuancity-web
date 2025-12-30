@@ -1,0 +1,687 @@
+{
+  "navbar": {
+    "yuancity": "YuanCity",
+    "whoWeAre": "Quem somos",
+    "howItWorks": "Como funciona",
+    "joinUs": "Junte-se a nós",
+    "downloadApp": "Baixar app"
+  },
+  "footer": {
+    "subscriptionSuccess": "Assinatura concluída com sucesso! Obrigado por se inscrever.",
+    "subscriptionError": "Houve um erro na sua assinatura. Tente novamente mais tarde.",
+    "connectionError": "Erro de conexão. Verifique sua internet e tente novamente.",
+    "yuancity": "YuanCity",
+    "description": "Na YuanCity, conectamos você às melhores experiências locais.",
+    "navigation": "Navegação",
+    "aboutUs": "Quem somos",
+    "howItWorks": "Como funciona",
+    "joinUs": "Junte-se a nós",
+    "legal": "Legal",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "deleteAccount": "Excluir conta",
+    "followUs": "Siga-nos",
+    "email": "E-mail",
+    "emailPlaceholder": "Digite seu endereço de e-mail",
+    "sending": "Enviando",
+    "subscribe": "Inscrever-se",
+    "allRightsReserved": "Todos os direitos reservados"
+  },
+  "home": {
+    "hero": {
+      "altText": "Pessoas usando a YuanCity, comprando produtos importados da China",
+      "discoverInYuanCity": "Descubra na YuanCity",
+      "closeToYou": "Perto de você",
+      "discoverThousandsOfExclusiveProducts": "Descubra milhares de produtos exclusivos importados na",
+      "yuanCity": "YuanCity",
+      "qualityAndVarietyAtYourFingertips": "Qualidade e variedade ao seu alcance",
+      "downloadApp": "Baixar app",
+      "howItWorks": "Como funciona"
+    },
+    "about": {
+      "title": "Quem somos",
+      "weAreYuanCity": "Nós somos a",
+      "yuanCity": "YuanCity",
+      "description1": ": seu acesso direto aos melhores produtos da China.",
+      "description2": "Conectamos milhares de usuários a uma oferta infinita de tecnologia, itens para casa, moda e muito mais, selecionando cuidadosamente cada produto para garantir qualidade e preços competitivos.",
+      "description3": "Nossa missão: democratizar o acesso a produtos internacionais com uma experiência de compra segura, rápida e sem complicações.",
+      "qualityBadge": "Qualidade de exportação • Variedade infinita • Preços diretos"
+    },
+    "HowItWorks": {
+      "title": "COMO FUNCIONA?",
+      "step1Title": "Explore e escolha",
+      "step1Desc": "Navegue por milhares de produtos importados da China. Encontre tecnologia, itens para casa, moda e muito mais.",
+      "step2Title": "Adicione ao carrinho",
+      "step2Desc": "Selecione seus itens favoritos e adicione ao carrinho com facilidade.",
+      "step3Title": "Pagamento seguro",
+      "step3Desc": "Faça seu pagamento pela nossa plataforma protegida com vários métodos disponíveis.",
+      "step4Title": "Receba em casa",
+      "step4Desc": "Cuidamos da logística para que seus produtos cheguem com segurança até você. Simples assim!",
+      "downloadApp": "BAIXE O APP"
+    },
+    "DownloadApp": {
+      "title": "Baixe o app da YuanCity",
+      "purchaseInYuanCity": "Compre na YuanCity",
+      "purchaseDescription": "Selecione seus itens favoritos e adicione ao carrinho com facilidade.",
+      "googlePlay": "Google Play",
+      "appStore": "App Store",
+      "storeNotice": "Não encontra sua loja? Em breve em mais regiões.",
+      "globalCatalog": "Catálogo global",
+      "globalCatalogDesc": "Acesse milhares de produtos direto da fábrica.",
+      "securePurchase": "Compra segura",
+      "securePurchaseDesc": "Seus pagamentos e dados estão sempre seguros conosco.",
+      "guaranteedShipping": "Envio garantido",
+      "guaranteedShippingDesc": "Logística profissional para garantir que tudo chegue até você."
+    },
+    "JoinSubscribe": {
+      "subscriptionSuccess": "Você se inscreveu com sucesso na nossa newsletter!",
+      "subscriptionError": "Houve um erro na sua inscrição. Tente novamente mais tarde.",
+      "connectionError": "Erro de conexão. Verifique sua internet e tente novamente.",
+      "newEpisode": "PRONTO PARA PARTICIPAR?",
+      "recentlyAdded": "Inscreva-se e receba novidades sobre a YuanCity.",
+      "sending": "ENVIANDO...",
+      "subscribe": "QUERO ME INSCREVER",
+      "emailPlaceholder": "Seu e-mail"
+    }
+  },
+  "languages": {
+    "english": "Inglês",
+    "spanish": "Espanhol",
+    "italian": "Italiano",
+    "portuguese": "Português",
+    "chinese": "Chinês",
+    "selectLanguage": "Selecionar idioma"
+  },
+  "socialPromo": {
+    "subtitle": "CONECTE-SE CONOSCO",
+    "title": "Baixe o YuanCity!",
+    "storeCta": "Disponível na App Store e Google Play",
+    "socialTitle": "Siga-nos nas redes sociais",
+    "close": "Fechar"
+  },
+  "notFound": {
+    "title": "Desculpe, página não encontrada.",
+    "description": "A página que você procura pode ter sido movida, excluída ou não existe.",
+    "backToHome": "Voltar para o início",
+    "whatCanYouDo": "O que você pode fazer?",
+    "exploreProducts": "Explorar produtos",
+    "needHelp": "Precisa de ajuda? Visite nossa",
+    "privacyPolicy": "Política de Privacidade",
+    "or": "ou",
+    "termsAndConditions": "Termos e Condições",
+    "pages": "páginas"
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "lastUpdated": "Última atualização: 10 de outubro de 2025",
+    "sections": {
+      "informationWeCollect": {
+        "title": "1. Informações que coletamos",
+        "content": "Coletamos dados pessoais durante o cadastro (nome, e-mail, data de nascimento, telefone) e dados de uso relacionados ao streaming (histórico de visualização, preferências, informações do dispositivo e da rede)."
+      },
+      "howWeUseInformation": {
+        "title": "2. Como usamos suas informações",
+        "content": "Seus dados nos permitem gerenciar sua conta, personalizar recomendações, melhorar a qualidade do streaming e enviar comunicações transacionais (por exemplo, recibos de pagamento, atualizações do serviço). E-mails de marketing são estritamente opt-in, em conformidade com o GDPR."
+      },
+      "subscriptionsBilling": {
+        "title": "3. Assinaturas e cobrança",
+        "content": "A Mikiguiki oferece assinaturas com renovação automática (",
+        "basic": "Básico",
+        "standard": "Padrão",
+        "premium": "Premium",
+        "contentContinued": "). Os preços e os períodos de renovação são exibidos na tela de compra antes do pagamento. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período vigente. Você pode gerenciar ou cancelar seu plano a qualquer momento nas configurações da sua conta na App Store. A restauração de compras está disponível pelo botão \"Restaurar compras\" no app, conforme exigido pela ",
+        "appReviewGuideline": "Diretriz de Revisão de Apps 3.1.2",
+        "period": "."
+      },
+      "sharingInformation": {
+        "title": "4. Compartilhamento de informações",
+        "content": "Nós nunca vendemos seus dados. Compartilhamos informações apenas com operadores confiáveis (por exemplo, pagamentos, provedores de e-mail/SMS/WhatsApp, analytics, hospedagem/CDN) sob acordos de processamento de dados, ou quando exigido por lei. Não permitimos que esses provedores usem seus dados para fins próprios."
+      },
+      "processorsTransfers": {
+        "title": "4.1. Operadores e transferências internacionais",
+        "content": "Podemos processar dados em infraestrutura localizada fora do seu país. Quando aplicável, utilizamos cláusulas contratuais padrão ou salvaguardas equivalentes para proteger suas informações e avaliamos regularmente a postura de segurança e conformidade de nossos fornecedores."
+      },
+      "cookiesTechnologies": {
+        "title": "5. Cookies e tecnologias semelhantes",
+        "content": "Usamos cookies e armazenamento local para lembrar preferências e analisar o uso da plataforma. Você pode desativar cookies no navegador; alguns recursos podem não funcionar corretamente. Para usuários da UE exibimos um banner de consentimento de cookies em conformidade com o GDPR e a diretiva ePrivacy."
+      },
+      "dataSecurity": {
+        "title": "6. Segurança dos dados",
+        "content": "Empregamos criptografia em trânsito (TLS 1.2+), senhas com hash (Argon2) e controles de acesso baseados em função. Apesar dos nossos esforços, nenhum sistema é 100% seguro."
+      },
+      "yourRights": {
+        "title": "7. Seus direitos",
+        "content": "Você pode acessar, corrigir ou excluir seus dados pessoais, se opor ao processamento ou solicitar portabilidade. Envie sua solicitação para ",
+        "supportEmail": "contact@mikiguiki.com",
+        "contentContinued": ". Respondemos em até 30 dias, conforme GDPR/CCPA."
+      },
+      "childrensPrivacy": {
+        "title": "8. Privacidade de crianças",
+        "content": "A Mikiguiki não é direcionada a crianças menores de 13 anos. Não coletamos intencionalmente dados de menores. Se você acredita que uma criança forneceu informações pessoais, entre em contato e nós as excluiremos imediatamente."
+      },
+      "changesToPolicy": {
+        "title": "9. Alterações nesta política",
+        "content": "Podemos atualizar esta política para refletir novos requisitos legais ou mudanças no serviço. Notificaremos no app ou por e-mail antes que alterações significativas entrem em vigor."
+      },
+      "contact": {
+        "title": "10. Contato",
+        "content": "Dúvidas? Fale conosco em ",
+        "supportEmail": "contact@mikiguiki.com",
+        "contentContinued": " ou em ",
+        "address": "Endereço (Ovalcampus USA): 1129 N Saint Lucas St Allentown, PA 18104, United States",
+        "period": "."
+      },
+      "deviceIds": {
+        "title": "11. IDs do dispositivo e outros identificadores (Push)",
+        "content": "Coletamos um identificador de instalação (por exemplo, token de notificação push) para habilitar notificações e associá-las à sua conta ou dispositivo. Não vendemos esses dados nem os usamos para publicidade. Os dados são criptografados em trânsito e retidos apenas enquanto sua conta permanecer ativa ou até você desativar notificações ou excluir sua conta."
+      },
+      "authOtp": {
+        "title": "12. Autenticação e OTP",
+        "content": "Para login sem senha e verificação de segurança, podemos enviar códigos de uso único (OTP) por e-mail, SMS ou WhatsApp para os contatos fornecidos. Compartilhamos os dados necessários com nossos provedores de mensagens somente para entregar o OTP. Esses provedores atuam como operadores e não podem usar seus dados para fins próprios."
+      },
+      "pushNotifications": {
+        "title": "13. Notificações push",
+        "content": "Com sua permissão, enviamos notificações push sobre atividade da conta, novos lançamentos e atualizações do serviço. Você pode desativar a qualquer momento nas configurações do dispositivo ou dentro do app. Desativar notificações pode impedir o recebimento de algumas mensagens de serviço."
+      },
+      "dataDeletion": {
+        "title": "14. Exclusão de dados e gerenciamento da conta",
+        "content": "Você pode solicitar a exclusão da sua conta e dos dados pessoais associados pelo seguinte link: ",
+        "deleteUrlLabel": "Excluir conta",
+        "contentContinued": ". Após verificarmos sua solicitação, excluiremos ou anonimizaremos seus dados, exceto quando a retenção for exigida por lei, resolução de disputas ou para fazer cumprir nossos termos."
+      },
+      "dataRetention": {
+        "title": "15. Retenção de dados",
+        "content": "Retemos dados pessoais apenas pelo tempo necessário para prestar o serviço, cumprir obrigações legais, resolver disputas e fazer cumprir acordos. Exemplos: (i) registros de assinatura e cobrança pelos períodos legais; (ii) logs de segurança por tempo limitado; (iii) tokens push enquanto sua conta estiver ativa ou até você revogar as notificações."
+      }
+    },
+    "links": {
+      "termsOfUse": "Termos de uso (EULA)",
+      "privacyPolicyPdf": "Política de Privacidade (PDF)"
+    }
+  },
+  "terms": {
+    "title": "Termos e condições",
+    "subtitle": "Termos e condições de uso da plataforma YuanCity (Ovalcampus) e EULA.",
+    "lastUpdated": "Última atualização: 11 de novembro de 2025",
+    "header": {
+      "title": "Termos e condições",
+      "description": "Termos e condições de uso da plataforma YuanCity (Ovalcampus) e EULA.",
+      "lastUpdate": "Última atualização: 11 de novembro de 2025"
+    },
+    "sections": {
+      "introduction": {
+        "number": "1",
+        "title": "Introdução",
+        "content": "Bem-vindo(a) à YuanCity, uma plataforma da Ovalcampus para explorar catálogos, fazer pedidos e comprar produtos importados com segurança. Ao usar nosso site ou aplicativo, você aceita estes Termos e Condições de Uso e o EULA. Se não concordar, não use a YuanCity.",
+        "yuanCity": "YuanCity",
+        "ovalcampus": "Ovalcampus",
+        "eula": "EULA"
+      },
+      "definitions": {
+        "number": "2",
+        "title": "Definições",
+        "user": "Usuário/Cliente",
+        "userDefinition": "Pessoa que cria uma conta ou usa a YuanCity.",
+        "provider": "Fornecedor",
+        "providerDefinition": "Entidade que fornece produtos importados por meio da YuanCity.",
+        "order": "Pedido",
+        "orderDefinition": "Solicitação de produto feita pelo Usuário por meio da plataforma.",
+        "platform": "Plataforma",
+        "platformDefinition": "Site e app da YuanCity.",
+        "services": "Serviços",
+        "servicesDefinition": "Recursos oferecidos pela YuanCity (exploração de produtos, gestão de pedidos, pagamentos, suporte, etc.)."
+      },
+      "registration": {
+        "number": "3",
+        "title": "Cadastro e segurança da conta",
+        "points": [
+          "Você deve fornecer informações verdadeiras e mantê-las atualizadas.",
+          "Você é responsável por suas credenciais e atividades.",
+          "Maior de 18 anos ou com autorização dos responsáveis conforme a lei.",
+          "Podemos suspender/encerrar contas por violações ou fraude."
+        ]
+      },
+      "platformUse": {
+        "number": "4",
+        "title": "Uso da plataforma",
+        "allowed": {
+          "title": "4.1 Uso permitido",
+          "points": [
+            "Consultar catálogos, disponibilidade e preços.",
+            "Fazer pedidos e pagamentos com segurança.",
+            "Receber atualizações do pedido e suporte."
+          ]
+        },
+        "prohibited": {
+          "title": "4.2 Uso proibido",
+          "points": [
+            "Pedidos fraudulentos ou que prejudiquem a operação.",
+            "Acessar/interferir em sistemas ou dados não autorizados.",
+            "Publicar conteúdo ilegal, ofensivo ou que infrinja direitos."
+          ]
+        }
+      },
+      "orders": {
+        "number": "5",
+        "title": "Pedidos, preços e pagamentos",
+        "points": [
+          "Preços, disponibilidade e prazos dependem do Fornecedor e da logística de importação.",
+          "O pedido é confirmado quando processado; os prazos de entrega são estimados.",
+          "Pagamentos com provedores certificados; impostos/taxas de importação podem se aplicar.",
+          "Recibos/notas fiscais conforme a regulamentação aplicável."
+        ]
+      },
+      "cancellations": {
+        "number": "6",
+        "title": "Cancelamentos e reembolsos",
+        "points": [
+          "Dependem do Fornecedor e da lei aplicável.",
+          "Se o sistema cancelar por falta de estoque ou logística, o reembolso segue o fluxo do provedor de pagamento.",
+          "Compras na App Store/Google Play são regidas por suas políticas."
+        ]
+      },
+      "subscriptions": {
+        "number": "7",
+        "title": "Assinaturas e compras no app (IAP)",
+        "content": "Se a YuanCity oferecer assinaturas ou IAP, você verá preços, benefícios e períodos antes do pagamento. Assinaturas podem ser renovadas automaticamente, a menos que sejam canceladas 24h antes do fim do período. Gestão/cancelamento pela loja correspondente. Restauração de compras estará disponível quando aplicável.",
+        "appleEula": "Para iOS, também se aplica o",
+        "appleEulaLink": "EULA padrão da Apple",
+        "notResponsible": "Apple e Google não fazem parte deste contrato entre você e a Ovalcampus sobre a YuanCity; não são responsáveis por suporte ou manutenção do serviço."
+      },
+      "reviews": {
+        "number": "8",
+        "title": "Avaliações, comentários e conteúdo do usuário",
+        "points": [
+          "O conteúdo deve ser verdadeiro, legal e respeitoso.",
+          "Você concede à YuanCity uma licença não exclusiva para usar/reproduzir o conteúdo na plataforma.",
+          "Podemos moderar ou remover conteúdo que viole estes termos."
+        ]
+      },
+      "intellectualProperty": {
+        "number": "9",
+        "title": "Propriedade intelectual e licença",
+        "content": "A YuanCity, seu software, marcas, designs e conteúdos são propriedade da Ovalcampus ou de seus licenciadores. Você recebe uma licença limitada, pessoal, não exclusiva e intransferível para usar o app com o único objetivo de comprar produtos conforme estes termos."
+      },
+      "devices": {
+        "number": "10",
+        "title": "Dispositivos, permissões e serviços de terceiros",
+        "points": [
+          "O app pode solicitar permissões (localização, câmera, notificações).",
+          "Integramos provedores (pagamentos, mensagens, hospedagem, analytics) com seus próprios termos."
+        ]
+      },
+      "warranties": {
+        "number": "11",
+        "title": "Garantias e limitação de responsabilidade",
+        "points": [
+          "Serviço \"no estado em que se encontra\" e \"conforme disponibilidade\".",
+          "Não nos responsabilizamos pela qualidade final do fabricante ou Fornecedor além das garantias da plataforma.",
+          "A responsabilidade é limitada ao valor pago na transação objeto da reclamação."
+        ]
+      },
+      "indemnity": {
+        "number": "12",
+        "title": "Indenização",
+        "content": "Você concorda em isentar a Ovalcampus/YuanCity de reivindicações de terceiros decorrentes do uso indevido da plataforma, violações destes termos ou violações de direitos de terceiros."
+      },
+      "suspension": {
+        "number": "13",
+        "title": "Suspensão e encerramento",
+        "content": "Podemos suspender ou encerrar o acesso por violações graves, fraude, riscos de segurança ou exigências legais. Você pode parar de usar o serviço a qualquer momento."
+      },
+      "law": {
+        "number": "14",
+        "title": "Lei aplicável e resolução de disputas",
+        "content": "Estes termos são regidos pelas leis da Colômbia. Disputas serão preferencialmente resolvidas por negociação; caso contrário, perante a jurisdição competente.",
+        "country": "Colombia"
+      },
+      "changes": {
+        "number": "15",
+        "title": "Alterações destes Termos/EULA",
+        "content": "Podemos atualizar estes Termos/EULA por mudanças no serviço ou requisitos legais. Notificaremos alterações substanciais no app ou por e-mail. Verifique a data de \"Última atualização\"."
+      },
+      "privacy": {
+        "number": "16",
+        "title": "Privacidade e documentos relacionados",
+        "content1": "O uso da plataforma também é regido pela nossa",
+        "privacyPolicyLink": "Política de Privacidade",
+        "content2": "Para iOS, consulte o",
+        "appleEulaLink": "EULA padrão da Apple"
+      },
+      "contact": {
+        "number": "17",
+        "title": "Contato",
+        "emailTitle": "E-mail jurídico",
+        "email": "legal@YuanCity.com",
+        "addressTitle": "Endereço (Ovalcampus USA)",
+        "address": "1129 N Saint Lucas St\nAllentown, PA 18104\nUnited States"
+      }
+    },
+    "links": {
+      "privacyPolicy": "Política de Privacidade",
+      "appleStandardEula": "EULA padrão da Apple"
+    }
+  },
+  "deleteAccount": {
+    "title": "Excluir sua conta",
+    "subtitle": "Excluir permanentemente sua conta da YuanCity",
+    "lastUpdated": "Última atualização: 11 de novembro de 2025",
+    "header": {
+      "title": "Excluir sua conta",
+      "subtitle": "Excluir permanentemente sua conta da YuanCity",
+      "lastUpdate": "Última atualização: 11 de novembro de 2025"
+    },
+    "sections": {
+      "description": {
+        "number": "1",
+        "title": "O que significa excluir sua conta?",
+        "content": "Ao excluir sua conta, seus dados pessoais, histórico de pedidos e preferências serão removidos dos nossos sistemas, exceto por alguns dados mínimos que precisamos manter por motivos legais ou de segurança. Esta ação não pode ser desfeita."
+      },
+      "warning": {
+        "number": "2",
+        "title": "Aviso",
+        "irreversible": "Esta ação é irreversível.",
+        "description": "Após a conclusão do processo, sua conta e os dados excluíveis não poderão ser recuperados."
+      },
+      "verification": {
+        "number": "3",
+        "title": "Verificação rápida",
+        "emailLabel": "E-mail da sua conta",
+        "emailPlaceholder": "seu-email@YuanCity.com",
+        "emailHint": "Deve corresponder ao e-mail cadastrado na YuanCity.",
+        "otpLabel": "Código OTP (se necessário)",
+        "otpPlaceholder": "Digite seu código de verificação",
+        "otpHint": "Enviamos por e-mail/SMS/WhatsApp se sua conta exigir.",
+        "reasonLabel": "Motivo (opcional)",
+        "reasonPlaceholder": "Conte rapidamente o motivo (opcional)",
+        "deleteButton": "Excluir minha conta"
+      },
+      "contact": {
+        "number": "4",
+        "title": "Fale conosco",
+        "description": "Dúvidas antes de excluir sua conta? Escreva para:",
+        "email": "contacto@yuancity.com"
+      },
+      "whatWillBeDeleted": {
+        "number": "5",
+        "title": "O que será excluído",
+        "items": [
+          "Perfil e informações pessoais (nome, e-mail, telefone).",
+          "Histórico de pedidos, pagamentos e preferências.",
+          "Itens favoritos e listas salvas.",
+          "Dados de assinatura gerenciados pela YuanCity (assinaturas externas devem ser canceladas separadamente).",
+          "Mensagens e comunicações vinculadas à sua conta no serviço."
+        ]
+      },
+      "steps": {
+        "number": "6",
+        "title": "Passos para excluir sua conta",
+        "fromApp": {
+          "title": "Pelo app",
+          "description": "Abra YuanCity → Configurações → Conta → Excluir conta e siga os passos. Confirme sua identidade (PIN/biometria/OTP)."
+        },
+        "byEmail": {
+          "title": "Por e-mail",
+          "description": "Envie para contact@YuanCity.com com o assunto «Excluir minha conta» incluindo seu e-mail cadastrado e país."
+        },
+        "verification": {
+          "title": "Verificação e prazos",
+          "description": "Podemos solicitar verificação adicional. Processamos em até 30 dias. Backups podem levar até 90 dias para serem removidos."
+        }
+      },
+      "dataRetention": {
+        "number": "7",
+        "title": "Dados que podem ser mantidos",
+        "tableHeaders": {
+          "type": "Tipo de dado",
+          "reason": "Motivo",
+          "period": "Período"
+        },
+        "tableRows": [
+          ["Registros de segurança/anti-fraude", "Prevenção, investigação e segurança", "Até 12 meses"],
+          ["Registros contábeis/fiscais", "Obrigações legais", "Até 7 anos (dependendo do país)"],
+          ["Tickets de suporte e e-mails", "Atendimento e defesa em reclamações", "Até 24 meses"],
+          ["Cópias de backup", "Integridade e recuperação de desastres", "Até 90 dias"]
+        ],
+        "note": "O restante é excluído de forma segura ou anonimizado."
+      },
+      "subscriptions": {
+        "number": "8",
+        "title": "Assinaturas e cobrança",
+        "items": [
+          {
+            "label": "Importante:",
+            "description": "Excluir sua conta não cancela automaticamente assinaturas compradas na App Store ou Google Play."
+          },
+          {
+            "description": "Cancele diretamente na sua conta da loja correspondente."
+          },
+          {
+            "description": "Não armazenamos dados completos de cartão em nossos sistemas."
+          }
+        ]
+      }
+    },
+    "status": {
+      "success": "Sua conta foi excluída com sucesso.",
+      "error": "Houve um erro ao excluir sua conta. Tente novamente."
+    },
+    "footer": {
+      "content": "Por sua segurança, em alguns casos podemos solicitar verificação adicional. Se precisar de ajuda, escreva para ",
+      "email": "contact@YuanCity.com"
+    },
+    "modal": {
+      "title": "Confirmação necessária",
+      "question": "Tem certeza de que deseja excluir permanentemente sua conta?",
+      "confirmButton": "Sim, excluir minha conta",
+      "cancelButton": "Cancelar",
+      "processing": "Processando...",
+      "note": "Podemos solicitar verificação adicional para proteger sua conta."
+    }
+  },
+  "privacyPolicy": {
+    "title": "Política de Privacidade — YuanCity",
+    "subtitle": "Sua privacidade é essencial para nós",
+    "lastUpdated": "Última atualização: 11 de novembro de 2025",
+    "intro": {
+      "title": "INTRO",
+      "paragraph1": ", um produto da ",
+      "ovalcampus": "Ovalcampus",
+      "paragraph2": ", é uma plataforma para compra de produtos importados. Esta Política explica como coletamos, usamos, compartilhamos, armazenamos e protegemos seus dados.",
+      "paragraph3": "Operamos inicialmente na Colômbia e cumprimos a ",
+      "law": "Lei 1581 de 2012",
+      "and": " e o regime de ",
+      "habeasData": "Habeas Data",
+      "regime": ". Quando aplicável, adotamos princípios do ",
+      "gdpr": "GDPR",
+      "eu": " (UE) e do ",
+      "ccpa": "CCPA",
+      "california": " (Califórnia)."
+    },
+    "sections": {
+      "dataController": {
+        "number": "1",
+        "title": "CONTROLADOR/RESPONSÁVEL PELO TRATAMENTO",
+        "name": "Ovalcampus / YuanCity",
+        "address": "1129 N Saint Lucas St, Allentown, PA 18104, United States",
+        "contactLabel": "Contato:",
+        "email": "contacto@yuancity.com"
+      },
+      "informationCollected": {
+        "number": "2",
+        "title": "INFORMAÇÕES QUE COLETAMOS",
+        "accountProfile": {
+          "title": "2.1 Conta e perfil",
+          "items": [
+            "Nome, e-mail, número de telefone.",
+            "Foto de perfil e preferências.",
+            "Documento de identificação para cobrança (quando aplicável)."
+          ]
+        },
+        "postsTransactions": {
+          "title": "2.2 Publicações e transações",
+          "items": [
+            "Fotos e descrições de produtos, preços, categorias e status.",
+            "Mensagens/chats de suporte e solicitações.",
+            "Pedidos, envios e confirmações de entrega.",
+            "Pagamentos (não armazenamos números completos de cartão)."
+          ]
+        },
+        "technicalData": {
+          "title": "2.3 Dados técnicos e de uso",
+          "items": [
+            "IP, dispositivo/navegador, sistema operacional, identificadores do app.",
+            "Métricas de desempenho, eventos, falhas e segurança."
+          ]
+        },
+        "location": {
+          "title": "2.4 Localização",
+          "items": [
+            "Localização aproximada (com seu consentimento).",
+            "Endereço de entrega para concluir transações."
+          ]
+        },
+        "moderation": {
+          "title": "2.5 Moderação e confiança",
+          "description": "Verificação, avaliação de denúncias e regras automatizadas/manuais para prevenir fraude."
+        }
+      },
+      "purposes": {
+        "number": "3",
+        "title": "FINALIDADES DO TRATAMENTO",
+        "main": {
+          "title": "3.1 Principais",
+          "items": [
+            "Criar/gerenciar sua conta.",
+            "Explorar e gerenciar pedidos de produtos importados.",
+            "Processar pagamentos com segurança e gerenciar a logística de entrega.",
+            "Fornecer suporte, resolver incidentes e moderar conteúdo.",
+            "Prevenir fraude e garantir a segurança da plataforma."
+          ]
+        },
+        "additional": {
+          "title": "3.2 Adicionais",
+          "items": [
+            "Recomendações personalizadas (categorias, interesses, produtos).",
+            "Análise de uso para melhorar experiência e desempenho.",
+            "Marketing com seu consentimento (opt-in) e opção de revogação (opt-out)."
+          ]
+        }
+      },
+      "legalBases": {
+        "number": "4",
+        "title": "BASES LEGAIS",
+        "items": [
+          {
+            "label": "Execução do contrato:",
+            "description": "compra e venda e pagamentos."
+          },
+          {
+            "label": "Consentimento:",
+            "description": "localização, marketing, cookies não essenciais."
+          },
+          {
+            "label": "Interesse legítimo:",
+            "description": "segurança, anti-fraude, melhorias do serviço."
+          },
+          {
+            "label": "Obrigação legal:",
+            "description": "contabilidade, tributos e cumprimento perante autoridades."
+          }
+        ]
+      },
+      "cookies": {
+        "number": "5",
+        "title": "COOKIES E TECNOLOGIAS SEMELHANTES",
+        "description": "Usamos cookies essenciais, de desempenho e de preferência. Cookies de marketing apenas com seu consentimento. Você pode gerenciá-los no navegador e, quando aplicável, no nosso banner."
+      },
+      "sharing": {
+        "number": "6",
+        "title": "COMPARTILHAMENTO DE INFORMAÇÕES",
+        "items": [
+          {
+            "label": "Pagamentos e logística",
+            "description": ": cobranças, envios e entregas."
+          },
+          {
+            "label": "Nuvem/analytics/mensagens",
+            "description": ": hospedagem, métricas, notificações."
+          },
+          {
+            "label": "Autoridades",
+            "description": ": cumprimento legal e proteção de direitos."
+          }
+        ]
+      },
+      "security": {
+        "number": "7",
+        "title": "SEGURANÇA DA INFORMAÇÃO",
+        "items": [
+          "🔒 TLS em trânsito; boas práticas de armazenamento.",
+          "🔐 Controles de acesso, minimização e auditoria.",
+          "🛡️ Monitoramento e testes periódicos."
+        ]
+      },
+      "retention": {
+        "number": "8",
+        "title": "RETENÇÃO DE DADOS",
+        "items": [
+          {
+            "label": "Conta",
+            "description": ": enquanto ativa ou até a exclusão."
+          },
+          {
+            "label": "Transações/cobrança",
+            "description": ": até 7 anos (obrigações legais)."
+          },
+          {
+            "label": "Logs técnicos",
+            "description": ": até 12 meses."
+          },
+          {
+            "label": "Marketing",
+            "description": ": até revogação do consentimento."
+          }
+        ]
+      },
+      "transfers": {
+        "number": "9",
+        "title": "TRANSFERÊNCIAS INTERNACIONAIS",
+        "description": "Possíveis transferências para outros países (por exemplo, EUA) com salvaguardas adequadas (SCC ou outras medidas)."
+      },
+      "minors": {
+        "number": "10",
+        "title": "MENORES",
+        "description": "Não direcionado a menores de 18 anos. Excluiremos dados e encerraremos contas associadas se detectado."
+      },
+      "rights": {
+        "number": "11",
+        "title": "SEUS DIREITOS",
+        "description": "Acesso, atualização, retificação, exclusão; oposição ou limitação; portabilidade; revogação do consentimento.",
+        "contact": "Escreva para ",
+        "email": "contacto@yuancity.com",
+        "response": ". Responderemos dentro dos prazos legais aplicáveis."
+      },
+      "communications": {
+        "number": "12",
+        "title": "CONTROLE DE COMUNICAÇÕES",
+        "items": [
+          "📧 Desative e-mails promocionais pelo link na mensagem.",
+          "📱 Gerencie notificações push nas configurações do dispositivo e no app.",
+          "ℹ️ Avisos transacionais podem continuar sendo enviados."
+        ]
+      },
+      "changes": {
+        "number": "13",
+        "title": "ALTERAÇÕES NESTA POLÍTICA",
+        "description": "Notificaremos alterações significativas no app ou por e-mail. Verifique a data de \"Última atualização\"."
+      }
+    },
+    "footer": {
+      "paragraph1": "Ao usar a YuanCity, você confirma que leu e aceita esta Política de Privacidade. Para ver os Termos e condições, visite a seção correspondente.",
+      "paragraph2": "Usuários Apple: revise também os ",
+      "appleTermsLink": "Termos de Serviço da Apple",
+      "period": "."
+    }
+  }
+}

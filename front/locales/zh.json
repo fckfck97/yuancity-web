@@ -1,0 +1,687 @@
+{
+  "navbar": {
+    "yuancity": "元城",
+    "whoWeAre": "我们是谁",
+    "howItWorks": "如何运作",
+    "joinUs": "加入我们",
+    "downloadApp": "下载应用"
+  },
+  "footer": {
+    "subscriptionSuccess": "订阅成功！感谢您的订阅。",
+    "subscriptionError": "订阅时发生错误。请稍后再试。",
+    "connectionError": "连接出错。请检查网络后重试。",
+    "yuancity": "元城",
+    "description": "在元城，我们为您连接最优质的本地体验。",
+    "navigation": "导航",
+    "aboutUs": "我们是谁",
+    "howItWorks": "如何运作",
+    "joinUs": "加入我们",
+    "legal": "法律",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "deleteAccount": "删除账户",
+    "followUs": "关注我们",
+    "email": "邮箱",
+    "emailPlaceholder": "请输入您的邮箱地址",
+    "sending": "发送中",
+    "subscribe": "订阅",
+    "allRightsReserved": "版权所有"
+  },
+  "home": {
+    "hero": {
+      "altText": "人们使用元城，从中国购买进口商品",
+      "discoverInYuanCity": "在元城发现",
+      "closeToYou": "就在你身边",
+      "discoverThousandsOfExclusiveProducts": "在",
+      "yuanCity": "元城",
+      "qualityAndVarietyAtYourFingertips": "品质与多样，一触即达",
+      "downloadApp": "下载应用",
+      "howItWorks": "如何运作"
+    },
+    "about": {
+      "title": "我们是谁",
+      "weAreYuanCity": "我们是",
+      "yuanCity": "元城",
+      "description1": "：直达中国优质好物的入口。",
+      "description2": "我们连接成千上万用户与源源不断的科技、家居、时尚等海量商品，并严选每一件商品，确保品质与价格竞争力。",
+      "description3": "我们的使命：以安全、快速、无忧的购物体验，让更多人轻松获得国际商品。",
+      "qualityBadge": "出口品质 • 无限选择 • 直采价格"
+    },
+    "HowItWorks": {
+      "title": "如何运作？",
+      "step1Title": "浏览并选择",
+      "step1Desc": "浏览来自中国的海量进口商品。发现科技、家居、时尚等更多品类。",
+      "step2Title": "加入购物车",
+      "step2Desc": "选择心仪商品，轻松加入购物车。",
+      "step3Title": "安全支付",
+      "step3Desc": "通过我们的安全平台完成支付，支持多种支付方式。",
+      "step4Title": "送货到家",
+      "step4Desc": "我们负责物流，让商品安全送达你的家门口。就是这么简单！",
+      "downloadApp": "下载应用"
+    },
+    "DownloadApp": {
+      "title": "下载元城应用",
+      "purchaseInYuanCity": "在元城购物",
+      "purchaseDescription": "选择你喜欢的商品，轻松加入购物车。",
+      "googlePlay": "Google Play",
+      "appStore": "App Store",
+      "storeNotice": "找不到你的商店？更多地区即将上线。",
+      "globalCatalog": "全球目录",
+      "globalCatalogDesc": "直达工厂，获取海量商品。",
+      "securePurchase": "安全购物",
+      "securePurchaseDesc": "你的支付与数据始终安全无忧。",
+      "guaranteedShipping": "保障配送",
+      "guaranteedShippingDesc": "专业物流，确保商品送达你家。"
+    },
+    "JoinSubscribe": {
+      "subscriptionSuccess": "你已成功订阅我们的通讯！",
+      "subscriptionError": "订阅时发生错误。请稍后再试。",
+      "connectionError": "连接出错。请检查网络后重试。",
+      "newEpisode": "准备加入了吗？",
+      "recentlyAdded": "订阅并获取关于元城的最新消息。",
+      "sending": "发送中...",
+      "subscribe": "立即订阅",
+      "emailPlaceholder": "你的邮箱"
+    }
+  },
+  "languages": {
+    "english": "英语",
+    "spanish": "西班牙语",
+    "italian": "意大利语",
+    "portuguese": "葡萄牙语",
+    "chinese": "中文",
+    "selectLanguage": "选择语言"
+  },
+  "socialPromo": {
+    "subtitle": "与我们联系",
+    "title": "下载YuanCity!",
+    "storeCta": "可在App Store和Google Play下载",
+    "socialTitle": "在社交媒体上关注我们",
+    "close": "关闭"
+  },
+  "notFound": {
+    "title": "抱歉，页面未找到。",
+    "description": "你访问的页面可能已被移动、删除或不存在。",
+    "backToHome": "返回首页",
+    "whatCanYouDo": "你可以做什么？",
+    "exploreProducts": "浏览商品",
+    "needHelp": "需要帮助？查看我们的",
+    "privacyPolicy": "隐私政策",
+    "or": "或",
+    "termsAndConditions": "条款与条件",
+    "pages": "页面"
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "lastUpdated": "最后更新：2025年10月10日",
+    "sections": {
+      "informationWeCollect": {
+        "title": "1. 我们收集的信息",
+        "content": "我们在注册时收集个人数据（姓名、邮箱、出生日期、电话），以及与流媒体使用相关的使用数据（观看历史、偏好、设备与网络信息）。"
+      },
+      "howWeUseInformation": {
+        "title": "2. 我们如何使用你的信息",
+        "content": "你的数据用于管理账户、个性化推荐、提升流媒体质量，并发送交易类通知（如付款收据、服务更新）。营销邮件严格采用自愿订阅（opt-in），符合 GDPR 要求。"
+      },
+      "subscriptionsBilling": {
+        "title": "3. 订阅与计费",
+        "content": "Mikiguiki 提供自动续订订阅（",
+        "basic": "基础版",
+        "standard": "标准版",
+        "premium": "高级版",
+        "contentContinued": "）。价格与续订周期会在支付前于购买页面显示。除非在当前周期结束前至少 24 小时取消，否则订阅将自动续订。你可随时在 App Store 账户设置中管理或取消订阅。应用内提供“恢复购买”按钮以恢复购买记录，符合 ",
+        "appReviewGuideline": "App Review Guideline 3.1.2",
+        "period": " 的要求。"
+      },
+      "sharingInformation": {
+        "title": "4. 信息共享",
+        "content": "我们绝不出售你的数据。仅在数据处理协议下与可信处理方共享信息（如支付、邮件/SMS/WhatsApp 服务商、分析、托管/CDN），或在法律要求时共享。我们不允许这些服务商将你的数据用于其自身目的。"
+      },
+      "processorsTransfers": {
+        "title": "4.1 处理方与跨境传输",
+        "content": "我们可能在你所在国家/地区之外的基础设施上处理数据。在适用情况下，我们依赖标准合同条款（SCC）或等效保障措施保护你的信息，并定期评估供应商的安全与合规状况。"
+      },
+      "cookiesTechnologies": {
+        "title": "5. Cookies 与类似技术",
+        "content": "我们使用 cookies 与本地存储来记住偏好并分析平台使用情况。你可在浏览器中禁用 cookies；部分功能可能无法正常使用。针对欧盟用户，我们会展示 cookie 同意横幅，以符合 GDPR 与 ePrivacy 指令。"
+      },
+      "dataSecurity": {
+        "title": "6. 数据安全",
+        "content": "我们采用传输加密（TLS 1.2+）、密码哈希（Argon2）与基于角色的访问控制。尽管我们努力提升安全性，但没有任何系统是 100% 安全的。"
+      },
+      "yourRights": {
+        "title": "7. 你的权利",
+        "content": "你可以访问、更正或删除个人数据，反对处理，或请求数据可携带性。请将请求发送至 ",
+        "supportEmail": "contact@mikiguiki.com",
+        "contentContinued": "。我们将在 30 天内回复，符合 GDPR/CCPA 要求。"
+      },
+      "childrensPrivacy": {
+        "title": "8. 儿童隐私",
+        "content": "Mikiguiki 不面向 13 岁以下儿童。我们不会有意收集未成年人的数据。如你认为有儿童向我们提供了个人信息，请联系我们，我们将立即删除。"
+      },
+      "changesToPolicy": {
+        "title": "9. 政策变更",
+        "content": "我们可能更新本政策以反映新的法律要求或服务变更。重大变更生效前，我们会在应用内或通过邮件通知你。"
+      },
+      "contact": {
+        "title": "10. 联系我们",
+        "content": "如有问题，请联系 ",
+        "supportEmail": "contact@mikiguiki.com",
+        "contentContinued": " 或 ",
+        "address": "地址（Ovalcampus USA）：1129 N Saint Lucas St Allentown, PA 18104, United States",
+        "period": "。"
+      },
+      "deviceIds": {
+        "title": "11. 设备与其他标识符（推送）",
+        "content": "我们会收集安装标识符（例如推送通知 token）以启用推送并将其与账户或设备关联。我们不出售这些数据，也不用于广告用途。数据在传输中加密，仅在账户活跃期间保留，或直到你关闭通知或删除账户为止。"
+      },
+      "authOtp": {
+        "title": "12. 身份验证与一次性验证码（OTP）",
+        "content": "为实现无密码登录与安全验证，我们可能通过邮箱、短信或 WhatsApp 向你提供的一种联系方式发送一次性验证码（OTP）。我们仅为发送 OTP 而与消息服务商共享必要的联系信息。服务商作为处理方，不得将你的数据用于其自身目的。"
+      },
+      "pushNotifications": {
+        "title": "13. 推送通知",
+        "content": "在你同意的情况下，我们会发送与账户活动、新内容发布和服务更新相关的推送通知。你可随时在设备设置或应用内关闭通知。关闭通知可能导致你无法接收部分服务类消息。"
+      },
+      "dataDeletion": {
+        "title": "14. 数据删除与账户管理",
+        "content": "你可通过以下链接请求删除账户及相关个人数据：",
+        "deleteUrlLabel": "删除账户",
+        "contentContinued": "。在核验请求后，我们将删除或匿名化你的数据，但法律要求保留、争议处理或执行条款所需的数据除外。"
+      },
+      "dataRetention": {
+        "title": "15. 数据保留",
+        "content": "我们仅在提供服务、履行法律义务、解决争议和执行协议所需的期限内保留个人数据。例如：（i）订阅与账单记录按法定期限保留；（ii）安全日志保留有限时间；（iii）推送 token 在账户活跃期间保留，或直到你撤销通知权限。"
+      }
+    },
+    "links": {
+      "termsOfUse": "使用条款（EULA）",
+      "privacyPolicyPdf": "隐私政策（PDF）"
+    }
+  },
+  "terms": {
+    "title": "条款与条件",
+    "subtitle": "元城（Ovalcampus）平台的使用条款与条件及 EULA。",
+    "lastUpdated": "最后更新：2025年11月11日",
+    "header": {
+      "title": "条款与条件",
+      "description": "元城（Ovalcampus）平台的使用条款与条件及 EULA。",
+      "lastUpdate": "最后更新：2025年11月11日"
+    },
+    "sections": {
+      "introduction": {
+        "number": "1",
+        "title": "介绍",
+        "content": "欢迎使用元城，这是 Ovalcampus 旗下平台，用于浏览目录、下单并安全购买进口商品。使用我们的网站或移动应用即表示你接受本《条款与条件》和 EULA。若不同意，请勿使用元城。",
+        "yuanCity": "元城",
+        "ovalcampus": "Ovalcampus",
+        "eula": "EULA"
+      },
+      "definitions": {
+        "number": "2",
+        "title": "定义",
+        "user": "用户/客户",
+        "userDefinition": "创建账户或使用元城的个人。",
+        "provider": "供应商",
+        "providerDefinition": "通过元城提供进口商品的实体。",
+        "order": "订单",
+        "orderDefinition": "用户通过平台提交的商品请求。",
+        "platform": "平台",
+        "platformDefinition": "元城网站与移动应用。",
+        "services": "服务",
+        "servicesDefinition": "元城提供的功能（商品浏览、订单管理、支付、客服等）。"
+      },
+      "registration": {
+        "number": "3",
+        "title": "注册与账户安全",
+        "points": [
+          "你必须提供真实信息并保持更新。",
+          "你对账户凭证与活动负责。",
+          "须年满 18 周岁，或依法取得监护人授权。",
+          "如发生违约或欺诈，我们可暂停/关闭账户。"
+        ]
+      },
+      "platformUse": {
+        "number": "4",
+        "title": "平台使用",
+        "allowed": {
+          "title": "4.1 允许的使用",
+          "points": [
+            "查询目录、库存与价格。",
+            "安全下单与支付。",
+            "接收订单更新与支持。"
+          ]
+        },
+        "prohibited": {
+          "title": "4.2 禁止的使用",
+          "points": [
+            "欺诈性订单或扰乱运营的行为。",
+            "访问/干扰未授权的系统或数据。",
+            "发布违法、冒犯或侵权内容。"
+          ]
+        }
+      },
+      "orders": {
+        "number": "5",
+        "title": "订单、价格与支付",
+        "points": [
+          "价格、库存与时间取决于供应商与进口物流。",
+          "订单在处理后确认；配送时间为预估。",
+          "支付由认证服务商处理；可能产生进口税费/手续费。",
+          "收据/发票依适用法规提供。"
+        ]
+      },
+      "cancellations": {
+        "number": "6",
+        "title": "取消与退款",
+        "points": [
+          "取决于供应商与适用法律。",
+          "如因缺货或物流导致系统取消，将按支付服务商流程退款。",
+          "App Store/Google Play 内购受其政策约束。"
+        ]
+      },
+      "subscriptions": {
+        "number": "7",
+        "title": "订阅与应用内购买（IAP）",
+        "content": "若元城提供订阅或 IAP，你将在支付前看到价格、权益与周期。订阅可能为自动续订，除非在周期结束前 24 小时取消。订阅管理/取消在对应商店进行；适用时提供恢复购买功能。",
+        "appleEula": "在 iOS 上，还适用",
+        "appleEulaLink": "Apple 标准 EULA",
+        "notResponsible": "Apple 与 Google 不属于你与 Ovalcampus 就元城达成的合同关系；其不对支持或服务维护负责。"
+      },
+      "reviews": {
+        "number": "8",
+        "title": "评分、评价与用户内容",
+        "points": [
+          "内容须真实、合法且尊重他人。",
+          "你授予元城非独占许可，可在平台上使用/复制该内容。",
+          "我们可审核或移除违反条款的内容。"
+        ]
+      },
+      "intellectualProperty": {
+        "number": "9",
+        "title": "知识产权与许可",
+        "content": "元城及其软件、商标、设计与内容归 Ovalcampus 或其许可方所有。你获得有限的、个人的、非独占且不可转让的许可，仅用于按本条款购买商品。"
+      },
+      "devices": {
+        "number": "10",
+        "title": "设备权限与第三方服务",
+        "points": [
+          "应用可能请求权限（定位、相机、通知）。",
+          "我们集成第三方（支付、消息、托管、分析）并适用其条款。"
+        ]
+      },
+      "warranties": {
+        "number": "11",
+        "title": "保证与责任限制",
+        "points": [
+          "服务按“现状”与“可用性”提供。",
+          "除平台保证外，我们不对制造商或供应商提供的最终质量承担责任。",
+          "责任上限为争议交易中你支付的金额。"
+        ]
+      },
+      "indemnity": {
+        "number": "12",
+        "title": "赔偿",
+        "content": "你同意就不当使用平台、违反本条款或侵犯第三方权利所引起的第三方索赔，使 Ovalcampus/元城免受损害。"
+      },
+      "suspension": {
+        "number": "13",
+        "title": "暂停与终止",
+        "content": "如发生严重违约、欺诈、安全风险或法律要求，我们可暂停或终止访问。你可随时停止使用服务。"
+      },
+      "law": {
+        "number": "14",
+        "title": "适用法律与争议解决",
+        "content": "本条款受哥伦比亚法律管辖。争议优先协商解决；否则提交有管辖权的法院/机构。",
+        "country": "哥伦比亚"
+      },
+      "changes": {
+        "number": "15",
+        "title": "条款/EULA 的变更",
+        "content": "因服务变更或法律要求，我们可能更新本条款/EULA。重大变更将通过应用或邮件通知。请留意“最后更新”日期。"
+      },
+      "privacy": {
+        "number": "16",
+        "title": "隐私与相关文件",
+        "content1": "平台使用也受我们的",
+        "privacyPolicyLink": "隐私政策",
+        "content2": "约束。iOS 用户请查看",
+        "appleEulaLink": "Apple 标准 EULA"
+      },
+      "contact": {
+        "number": "17",
+        "title": "联系",
+        "emailTitle": "法律邮箱",
+        "email": "legal@元城.com",
+        "addressTitle": "地址（Ovalcampus USA）",
+        "address": "1129 N Saint Lucas St\nAllentown, PA 18104\nUnited States"
+      }
+    },
+    "links": {
+      "privacyPolicy": "隐私政策",
+      "appleStandardEula": "Apple 标准 EULA"
+    }
+  },
+  "deleteAccount": {
+    "title": "删除你的账户",
+    "subtitle": "永久删除你的元城账户",
+    "lastUpdated": "最后更新：2025年11月11日",
+    "header": {
+      "title": "删除你的账户",
+      "subtitle": "永久删除你的元城账户",
+      "lastUpdate": "最后更新：2025年11月11日"
+    },
+    "sections": {
+      "description": {
+        "number": "1",
+        "title": "删除账户意味着什么？",
+        "content": "当你删除账户时，你的个人数据、订单历史和偏好将从我们的系统中移除，但出于法律或安全原因我们可能保留少量必要数据。此操作无法撤销。"
+      },
+      "warning": {
+        "number": "2",
+        "title": "警告",
+        "irreversible": "此操作不可逆。",
+        "description": "流程完成后，你的账户及可删除数据将无法恢复。"
+      },
+      "verification": {
+        "number": "3",
+        "title": "快速验证",
+        "emailLabel": "你的账户邮箱",
+        "emailPlaceholder": "your-email@元城.com",
+        "emailHint": "必须与元城注册邮箱一致。",
+        "otpLabel": "OTP 验证码（如需要）",
+        "otpPlaceholder": "输入你的验证码",
+        "otpHint": "如你的账户需要，我们会通过邮箱/SMS/WhatsApp 发送。",
+        "reasonLabel": "原因（可选）",
+        "reasonPlaceholder": "简单说明原因（可选）",
+        "deleteButton": "删除我的账户"
+      },
+      "contact": {
+        "number": "4",
+        "title": "联系我们",
+        "description": "删除前有疑问？请联系：",
+        "email": "contacto@元城.com"
+      },
+      "whatWillBeDeleted": {
+        "number": "5",
+        "title": "将被删除的内容",
+        "items": [
+          "个人资料与个人信息（姓名、邮箱、电话）。",
+          "订单历史、支付记录与偏好设置。",
+          "收藏与保存的清单。",
+          "由元城管理的订阅数据（外部订阅需另行取消）。",
+          "服务内与你账户关联的消息与沟通记录。"
+        ]
+      },
+      "steps": {
+        "number": "6",
+        "title": "删除账户步骤",
+        "fromApp": {
+          "title": "在应用内",
+          "description": "打开元城 → 设置 → 账户 → 删除账户并按步骤操作。确认身份（PIN/生物识别/OTP）。"
+        },
+        "byEmail": {
+          "title": "通过邮件",
+          "description": "发送至 contact@元城.com，主题为「删除我的账户」，并附上注册邮箱与国家/地区。"
+        },
+        "verification": {
+          "title": "验证与时效",
+          "description": "我们可能要求额外验证。我们将在 30 天内处理。备份数据可能需要最多 90 天清除。"
+        }
+      },
+      "dataRetention": {
+        "number": "7",
+        "title": "可能保留的数据",
+        "tableHeaders": {
+          "type": "数据类型",
+          "reason": "原因",
+          "period": "期限"
+        },
+        "tableRows": [
+          ["安全/反欺诈记录", "预防、调查与安全", "最多 12 个月"],
+          ["会计/税务记录", "法定义务", "最多 7 年（视国家而定）"],
+          ["客服工单与邮件", "支持与争议抗辩", "最多 24 个月"],
+          ["备份副本", "完整性与灾难恢复", "最多 90 天"]
+        ],
+        "note": "其余数据将被安全删除或匿名化。"
+      },
+      "subscriptions": {
+        "number": "8",
+        "title": "订阅与计费",
+        "items": [
+          {
+            "label": "重要：",
+            "description": "删除账户不会自动取消在 App Store 或 Google Play 购买的订阅。"
+          },
+          {
+            "description": "请在对应商店账户内直接取消。"
+          },
+          {
+            "description": "我们不会在系统中存储完整的银行卡信息。"
+          }
+        ]
+      }
+    },
+    "status": {
+      "success": "你的账户已成功删除。",
+      "error": "删除账户时发生错误。请重试。"
+    },
+    "footer": {
+      "content": "为保障安全，部分情况下我们可能需要额外验证。如需帮助，请联系 ",
+      "email": "contact@元城.com"
+    },
+    "modal": {
+      "title": "需要确认",
+      "question": "你确定要永久删除你的账户吗？",
+      "confirmButton": "是的，删除我的账户",
+      "cancelButton": "取消",
+      "processing": "处理中...",
+      "note": "我们可能要求额外验证以保护你的账户。"
+    }
+  },
+  "privacyPolicy": {
+    "title": "隐私政策 — 元城",
+    "subtitle": "你的隐私对我们至关重要",
+    "lastUpdated": "最后更新：2025年11月11日",
+    "intro": {
+      "title": "导言",
+      "paragraph1": "元城是 ",
+      "ovalcampus": "Ovalcampus",
+      "paragraph2": " 的产品，是一个用于购买进口商品的平台。本政策说明我们如何收集、使用、共享、存储并保护你的数据。",
+      "paragraph3": "我们最初在哥伦比亚运营，并遵守 ",
+      "law": "2012 年第 1581 号法律",
+      "and": " 及 ",
+      "habeasData": "Habeas Data",
+      "regime": " 制度。在适用情况下，我们也遵循 ",
+      "gdpr": "GDPR",
+      "eu": "（欧盟）与 ",
+      "ccpa": "CCPA",
+      "california": "（加州）的原则。"
+    },
+    "sections": {
+      "dataController": {
+        "number": "1",
+        "title": "数据控制方",
+        "name": "Ovalcampus / 元城",
+        "address": "1129 N Saint Lucas St, Allentown, PA 18104, United States",
+        "contactLabel": "联系方式：",
+        "email": "contacto@元城.com"
+      },
+      "informationCollected": {
+        "number": "2",
+        "title": "我们收集的信息",
+        "accountProfile": {
+          "title": "2.1 账户与资料",
+          "items": [
+            "姓名、邮箱、电话号码。",
+            "头像与偏好设置。",
+            "用于计费的身份证件（如适用）。"
+          ]
+        },
+        "postsTransactions": {
+          "title": "2.2 发布与交易",
+          "items": [
+            "商品照片与描述、价格、类别与状态。",
+            "客服消息/聊天与咨询。",
+            "订单、物流与收货确认。",
+            "支付信息（我们不存储完整卡号）。"
+          ]
+        },
+        "technicalData": {
+          "title": "2.3 技术与使用数据",
+          "items": [
+            "IP、设备/浏览器、操作系统、应用标识符。",
+            "性能指标、事件、崩溃与安全数据。"
+          ]
+        },
+        "location": {
+          "title": "2.4 位置信息",
+          "items": [
+            "大致位置（经你同意）。",
+            "用于完成交易的收货地址。"
+          ]
+        },
+        "moderation": {
+          "title": "2.5 审核与信任",
+          "description": "广告/身份验证、举报评估，以及自动/人工规则以防止欺诈。"
+        }
+      },
+      "purposes": {
+        "number": "3",
+        "title": "处理目的",
+        "main": {
+          "title": "3.1 主要目的",
+          "items": [
+            "创建/管理你的账户。",
+            "浏览与管理进口商品订单。",
+            "安全处理支付并管理配送物流。",
+            "提供支持、处理事件并进行内容审核。",
+            "防欺诈与平台安全。"
+          ]
+        },
+        "additional": {
+          "title": "3.2 附加目的",
+          "items": [
+            "个性化推荐（类别、兴趣、商品）。",
+            "使用分析以改进体验与性能。",
+            "经你同意的营销（opt-in），并可随时撤回（opt-out）。"
+          ]
+        }
+      },
+      "legalBases": {
+        "number": "4",
+        "title": "法律依据",
+        "items": [
+          {
+            "label": "合同履行：",
+            "description": "买卖与支付。"
+          },
+          {
+            "label": "同意：",
+            "description": "位置、营销、非必要 cookies。"
+          },
+          {
+            "label": "合法利益：",
+            "description": "安全、防欺诈、服务改进。"
+          },
+          {
+            "label": "法律义务：",
+            "description": "会计、税务与合规。"
+          }
+        ]
+      },
+      "cookies": {
+        "number": "5",
+        "title": "Cookies 与类似技术",
+        "description": "我们使用必要、性能与偏好 cookies。营销 cookies 仅在你同意后使用。你可以在浏览器中管理；适用时也可在我们的横幅中管理。"
+      },
+      "sharing": {
+        "number": "6",
+        "title": "信息共享",
+        "items": [
+          {
+            "label": "支付与物流",
+            "description": "：收款、配送与交付。"
+          },
+          {
+            "label": "云/分析/消息",
+            "description": "：托管、指标、通知。"
+          },
+          {
+            "label": "主管机关",
+            "description": "：法律合规与权利保护。"
+          }
+        ]
+      },
+      "security": {
+        "number": "7",
+        "title": "信息安全",
+        "items": [
+          "🔒 传输使用 TLS；良好存储实践。",
+          "🔐 访问控制、最小化与审计。",
+          "🛡️ 监控与定期测试。"
+        ]
+      },
+      "retention": {
+        "number": "8",
+        "title": "数据保留",
+        "items": [
+          {
+            "label": "账户",
+            "description": "：账户活跃期间或直至删除。"
+          },
+          {
+            "label": "交易/计费",
+            "description": "：最多 7 年（法定义务）。"
+          },
+          {
+            "label": "技术日志",
+            "description": "：最多 12 个月。"
+          },
+          {
+            "label": "营销",
+            "description": "：直至撤回同意。"
+          }
+        ]
+      },
+      "transfers": {
+        "number": "9",
+        "title": "跨境传输",
+        "description": "可能向其他国家/地区（如美国）传输，并采用适当保障措施（SCC 或其他）。"
+      },
+      "minors": {
+        "number": "10",
+        "title": "未成年人",
+        "description": "不面向 18 岁以下人群。如检测到未成年人，我们将删除数据并关闭相关账户。"
+      },
+      "rights": {
+        "number": "11",
+        "title": "你的权利",
+        "description": "访问、更新、更正、删除；反对或限制处理；可携带性；撤回同意。",
+        "contact": "请联系 ",
+        "email": "contacto@元城.com",
+        "response": "。我们将在适用法律期限内回复。"
+      },
+      "communications": {
+        "number": "12",
+        "title": "通信控制",
+        "items": [
+          "📧 通过邮件中的链接关闭促销邮件。",
+          "📱 在设备设置或应用内管理推送通知。",
+          "ℹ️ 交易类通知可能继续发送。"
+        ]
+      },
+      "changes": {
+        "number": "13",
+        "title": "政策变更",
+        "description": "重大变更将通过应用或邮件通知。请查看“最后更新”日期。"
+      }
+    },
+    "footer": {
+      "paragraph1": "使用元城即表示你已阅读并接受本隐私政策。要查看条款与条件，请访问对应页面。",
+      "paragraph2": "Apple 用户：也请阅读 ",
+      "appleTermsLink": "Apple 服务条款",
+      "period": "。"
+    }
+  }
+}

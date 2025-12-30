@@ -1,26 +1,28 @@
 // components/HowItWorks.tsx
+"use client";
 import { Search, ShoppingBag, CreditCard, Truck } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 export default function HowItWorks() {
+  const { t } = useTranslation();
   const steps = [
     {
-      title: "Explora y elige",
-      desc: "Navega por miles de productos importados de China. Encuentra tecnología, hogar, moda y más.",
+      title: t('home.HowItWorks.step1Title'),
+      desc: t('home.HowItWorks.step1Desc'),
       Icon: Search,
     },
     {
-      title: "Agrega al carrito",
-      desc: "Selecciona tus artículos favoritos y agrégalos a tu carrito de compras de forma sencilla.",
+      title: t('home.HowItWorks.step2Title'),
+      desc: t('home.HowItWorks.step2Desc'),
       Icon: ShoppingBag,
     },
     {
-      title: "Pago seguro",
-      desc: "Realiza tu pago a través de nuestra plataforma protegida con múltiples métodos disponibles.",
+      title: t('home.HowItWorks.step3Title'),
+      desc: t('home.HowItWorks.step3Desc'),
       Icon: CreditCard,
     },
     {
-      title: "Recibe en casa",
-      desc: "Nos encargamos de la logística para que tus productos lleguen seguros a tu puerta. ¡Así de fácil!",
+      title: t('home.HowItWorks.step4Title'),
+      desc: t('home.HowItWorks.step4Desc'),
       Icon: Truck,
     },
   ] as const;
@@ -32,7 +34,7 @@ export default function HowItWorks() {
         <div>
           <div className="bg-chart-2 border-4 border-border shadow-brutal-colored-xl p-4 inline-block mb-12 rotate-1">
             <h2 className="text-4xl md:text-5xl font-bold text-main-foreground">
-              ¿CÓMO FUNCIONA?
+              {t('home.HowItWorks.title')}
             </h2>
           </div>
         </div>
@@ -58,7 +60,7 @@ export default function HowItWorks() {
             href="#descargar-app"
             className="bg-main text-main-foreground px-8 py-3 border-2 border-border shadow-brutal hover:shadow-brutal-lg transition-all font-bold"
           >
-            DESCARGAR LA APP
+            {t('home.HowItWorks.downloadApp')}
           </a>
         </div>
       </div>

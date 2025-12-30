@@ -1,3 +1,5 @@
+'use client';
+
 import About from "@/components/home/About";
 import DownloadApp from "@/components/home/DownloadApp";
 import Hero from "@/components/home/Hero";
@@ -6,10 +8,13 @@ import JoinSubscribe from "@/components/home/JoinSubscribe";
 import Stories from "@/components/home/Stories";
 import Footer from "@/components/navigation/footer";
 import Navbar from "@/components/navigation/navbar";
-
+import { SocialPromoModal } from "@/components/SocialPromoModal";
+import { useState } from "react";
 export default function JamRockClimbers() {
+  const [showSocialModal, setShowSocialModal] =  useState(true);
   return (
     <div className="min-h-screen bg-background">
+                  {showSocialModal && <SocialPromoModal onClose={() => setShowSocialModal(false)} />}
       {/* Header */}
       <Navbar />
       {/* Hero Section */}

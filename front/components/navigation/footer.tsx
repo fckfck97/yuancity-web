@@ -3,13 +3,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Facebook, Instagram, Twitter, Loader2 } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
-
+  const { t, i18n } = useTranslation();
+  const localizedLegalLink = (path: string) => {
+    const separator = path.includes("?") ? "&" : "?";
+    const language = i18n.language || i18n.resolvedLanguage || "en";
+    return `${path}${separator}lng=${encodeURIComponent(language)}`;
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -31,15 +36,15 @@ export default function Footer() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("¡Te has suscrito exitosamente a nuestro boletín!");
+        setMessage(t("footer.subscriptionSuccess"));
         setMessageType("success");
         setEmail("");
       } else {
-        setMessage(data.error || "Error al suscribirse. Inténtalo de nuevo.");
+        setMessage(data.error || t("footer.subscriptionError"));
         setMessageType("error");
       }
     } catch {
-      setMessage("Error de conexión. Verifica tu conexión a internet.");
+      setMessage(t("footer.connectionError"));
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -56,15 +61,15 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.png"
-                alt="Logo de YuanCity"
+                alt={t('footer.yuancity')}
                 width={32}
                 height={32}
                 className="h-8 w-8"
               />
-              <span className="text-xl font-bold text-foreground">YuanCity</span>
+              <span className="text-xl font-bold text-foreground">{t('footer.yuancity')}</span>
             </div>
             <p className="text-foreground/90 font-medium mb-4 leading-relaxed">
-              Información para descargar la app y unirte a nuestra comunidad.
+              {t('footer.description')}
             </p>
             <p className="text-foreground font-medium">
               <a
@@ -78,21 +83,21 @@ export default function Footer() {
 
           {/* Columna 2: Navegación */}
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-4">NAVEGACIÓN</h3>
+            <h3 className="text-lg font-bold text-foreground mb-4">{t('footer.navigation')}</h3>
             <ul className="space-y-2 mb-8">
               <li>
             <a href="#about" className="text-black hover:text-main font-medium">
-              Quienes Somos
+              {t('footer.aboutUs')}
             </a>
               </li>
               <li>
             <a href="#como-funciona" className="text-black hover:text-main font-medium">
-              Como Funciona
+              {t('footer.howItWorks')}
             </a>
               </li>
               <li>
             <a href="#join" className="text-black hover:text-main font-medium">
-              Únete
+              {t('footer.joinUs')}
             </a>
               </li>
 
@@ -101,21 +106,30 @@ export default function Footer() {
 
           {/* Columna 3: Legal */}
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-4">LEGAL</h3>
+            <h3 className="text-lg font-bold text-foreground mb-4">{t('footer.legal')}</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/politicas-privacidad" className="text-foreground hover:text-main font-medium">
-                  Políticas de Privacidad
+                <a
+                  href={localizedLegalLink("/politicas-privacidad")}
+                  className="text-foreground hover:text-main font-medium"
+                >
+                  {t('footer.privacy')}
                 </a>
               </li>
               <li>
-                <a href="/terminos-condiciones" className="text-foreground hover:text-main font-medium">
-                  Términos y Condiciones
+                <a
+                  href={localizedLegalLink("/terminos-condiciones")}
+                  className="text-foreground hover:text-main font-medium"
+                >
+                  {t('footer.terms')}
                 </a>
               </li>
               <li>
-                <a href="/eliminar-cuenta" className="text-foreground hover:text-main font-medium">
-                  Eliminar Cuenta
+                <a
+                  href={localizedLegalLink("/eliminar-cuenta")}
+                  className="text-foreground hover:text-main font-medium"
+                >
+                  {t('footer.deleteAccount')}
                 </a>
               </li>
             </ul>
@@ -123,7 +137,7 @@ export default function Footer() {
 
           {/* Columna 4: Redes + Suscripción */}
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-4">SÍGUENOS</h3>
+            <h3 className="text-lg font-bold text-foreground mb-4">{t('footer.followUs')}</h3>
             <div className="flex items-center gap-4 mb-6">
               <a
                 href="https://instagram.com/yuancity"
@@ -154,7 +168,7 @@ export default function Footer() {
             {/* Suscripción: alineada, altura consistente y sombra limpia */}
             <form onSubmit={handleSubmit} className="space-y-3" noValidate>
               <label htmlFor="footer-email" className="sr-only">
-                Tu correo electrónico
+                {t('footer.email')}
               </label>
               <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <input
@@ -162,8 +176,8 @@ export default function Footer() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Tu correo"
-                  aria-label="Tu correo electrónico"
+                  placeholder={t('footer.emailPlaceholder')}
+                  aria-label={t('footer.email')}
                   className="flex-1 h-12 px-4 border-2 border-border bg-background text-foreground font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/20"
                   required
                   disabled={isLoading}
@@ -176,10 +190,10 @@ export default function Footer() {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ENVIANDO...
+                      {t('footer.sending')}...
                     </>
                   ) : (
-                    "SUSCRIBIRME"
+                    t('footer.subscribe')
                   )}
                 </button>
               </div>
@@ -204,7 +218,7 @@ export default function Footer() {
 
         {/* Línea inferior opcional */}
         <div className="mt-10 pt-6 border-t-2 border-border/60 text-xs text-foreground/70 text-center">
-          © {new Date().getFullYear()} YuanCity · Todos los derechos reservados
+          © {new Date().getFullYear()} {t('footer.yuancity')} · {t('footer.allRightsReserved')}
         </div>
       </div>
     </footer>

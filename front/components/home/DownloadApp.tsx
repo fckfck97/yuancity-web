@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaApple, FaGooglePlay } from "react-icons/fa";
 import { ShoppingBag, Globe, ShieldCheck, Truck } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 function PhoneCarousel() {
   const slides = useMemo(
     () => Array.from({ length: 4 }, (_, i) => `/img/movil/${i + 1}.png`),
@@ -120,6 +120,7 @@ function PhoneCarousel() {
 }
 
 export default function DownloadApp() {
+  const { t } = useTranslation();
   return (
     <section id="descargar-app" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,7 +128,7 @@ export default function DownloadApp() {
         <div>
           <div className="bg-chart-5 border-4 border-border shadow-brutal-colored p-4 inline-block mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-main-foreground">
-              DESCARGA LA APP
+              {t('home.DownloadApp.title')}
             </h2>
           </div>
         </div>
@@ -139,12 +140,11 @@ export default function DownloadApp() {
             <div className="bg-chart-2 border-4 border-border shadow-brutal-colored-xl p-8 -rotate-1">
               <div className="flex items-center gap-3 mb-4">
                 <ShoppingBag className="h-10 w-10 text-white" />
-                <h3 className="text-2xl font-bold text-white">Compra en YuanCity</h3>
+                <h3 className="text-2xl font-bold text-white">{t('home.DownloadApp.purchaseInYuanCity')}</h3>
               </div>
               <p className="text-lg font-medium mb-6 text-white/95">
-                Lleva lo mejor del mercado chino en tu bolsillo. Una experiencia de compra diseñada para darte variedad, calidad y ahorro desde cualquier lugar.
+                {t('home.DownloadApp.purchaseDescription')}
               </p>
-
               {/* Botones de tiendas */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <a
@@ -157,7 +157,7 @@ export default function DownloadApp() {
                   <span className="shrink-0 leading-none text-2xl md:text-3xl">
                     <FaGooglePlay />
                   </span>
-                  <span>Google Play</span>
+                  <span>{t('home.DownloadApp.googlePlay')}</span>
                 </a>
 
                 <a
@@ -170,14 +170,14 @@ export default function DownloadApp() {
                   <span className="shrink-0 leading-none text-2xl md:text-3xl">
                     <FaApple />
                   </span>
-                  <span>App Store</span>
+                  <span>{t('home.DownloadApp.appStore')}</span>
                 </a>
               </div>
             </div>
 
             {/* Aviso pequeño */}
-            <p className="mt-6 text-sm text-foreground/70">
-              ¿No encuentras tu tienda? Próximamente en más regiones.
+            <p className="mt-10 text-sm text-foreground/70">
+              {t('home.DownloadApp.storeNotice')}
             </p>
           </div>
 
@@ -191,18 +191,18 @@ export default function DownloadApp() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           {[
             {
-              title: "Catálogo Global",
-              desc: "Acceso a miles de productos directos de fábrica.",
+              title: t('home.DownloadApp.globalCatalog'),
+              desc: t('home.DownloadApp.globalCatalogDesc'),
               icon: Globe
             },
             {
-              title: "Compra Protegida",
-              desc: "Tus pagos y datos siempre seguros con nosotros.",
+              title: t('home.DownloadApp.securePurchase'),
+              desc: t('home.DownloadApp.securePurchaseDesc'),
               icon: ShieldCheck
             },
             {
-              title: "Envío Garantizado",
-              desc: "Logística profesional para que todo llegue a tu puerta.",
+              title: t('home.DownloadApp.guaranteedShipping'),
+              desc: t('home.DownloadApp.guaranteedShippingDesc'),
               icon: Truck
             },
           ].map((b, i) => (

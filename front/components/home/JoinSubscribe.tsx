@@ -3,13 +3,13 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 export default function JoinSubscribe() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
-
+  const { t } = useTranslation();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -31,15 +31,15 @@ export default function JoinSubscribe() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("¡Te has suscrito exitosamente a nuestro boletín!");
+        setMessage(t("home.JoinSubscribe.subscriptionSuccess"));
         setMessageType("success");
         setEmail("");
       } else {
-        setMessage(data.error || "Error al suscribirse. Inténtalo de nuevo.");
+        setMessage(data.error || t("home.JoinSubscribe.subscriptionError"));
         setMessageType("error");
       }
     } catch (err) {
-      setMessage("Error de conexión. Verifica tu conexión a internet.");
+      setMessage(t("home.JoinSubscribe.connectionError"));
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -51,10 +51,10 @@ export default function JoinSubscribe() {
       <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
         <div className="bg-black text-white border-4 border-border shadow-[28px_28px_0px_0px_var(--color-border)] p-8 mb-8 transform rotate-1">
           <h2 className="text-5xl md:text-7xl font-bold text-white mb-6">
-            ¿LISTO PARA UNIRTE?
+            {t("home.JoinSubscribe.newEpisode")}
           </h2>
           <p className="text-xl text-white font-medium mb-8">
-            Suscríbete y recibe novedades de YuanCity.
+            {t("home.JoinSubscribe.recentlyAdded")}
           </p>
 
           {/* Formulario (mismos estilos/endpoint que el footer) */}
@@ -62,8 +62,8 @@ export default function JoinSubscribe() {
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <input
                 type="email"
-                placeholder="Tu correo"
-                aria-label="Tu correo electrónico"
+                placeholder={t("home.JoinSubscribe.emailPlaceholder")}
+                aria-label={t("home.JoinSubscribe.emailPlaceholder")}
                 className="flex-1 px-4 py-3 border-2 border-border bg-background text-foreground font-medium"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -78,10 +78,10 @@ export default function JoinSubscribe() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ENVIANDO...
+                    {t("home.JoinSubscribe.sending")}
                   </>
                 ) : (
-                  "SUSCRIBIRME"
+                  t("home.JoinSubscribe.subscribe")
                 )}
               </button>
             </div>
