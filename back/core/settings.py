@@ -1,12 +1,12 @@
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse_lazy
+from django.templatetags.static import static
 from pathlib import Path
 import os
 import environ
 from datetime import timedelta
 env = environ.Env()
 
-from django.templatetags.static import static
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 environ.Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,7 +40,7 @@ TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
 
-#Boto3
+# Boto3
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
@@ -51,12 +51,12 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Application definition
 DJANGO_APPS = [
-    "unfold",  
-    "unfold.contrib.filters", 
+    "unfold",
+    "unfold.contrib.filters",
     "unfold.contrib.forms",
-    'import_export', 
-    "unfold.contrib.import_export",  
-    "unfold.contrib.guardian", 
+    'import_export',
+    "unfold.contrib.import_export",
+    "unfold.contrib.guardian",
     "unfold.contrib.simple_history",
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,19 +69,20 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-    'apps.user', 
+    'apps.user',
     'apps.count',
 ]
 ECOMMERCE_APPS = [
-      'apps.AI',
+    'apps.AI',
     'apps.category',
     'apps.product',
-    'apps.cart', 
-    'apps.orders', 
-    'apps.payment', 
-    'apps.coupons', 
+    'apps.cart',
+    'apps.orders',
+    'apps.payment',
+    'apps.coupons',
     'apps.reviews',
     'apps.promotions',
+    'apps.wishlist'
 ]
 THIRD_PARTY_APPS = [
     'corsheaders',
@@ -134,29 +135,27 @@ WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-#DATABASES = {
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
-#}
+# }
 
 
 DATABASES = {
-  "default": {
-    "ENGINE": "django.db.backends.postgresql",
-    "NAME": os.environ.get("POSTGRES_DB"),
-    "USER": os.environ.get("POSTGRES_USER"),
-    "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-    "HOST": os.environ.get("POSTGRES_HOST"),
-    "PORT": 5432,
-  }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": 5432,
+    }
 }
-
 
 
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
@@ -215,13 +214,18 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend'
 )
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'openid']
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile', 'openid']
 SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
-SOCIAL_AUTH_AZUREAD_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_AZUREAD_OAUTH2_KEY')
-SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET')
-SOCIAL_AUTH_AZUREAD_OAUTH2_SCOPE = ['User.Read']  # Nombre de variable corregido
+SOCIAL_AUTH_AZUREAD_OAUTH2_KEY = os.environ.get(
+    'SOCIAL_AUTH_AZUREAD_OAUTH2_KEY')
+SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET = os.environ.get(
+    'SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET')
+SOCIAL_AUTH_AZUREAD_OAUTH2_SCOPE = [
+    'User.Read']  # Nombre de variable corregido
 
 
 GOOGLE_CLIENT_IDS = [
@@ -230,8 +234,8 @@ GOOGLE_CLIENT_IDS = [
     os.environ.get("GOOGLE_CLIENT_ID_IOS"),        # 1059586197090-h4o7m4frk…
 ]
 APPLE_SERVICE_ID = "com.ovalcampus.yuancity"     # (web, si algún día usas JS)
-APPLE_APP_ID     = "com.ovalcampus.yuancity"       # bundle ID de la app nativa
-APPLE_EXPO_AUD   = "host.exp.Exponent"     # tokens emitidos dentro de Expo Go
+APPLE_APP_ID = "com.ovalcampus.yuancity"       # bundle ID de la app nativa
+APPLE_EXPO_AUD = "host.exp.Exponent"     # tokens emitidos dentro de Expo Go
 
 APPLE_ALLOWED_AUDS = [APPLE_SERVICE_ID, APPLE_APP_ID, APPLE_EXPO_AUD]
 
@@ -272,7 +276,7 @@ DJOSER = {
     'ACTIVATION_URL': 'auth/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/google', 'http://localhost:8000/microsoft', 'http://localhost:3000/google', 'http://localhost:3000/microsoft','https://yuancity.com/google','https://yuancity.com/microsoft'],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/google', 'http://localhost:8000/microsoft', 'http://localhost:3000/google', 'http://localhost:3000/microsoft', 'https://yuancity.com/google', 'https://yuancity.com/microsoft'],
     'SERIALIZERS': {
         'user_create': 'apps.user.serializers.UserCreateSerializer',
         'user': 'apps.user.serializers.UserCreateSerializer',
@@ -318,22 +322,21 @@ UNFOLD = {
     "SCRIPTS": [
         lambda request: static("js/script.js"),
     ],
-"COLORS": {
-  "primary": {
-    "50": "232 250 241",
-    "100": "204 243 225",
-    "200": "153 230 197",
-    "300": "102 217 168",
-    "400": "51 204 140",
-    "500": "11 179 94",
-    "600": "9 149 78",
-    "700": "7 119 63",
-    "800": "5 94 50",
-    "900": "4 79 42",
-    "950": "3 54 29"
-  }
-}
-,
+    "COLORS": {
+        "primary": {
+            "50": "232 250 241",
+            "100": "204 243 225",
+            "200": "153 230 197",
+            "300": "102 217 168",
+            "400": "51 204 140",
+            "500": "11 179 94",
+            "600": "9 149 78",
+            "700": "7 119 63",
+            "800": "5 94 50",
+            "900": "4 79 42",
+            "950": "3 54 29"
+        }
+    },
 
     "EXTENSIONS": {
         "modeltranslation": {
@@ -362,13 +365,13 @@ UNFOLD = {
                         "title": _("Users"),
                         "icon": "people",
                         "link": reverse_lazy("admin:user_useraccount_changelist"),
-												"permission": lambda request: request.user.is_superuser,
+                        "permission": lambda request: request.user.is_superuser,
                     },
                     {
-											"title":_("Group"),
-											"icon":"group",
-											"link":reverse_lazy("admin:auth_group_changelist"),
-										}
+                        "title": _("Group"),
+                        "icon": "group",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                    }
                 ],
             },
         ],

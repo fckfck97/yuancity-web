@@ -17,9 +17,11 @@ urlpatterns = [
     path('api/coupons/', include('apps.coupons.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
     path('api/promotions/', include('apps.promotions.urls')),
+    path('api/wishlist/', include('apps.wishlist.urls')),
     path('api/', include('apps.count.urls')),
     path('api/', include('apps.user.urls')),
     path('admin/', admin.site.urls),
-    path("ckeditor5/", include('django_ckeditor_5.urls'),name="ck_editor_5_upload_file"),
-    
+    path("ckeditor5/", include('django_ckeditor_5.urls'),
+         name="ck_editor_5_upload_file"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser, PermissionsMixin, BaseUserManager
 )
 from apps.cart.models import Cart
-
+from apps.wishlist.models import Wishlist
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
@@ -41,6 +41,8 @@ class UserAccountManager(BaseUserManager):
         shopping_cart = Cart.objects.create(user=user)
         shopping_cart.save()
         
+        wishlist = Wishlist.objects.create(user=user)
+        wishlist.save()
         return user
     
     def create_superuser(self, email, password, **extra_fields):
