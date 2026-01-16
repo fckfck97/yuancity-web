@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProductAPIView,ProductListAPIView
+from .views import ProductAPIView, ProductListAPIView, ProductHighlightsAPIView
 
 urlpatterns = [
     path('', ProductAPIView.as_view(), name='product-list'),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('<uuid:pk>/update/', ProductAPIView.as_view(), name='product-update'),
 
     path('list/', ProductListAPIView.as_view(), name='product-list-all'),
+    path('highlights/', ProductHighlightsAPIView.as_view(), name='product-highlights'),
  
 ]

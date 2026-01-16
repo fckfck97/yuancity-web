@@ -8,9 +8,10 @@ from .models import Product
 from .serializers import ProductSerializer,ProductMinimalSerializer
 from ..utils.pagination import LargeSetPagination
 from django.http import Http404
-from django.db.models import OuterRef, Subquery
+from django.db.models import Case, IntegerField, OuterRef, Q, Subquery, Sum, When
 from django.utils import timezone
 from apps.cart.models import CartItem
+from apps.orders.models import OrderItem, Order
 
 
 def annotate_reservations(queryset):
@@ -30,6 +31,26 @@ def annotate_reservations(queryset):
         reservation_user_id=Subquery(
             active_reservations.values("cart__user_id")[:1]
         ),
+    )
+
+
+def apply_product_category_filter(queryset, category_id):
+    if not category_id:
+        return queryset
+    return queryset.filter(
+        Q(category__id=category_id)
+        | Q(category__parent__id=category_id)
+        | Q(category__parent__parent__id=category_id)
+    )
+
+
+def apply_orderitem_category_filter(queryset, category_id):
+    if not category_id:
+        return queryset
+    return queryset.filter(
+        Q(product__category__id=category_id)
+        | Q(product__category__parent__id=category_id)
+        | Q(product__category__parent__parent__id=category_id)
     )
 class ProductAPIView(APIView):
     """
@@ -165,3 +186,85 @@ class ProductListAPIView(APIView):
       page = paginator.paginate_queryset(qs, request, view=self)
       serializer = ProductMinimalSerializer(page, many=True, context={'request': request})
       return paginator.get_paginated_response(serializer.data)
+
+
+class ProductHighlightsAPIView(APIView):
+  """
+  Retorna clasificación top (más vendidos) y ofertas diarias.
+  """
+  permission_classes = [AllowAny]
+
+  def get(self, request, *args, **kwargs):
+    category_id = request.query_params.get('category')
+    top_limit = int(request.query_params.get('top_limit', 6))
+    offers_limit = int(request.query_params.get('offers_limit', 6))
+    categories_limit = int(request.query_params.get('categories_limit', 6))
+
+    base_qs = (
+      Product.objects.filter(is_available=True, stock__gt=0)
+      .select_related('vendor', 'vendor__social_profile', 'category')
+      .prefetch_related('images')
+    )
+    base_qs = annotate_reservations(base_qs)
+    base_qs = apply_product_category_filter(base_qs, category_id)
+
+    sold_items = OrderItem.objects.filter(
+      order__status__in=[
+        Order.OrderStatus.processed,
+        Order.OrderStatus.shipping,
+        Order.OrderStatus.delivered,
+      ],
+      product__is_available=True,
+      product__stock__gt=0,
+    )
+    sold_items = apply_orderitem_category_filter(sold_items, category_id)
+
+    top_ids = list(
+      sold_items.values('product')
+      .annotate(total_sold=Sum('count'))
+      .order_by('-total_sold')
+      .values_list('product', flat=True)[:top_limit]
+    )
+
+    if top_ids:
+      preserved_order = Case(
+        *[When(id=pk, then=pos) for pos, pk in enumerate(top_ids)],
+        output_field=IntegerField(),
+      )
+      top_products_qs = base_qs.filter(id__in=top_ids).order_by(preserved_order)
+      top_products = ProductMinimalSerializer(
+        top_products_qs, many=True, context={'request': request}
+      ).data
+    else:
+      top_products = []
+
+    top_categories = [
+      {
+        'id': str(row['product__category__id']),
+        'name': row['product__category__name'],
+        'sold_count': row['total_sold'],
+      }
+      for row in sold_items.values(
+        'product__category__id',
+        'product__category__name',
+      )
+      .annotate(total_sold=Sum('count'))
+      .order_by('-total_sold')[:categories_limit]
+      if row.get('product__category__id')
+    ]
+
+    daily_offers_qs = (
+      base_qs.filter(discount_percent__gt=0)
+      .order_by('-discount_percent', '-updated_at')[:offers_limit]
+    )
+    daily_offers = ProductMinimalSerializer(
+      daily_offers_qs, many=True, context={'request': request}
+    ).data
+
+    return Response({
+      'top_classification': {
+        'categories': top_categories,
+        'products': top_products,
+      },
+      'daily_offers': daily_offers,
+    })
