@@ -34,24 +34,42 @@ def annotate_reservations(queryset):
     )
 
 
-def apply_product_category_filter(queryset, category_id):
-    if not category_id:
-        return queryset
-    return queryset.filter(
-        Q(category__id=category_id)
-        | Q(category__parent__id=category_id)
-        | Q(category__parent__parent__id=category_id)
-    )
+def _normalize_category_ids(category_ids):
+    if not category_ids:
+        return []
+    if isinstance(category_ids, (list, tuple, set)):
+        raw_ids = category_ids
+    else:
+        raw_ids = [category_ids]
+    return [cid for cid in raw_ids if cid not in ("", None, "all")]
 
 
-def apply_orderitem_category_filter(queryset, category_id):
-    if not category_id:
+def apply_product_category_filter(queryset, category_ids):
+    category_ids = _normalize_category_ids(category_ids)
+    if not category_ids:
         return queryset
-    return queryset.filter(
-        Q(product__category__id=category_id)
-        | Q(product__category__parent__id=category_id)
-        | Q(product__category__parent__parent__id=category_id)
-    )
+    category_filter = Q()
+    for category_id in category_ids:
+        category_filter |= (
+            Q(category__id=category_id)
+            | Q(category__parent__id=category_id)
+            | Q(category__parent__parent__id=category_id)
+        )
+    return queryset.filter(category_filter)
+
+
+def apply_orderitem_category_filter(queryset, category_ids):
+    category_ids = _normalize_category_ids(category_ids)
+    if not category_ids:
+        return queryset
+    category_filter = Q()
+    for category_id in category_ids:
+        category_filter |= (
+            Q(product__category__id=category_id)
+            | Q(product__category__parent__id=category_id)
+            | Q(product__category__parent__parent__id=category_id)
+        )
+    return queryset.filter(category_filter)
 class ProductAPIView(APIView):
     """
     GET  /api/products/           -> list own products + total
@@ -173,13 +191,13 @@ class ProductListAPIView(APIView):
     
     else:
       search = request.query_params.get('search', '')
-      category = request.query_params.get('category', '')
+      category_ids = request.query_params.getlist('category')
       vendor_id = request.query_params.get('vendor')
       qs = self.get_objects()
       if search:
         qs = qs.filter(name__icontains=search)
-      if category:
-        qs = qs.filter(category__id=category)
+      if category_ids:
+        qs = apply_product_category_filter(qs, category_ids)
       if vendor_id:
         qs = qs.filter(vendor__id=vendor_id)
       paginator = LargeSetPagination()

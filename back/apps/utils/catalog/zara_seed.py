@@ -33,66 +33,15 @@ MARKETPLACE_CATEGORIES = {
     "Ropa": [
         {
             "categoria": "Mujer",
-            "subcategorias": [
-                "Abrigos y chaquetas",
-                "Blazers y trajes",
-                "Vestidos",
-                "Monos y enterizos",
-                "Tops y camisetas",
-                "Camisas y blusas",
-                "Sudaderas y hoodies",
-                "Punto (suéteres y cárdigans)",
-                "Pantalones",
-                "Jeans",
-                "Faldas",
-                "Shorts y bermudas",
-                "Ropa deportiva",
-                "Ropa interior",
-                "Pijamas y loungewear",
-                "Ropa de baño",
-                "Accesorios de moda (bufandas, gorras, cinturones)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Hombre",
-            "subcategorias": [
-                "Abrigos y chaquetas",
-                "Blazers y trajes",
-                "Camisas",
-                "Camisetas",
-                "Polos",
-                "Sudaderas y hoodies",
-                "Punto (suéteres y cárdigans)",
-                "Pantalones",
-                "Jeans",
-                "Chinos",
-                "Joggers",
-                "Shorts y bermudas",
-                "Ropa deportiva",
-                "Ropa interior",
-                "Pijamas y loungewear",
-                "Ropa de baño",
-                "Accesorios de moda (gorras, cinturones, bufandas)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Niños",
-            "subcategorias": [
-                "Bebé (0-24m)",
-                "Niña (2-12)",
-                "Niño (2-12)",
-                "Ropa escolar",
-                "Abrigos y chaquetas",
-                "Camisetas y tops",
-                "Pantalones y jeans",
-                "Vestidos (niña)",
-                "Conjuntos",
-                "Pijamas",
-                "Ropa interior",
-                "Ropa deportiva",
-                "Ropa de baño",
-                "Accesorios infantiles (gorros, bufandas, mochilas)",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -102,80 +51,31 @@ MARKETPLACE_CATEGORIES = {
     "Electrónica": [
         {
             "categoria": "Celulares y Accesorios",
-            "subcategorias": [
-                "Fundas y protectores",
-                "Protectores de pantalla",
-                "Cargadores y adaptadores",
-                "Cables",
-                "Power banks",
-                "Soportes (auto/escritorio)",
-                "Auriculares (in-ear/over-ear)",
-                "Bluetooth (receptores/transmisores)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Audio y Video",
-            "subcategorias": [
-                "Parlantes",
-                "Soundbars",
-                "Micrófonos",
-                "Proyectores",
-                "Streaming devices",
-                "Accesorios de TV",
-                "Accesorios de video (capturadoras, cables)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Computación (Accesorios)",
-            "subcategorias": [
-                "Teclados",
-                "Mouse",
-                "Mousepads",
-                "Webcams",
-                "Hubs USB y docks",
-                "Adaptadores (HDMI/USB-C)",
-                "Monitores (accesorios)",
-                "Soportes de laptop/monitor",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Wearables",
-            "subcategorias": [
-                "Smartwatches",
-                "Bandas deportivas",
-                "Accesorios para wearables (correas, cargadores)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Smart Home",
-            "subcategorias": [
-                "Cámaras de seguridad",
-                "Bombillos inteligentes",
-                "Enchufes inteligentes",
-                "Sensores (movimiento/puerta)",
-                "Timbres inteligentes",
-                "Cerraduras inteligentes",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Gaming",
-            "subcategorias": [
-                "Controles y mandos",
-                "Accesorios para consola",
-                "Accesorios para PC gamer",
-                "Headsets gamer",
-                "Sillas gamer (accesorios)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cámaras y Drones",
-            "subcategorias": [
-                "Cámaras de acción",
-                "Drones",
-                "Gimbals y estabilizadores",
-                "Trípodes",
-                "Baterías y accesorios",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -185,82 +85,35 @@ MARKETPLACE_CATEGORIES = {
     "Hogar y Jardín": [
         {
             "categoria": "Decoración",
-            "subcategorias": [
-                "Cuadros y arte mural",
-                "Espejos",
-                "Relojes decorativos",
-                "Jarrones y floreros",
-                "Velas y aromatizantes",
-                "Alfombras",
-                "Cortinas",
-                "Cojines y fundas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cocina y Comedor (Hogar)",
-            "subcategorias": [
-                "Vajilla y cristalería",
-                "Contenedores y almacenamiento",
-                "Textiles (manteles, paños)",
-                "Accesorios de mesa",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Baño (Hogar)",
-            "subcategorias": [
-                "Organización de baño",
-                "Accesorios (dispensadores, jaboneras)",
-                "Cortinas de baño",
-                "Tapetes de baño",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Organización y Almacenamiento",
-            "subcategorias": [
-                "Cajas y canastas",
-                "Organizadores de clóset",
-                "Estanterías (accesorios)",
-                "Ganchos y colgadores",
-                "Organizadores de cocina",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Iluminación",
-            "subcategorias": [
-                "Lámparas de mesa",
-                "Lámparas de pie",
-                "Luces LED decorativas",
-                "Guirnaldas de luz",
-                "Accesorios de iluminación",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Jardín y Exteriores",
-            "subcategorias": [
-                "Macetas y jardineras",
-                "Riego (mangueras, aspersores)",
-                "Decoración exterior",
-                "Muebles de exterior (accesorios)",
-                "Parrillas y BBQ (accesorios)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Limpieza",
-            "subcategorias": [
-                "Guantes y esponjas",
-                "Paños y microfibras",
-                "Organizadores de limpieza",
-                "Accesorios para aspiradora",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Seguridad del Hogar",
-            "subcategorias": [
-                "Cajas fuertes",
-                "Cerraduras (no inteligentes)",
-                "Alarmas básicas",
-                "Sensores básicos",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -270,61 +123,27 @@ MARKETPLACE_CATEGORIES = {
     "Belleza": [
         {
             "categoria": "Maquillaje",
-            "subcategorias": [
-                "Rostro (base, corrector, polvos)",
-                "Ojos (sombras, delineadores, máscara)",
-                "Labios (labiales, gloss, bálsamos)",
-                "Brochas y esponjas",
-                "Sets de maquillaje",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cuidado de la Piel",
-            "subcategorias": [
-                "Limpieza facial",
-                "Hidratación",
-                "Sérums y tratamientos",
-                "Mascarillas",
-                "Protector solar",
-                "Cuidado corporal",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cuidado del Cabello",
-            "subcategorias": [
-                "Shampoo y acondicionador",
-                "Mascarillas y tratamientos",
-                "Styling (geles, ceras, sprays)",
-                "Herramientas (secadores, planchas)",
-                "Accesorios (peines, cepillos)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Uñas",
-            "subcategorias": [
-                "Esmaltes",
-                "Kits de manicura",
-                "Uñas postizas",
-                "Lámparas UV",
-                "Accesorios (limas, cortaúñas)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Fragancias",
-            "subcategorias": [
-                "Perfumes",
-                "Body mist",
-                "Sets de fragancia",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cuidado Personal",
-            "subcategorias": [
-                "Afeitado y depilación",
-                "Desodorantes",
-                "Higiene íntima (general)",
-                "Cuidado dental",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -334,68 +153,35 @@ MARKETPLACE_CATEGORIES = {
     "Juguetes": [
         {
             "categoria": "Bebés y Primera Infancia",
-            "subcategorias": [
-                "Sonajeros",
-                "Mordedores",
-                "Juguetes sensoriales",
-                "Tapetes de juego",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Muñecas y Accesorios",
-            "subcategorias": [
-                "Muñecas",
-                "Coches y cunas (accesorios)",
-                "Ropa para muñecas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Construcción y Bloques",
-            "subcategorias": [
-                "Bloques",
-                "Sets de construcción",
-                "Pistas y circuitos",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Vehículos y Radio Control",
-            "subcategorias": [
-                "Carros a control remoto",
-                "Drones para niños",
-                "Pistas y accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Juegos de Mesa y Rompecabezas",
-            "subcategorias": [
-                "Juegos familiares",
-                "Cartas",
-                "Rompecabezas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Educativos y STEM",
-            "subcategorias": [
-                "Kits de ciencia",
-                "Robótica básica",
-                "Juguetes didácticos",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Figuras y Coleccionables",
-            "subcategorias": [
-                "Figuras de acción",
-                "Coleccionables",
-                "Sets temáticos",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Exterior",
-            "subcategorias": [
-                "Juegos de agua",
-                "Cometas",
-                "Pelotas y juegos al aire libre",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -405,66 +191,31 @@ MARKETPLACE_CATEGORIES = {
     "Deportes y Aire Libre": [
         {
             "categoria": "Fitness y Gimnasio",
-            "subcategorias": [
-                "Bandas elásticas",
-                "Mancuernas y pesas",
-                "Esterillas",
-                "Accesorios de entrenamiento",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Yoga y Pilates",
-            "subcategorias": [
-                "Mat de yoga",
-                "Bloques y straps",
-                "Ropa de yoga",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Ciclismo",
-            "subcategorias": [
-                "Cascos",
-                "Luces",
-                "Guantes",
-                "Soportes y accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Camping y Senderismo",
-            "subcategorias": [
-                "Carpas",
-                "Linternas",
-                "Mochilas",
-                "Sacos de dormir",
-                "Accesorios de camping",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Deportes de Equipo",
-            "subcategorias": [
-                "Fútbol",
-                "Baloncesto",
-                "Voleibol",
-                "Accesorios (balones, redes)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Natación",
-            "subcategorias": [
-                "Gafas",
-                "Gorros",
-                "Accesorios",
-                "Ropa de baño deportiva",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Pesca",
-            "subcategorias": [
-                "Cañas",
-                "Señuelos",
-                "Cajas y organización",
-                "Accesorios",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -474,47 +225,23 @@ MARKETPLACE_CATEGORIES = {
     "Salud": [
         {
             "categoria": "Vitaminas y Suplementos",
-            "subcategorias": [
-                "Multivitamínicos",
-                "Proteína y fitness",
-                "Omega 3",
-                "Colágeno",
-                "Minerales",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Monitoreo y Dispositivos",
-            "subcategorias": [
-                "Tensiómetros",
-                "Termómetros",
-                "Oxímetros",
-                "Básculas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Primeros Auxilios",
-            "subcategorias": [
-                "Botiquines",
-                "Vendas y gasas",
-                "Antisépticos (general)",
-                "Accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Bienestar",
-            "subcategorias": [
-                "Masajeadores",
-                "Aromaterapia",
-                "Relajación (accesorios)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Ortopedia y Movilidad",
-            "subcategorias": [
-                "Soportes y braces",
-                "Plantillas",
-                "Accesorios de movilidad",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -524,58 +251,27 @@ MARKETPLACE_CATEGORIES = {
     "Mascotas": [
         {
             "categoria": "Perros",
-            "subcategorias": [
-                "Alimento",
-                "Camas y casas",
-                "Juguetes",
-                "Correas y arneses",
-                "Higiene y grooming",
-                "Ropa para perro",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Gatos",
-            "subcategorias": [
-                "Alimento",
-                "Areneros y arena",
-                "Rascadores",
-                "Juguetes",
-                "Camas",
-                "Higiene",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Aves",
-            "subcategorias": [
-                "Jaulas",
-                "Alimento",
-                "Accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Peces y Acuarios",
-            "subcategorias": [
-                "Acuarios",
-                "Filtros",
-                "Alimento",
-                "Decoración",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Pequeños Animales",
-            "subcategorias": [
-                "Hámsters y roedores",
-                "Accesorios y hábitat",
-                "Alimento",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Viaje y Transporte",
-            "subcategorias": [
-                "Guacales y transportadoras",
-                "Accesorios de carro",
-                "Bebederos portátiles",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -585,53 +281,23 @@ MARKETPLACE_CATEGORIES = {
     "Papelería": [
         {
             "categoria": "Escritura y Corrección",
-            "subcategorias": [
-                "Bolígrafos",
-                "Lápices",
-                "Marcadores",
-                "Resaltadores",
-                "Correctores",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cuadernos y Papel",
-            "subcategorias": [
-                "Cuadernos",
-                "Libretas",
-                "Agendas",
-                "Hojas y resmas",
-                "Papel fotográfico",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Arte y Manualidades",
-            "subcategorias": [
-                "Pinturas",
-                "Pinceles",
-                "Pegantes",
-                "Tijeras y cutters",
-                "Foamy y cartulina",
-                "Scrapbooking (básico)",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Organización",
-            "subcategorias": [
-                "Carpetas",
-                "Archivadores",
-                "Separadores",
-                "Post-it",
-                "Etiquetas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Escolar",
-            "subcategorias": [
-                "Estuches",
-                "Reglas y escuadras",
-                "Calculadoras",
-                "Morrales escolares (básico)",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -641,67 +307,31 @@ MARKETPLACE_CATEGORIES = {
     "Accesorios de Cocina": [
         {
             "categoria": "Utensilios",
-            "subcategorias": [
-                "Espátulas",
-                "Pinzas",
-                "Cucharones",
-                "Batidores",
-                "Tablas de picar",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Gadgets",
-            "subcategorias": [
-                "Peladores",
-                "Ralladores",
-                "Cortadores",
-                "Prensas y exprimidores",
-                "Termómetros de cocina",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Repostería",
-            "subcategorias": [
-                "Moldes",
-                "Cortadores de galleta",
-                "Mangas pasteleras",
-                "Accesorios de decoración",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Almacenamiento",
-            "subcategorias": [
-                "Recipientes",
-                "Bolsas reutilizables",
-                "Frascos",
-                "Organizadores de despensa",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Café y Té",
-            "subcategorias": [
-                "Filtros",
-                "Prensas",
-                "Molinillos (manuales)",
-                "Teteras y accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Cuchillos y Afiliado",
-            "subcategorias": [
-                "Cuchillos",
-                "Afiladores",
-                "Tacos y fundas",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Bar y Coctelería",
-            "subcategorias": [
-                "Cocteleras",
-                "Medidores",
-                "Abridores",
-                "Accesorios de vino",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -711,38 +341,19 @@ MARKETPLACE_CATEGORIES = {
     "Joyería": [
         {
             "categoria": "Piezas",
-            "subcategorias": [
-                "Aretes",
-                "Collares",
-                "Pulseras",
-                "Anillos",
-                "Sets",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Relojes",
-            "subcategorias": [
-                "Relojes (hombre)",
-                "Relojes (mujer)",
-                "Correas y accesorios",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Material y Estilo",
-            "subcategorias": [
-                "Joyería fina (plata/oro)",
-                "Bisutería",
-                "Acero inoxidable",
-                "Perlas y piedras",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Accesorios",
-            "subcategorias": [
-                "Joyeros y estuches",
-                "Piercings",
-                "Accesorios para el cabello (clips, diademas)",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -752,41 +363,19 @@ MARKETPLACE_CATEGORIES = {
     "Calzado": [
         {
             "categoria": "Mujer",
-            "subcategorias": [
-                "Zapatillas (sneakers)",
-                "Tacones",
-                "Botas y botines",
-                "Sandalias",
-                "Bailarinas y flats",
-                "Mocasines",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Hombre",
-            "subcategorias": [
-                "Zapatillas (sneakers)",
-                "Zapatos formales",
-                "Botas",
-                "Sandalias",
-                "Mocasines",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Niños",
-            "subcategorias": [
-                "Escolar",
-                "Zapatillas",
-                "Botas",
-                "Sandalias",
-            ],
+            "subcategorias": [],
         },
         {
             "categoria": "Accesorios de calzado",
-            "subcategorias": [
-                "Plantillas",
-                "Cordones",
-                "Cuidado del calzado",
-            ],
+            "subcategorias": [],
         },
     ],
 
@@ -796,8 +385,7 @@ MARKETPLACE_CATEGORIES = {
     "Artículos de Fiesta": [
         {
             "categoria": "Decoración",
-            "subcategorias": [
-                "Globos",
+            "subcategorias": [],
                 "Guirnaldas",
                 "Banners",
                 "Centros de mesa",
