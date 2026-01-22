@@ -195,7 +195,7 @@ class OTPLoginRequestView(APIView):
       email_norm = normalize_email(email)
       
       # Check for demo account
-      if email_norm == "apple.revisor@yuancity.com" or email_norm == "google.revisor@yuancity.com":
+      if email_norm == "apple.revisor@yuancity.com" or email_norm == "google.revisor@yuancity.com" or email_norm == "huawei.revisor@yuancity.com":
         user = User.objects.filter(email=email_norm).first()
         if user:
           return Response(build_tokens(user), status=200)
@@ -270,7 +270,7 @@ class OTPLoginVerifyView(APIView):
       return Response({"detail": "Usuario no encontrado."}, status=404)
 
     # Check for demo account - skip OTP verification
-    if hasattr(user, 'email') and user.email == "apple.revisor@yuancity.com" or user.email ==  "google.revisor@yuancity.com":
+    if hasattr(user, 'email') and (user.email == "apple.revisor@yuancity.com" or user.email ==  "google.revisor@yuancity.com" or user.email == "huawei.revisor@yuancity.com"):
       return Response(build_tokens(user), status=200)
 
     if user.otp != otp:
