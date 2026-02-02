@@ -12,10 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENVIRONMENT = env
 
-# Correos habilitados para ingresar al portal de pagos interno
-FINANCE_PORTAL_ALLOWED_EMAILS = [
+# Correos autorizados para acceder a la plataforma web
+WEB_ALLOWED_EMAILS = [
     email.strip().lower()
-    for email in os.environ.get('FINANCE_PORTAL_ALLOWED_EMAILS', '').split(',')
+    for email in os.environ.get('WEB_ALLOWED_EMAILS', '').split(',')
     if email and email.strip()
 ]
 
@@ -73,7 +73,6 @@ PROJECT_APPS = [
     'apps.count',
 ]
 ECOMMERCE_APPS = [
-    'apps.AI',
     'apps.category',
     'apps.product',
     'apps.cart',
@@ -138,24 +137,24 @@ ASGI_APPLICATION = 'core.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_HOST"),
-        "PORT": 5432,
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+#DATABASES = {
+#    "default": {
+#        "ENGINE": "django.db.backends.postgresql",
+#        "NAME": os.environ.get("POSTGRES_DB"),
+#        "USER": os.environ.get("POSTGRES_USER"),
+#        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+#        "HOST": os.environ.get("POSTGRES_HOST"),
+#        "PORT": 5432,
+#    }
+#}
 
 
 DATABASES["default"]["ATOMIC_REQUESTS"] = True

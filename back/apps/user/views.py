@@ -290,7 +290,7 @@ class OTPLoginRequestWebView(APIView):
     """
     POST /auth/login/otp/request/
       { "email": "usuario@dominio.com" }
-    Envia OTP solo si el usuario existe y está activo.
+    Envia OTP solo si el usuario existe, está activo y está autorizado para web.
     """
     permission_classes = [permissions.AllowAny]
 
@@ -299,6 +299,14 @@ class OTPLoginRequestWebView(APIView):
         ser.is_valid(raise_exception=True)
 
         email_norm = normalize_email(ser.validated_data["email"])
+        
+        # Validar que el correo esté en la lista de autorizados para web
+        if email_norm not in settings.WEB_ALLOWED_EMAILS:
+            return Response(
+                {"detail": "No tienes autorización para acceder a la plataforma web. Contacta al administrador."},
+                status=403,
+            )
+        
         user = User.objects.filter(email=email_norm, is_active=True).first()
 
         if not user:

@@ -20,8 +20,11 @@ from rest_framework.views import APIView
 
 from apps.cart.models import Cart, CartItem
 from apps.coupons.models import FixedPriceCoupon, PercentageCoupon
-from apps.orders.models import Order, OrderItem, Countries
+from apps.orders.models import Order, OrderItem, OrderChatMessage, Countries
+from apps.category.models import Category
 from apps.product.models import Product
+from apps.product.serializers import ProductSerializer
+from apps.reviews.models import Review
 from apps.user.utils.push import send_push
 from apps.user.utils.jwt import build_tokens
 from apps.user.utils.password import strong_random_password
@@ -43,7 +46,8 @@ from apps.payment.utils import (
 
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import TruncMonth
 import uuid
 import logging
 from django.utils import timezone
@@ -66,36 +70,30 @@ SELLER_FEE_RATE = Decimal("0.15")
 DELIVERY_NAME = "Entrega a domicilio"
 DELIVERY_TIME = "Estamos coordinando el envío"
 DELIVERY_PRICE = Decimal("0.00")
+STATUS_PUSH_MESSAGES = {
+    Order.OrderStatus.not_processed: (
+        "Pedido recibido 📦",
+        "Tu pedido ha sido recibido y pronto será procesado.",
+    ),
+    Order.OrderStatus.processed: (
+        "Pedido en preparación 📦",
+        "El vendedor está preparando tu orden.",
+    ),
+    Order.OrderStatus.shipping: (
+        "Pedido en camino 🚚",
+        "Nuestro equipo coordina la entrega en tu dirección.",
+    ),
+    Order.OrderStatus.delivered: (
+        "Pedido completado 🎉",
+        "¡Gracias por tu compra! Esperamos que disfrutes tu pedido.",
+    ),
+    Order.OrderStatus.cancelled: (
+        "Pedido cancelado ❌",
+        "Tu pedido fue cancelado. Si tienes dudas, contáctanos.",
+    ),
+}
 
 
-class IsFinanceOperator(permissions.BasePermission):
-    """
-    Limita el acceso del portal financiero al listado de correos permitido.
-    """
-
-    message = "No tienes permiso para usar este portal."
-
-    def has_permission(self, request, view):
-        user = getattr(request, "user", None)
-        allowed = getattr(settings, "FINANCE_PORTAL_ALLOWED_EMAILS", []) or []
-
-        if not user or not user.is_authenticated:
-            return False
-
-        if not allowed:
-            # Si no hay lista configurada, solo superusuarios pueden ingresar.
-            return bool(user.is_superuser)
-
-        email = (user.email or "").strip().lower()
-        return email in {item.strip().lower() for item in allowed}
-
-
-def _is_finance_email_allowed(email: str) -> bool:
-    allowed = getattr(settings, "FINANCE_PORTAL_ALLOWED_EMAILS", []) or []
-    if not allowed:
-        return False
-    normalized = (email or "").strip().lower()
-    return normalized in {item.strip().lower() for item in allowed}
 
 
 def _stripe_metadata_base(channel: str = "mobile_app"):
@@ -241,6 +239,25 @@ def _get_cart_with_items(user):
     cart, _ = Cart.objects.get_or_create(user=user)
     cart_items = CartItem.objects.filter(cart=cart).select_related("product")
     return cart, cart_items
+
+
+def _is_admin_user(user):
+    return bool(
+        getattr(user, "is_staff", False)
+        or getattr(user, "is_superuser", False)
+        or getattr(user, "rol", "") == "admin"
+    )
+
+
+def _month_start(value):
+    return value.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+def _add_months(value, months):
+    month_index = value.month - 1 + months
+    year = value.year + month_index // 12
+    month = month_index % 12 + 1
+    return value.replace(year=year, month=month, day=1)
 
 
 class CheckoutSummaryView(APIView):
@@ -1030,11 +1047,6 @@ class FinancePortalLoginView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"].strip().lower()
 
-        if not _is_finance_email_allowed(email):
-            return Response(
-                {"detail": "Correo no autorizado para este portal."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
         user = User.objects.filter(email__iexact=email).first()
         if not user:
@@ -1073,13 +1085,57 @@ class FinancePortalLoginView(APIView):
 
 
 class FinanceDashboardSummaryView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsFinanceOperator]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver este panel."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         orders_total = Order.objects.count()
         orders_pending = Order.objects.exclude(
             status=Order.OrderStatus.delivered
         ).count()
+        orders_delivered = Order.objects.filter(
+            status=Order.OrderStatus.delivered
+        ).count()
+        orders_cancelled = Order.objects.filter(
+            status=Order.OrderStatus.cancelled
+        ).count()
+
+        sales_total = Order.objects.aggregate(total=Sum("amount"))["total"] or Decimal(
+            "0.00"
+        )
+        avg_order_value = (
+            _quantize(sales_total / orders_total) if orders_total else Decimal("0.00")
+        )
+        items_sold = (
+            OrderItem.objects.aggregate(total=Sum("count"))["total"] or 0
+        )
+
+        users_total = User.objects.count()
+        users_active = User.objects.filter(is_active=True).count()
+        users_vendors = User.objects.filter(rol="vendor").count()
+        users_clients = User.objects.filter(rol="client").count()
+        vendors_with_products = (
+            Product.objects.values("vendor_id").distinct().count()
+        )
+        vendors_with_sales = (
+            OrderItem.objects.exclude(product__vendor_id=None)
+            .values("product__vendor_id")
+            .distinct()
+            .count()
+        )
+        products_total = Product.objects.count()
+        products_available = Product.objects.filter(is_available=True).count()
+
+        support_unread = OrderChatMessage.objects.filter(read=False).count()
+        support_threads = (
+            OrderChatMessage.objects.values("order_id").distinct().count()
+        )
+
         waiting_qs = VendorPayout.objects.filter(
             status=VendorPayout.Status.waiting_confirmation
         )
@@ -1096,13 +1152,79 @@ class FinanceDashboardSummaryView(APIView):
         stats = {
             "orders_total": orders_total,
             "orders_pending": orders_pending,
+            "orders_delivered": orders_delivered,
+            "orders_cancelled": orders_cancelled,
             "payouts_waiting": waiting_qs.count(),
             "payouts_pending": pending_qs.count(),
             "payouts_available": available_qs.count(),
             "payouts_released": released_qs.count(),
             "pending_amount": str(summarize_amount(pending_qs)),
             "available_amount": str(summarize_amount(available_qs)),
+            "sales_total": str(_quantize(sales_total)),
+            "avg_order_value": str(_quantize(avg_order_value)),
+            "items_sold": int(items_sold),
+            "users_total": users_total,
+            "users_active": users_active,
+            "users_vendors": users_vendors,
+            "users_clients": users_clients,
+            "vendors_with_products": vendors_with_products,
+            "vendors_with_sales": vendors_with_sales,
+            "products_total": products_total,
+            "products_available": products_available,
+            "support_unread": support_unread,
+            "support_threads": support_threads,
         }
+
+        now = timezone.now()
+        start_month = _add_months(_month_start(now), -5)
+        month_labels = [
+            "Ene",
+            "Feb",
+            "Mar",
+            "Abr",
+            "May",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dic",
+        ]
+        sales_rows = (
+            Order.objects.filter(date_issued__gte=start_month)
+            .annotate(month=TruncMonth("date_issued"))
+            .values("month")
+            .annotate(sales=Sum("amount"), clients=Count("user", distinct=True))
+            .order_by("month")
+        )
+        sales_map = {row["month"].date(): row for row in sales_rows}
+        sales_series = []
+        for offset in range(6):
+            month_value = _add_months(start_month, offset)
+            row = sales_map.get(month_value.date())
+            sales_value = row["sales"] if row else 0
+            clients_value = row["clients"] if row else 0
+            sales_series.append(
+                {
+                    "month": month_labels[month_value.month - 1],
+                    "sales": float(sales_value or 0),
+                    "clients": int(clients_value or 0),
+                }
+            )
+
+        category_rows = (
+            Category.objects.annotate(total=Count("products"))
+            .filter(total__gt=0)
+            .order_by("-total")[:6]
+        )
+        category_breakdown = [
+            {
+                "name": row.name,
+                "value": row.total,
+            }
+            for row in category_rows
+        ]
 
         recent_orders = (
             Order.objects.select_related("user")
@@ -1117,6 +1239,8 @@ class FinanceDashboardSummaryView(APIView):
         return Response(
             {
                 "stats": stats,
+                "sales_series": sales_series,
+                "category_breakdown": category_breakdown,
                 "recent_orders": FinanceOrderSerializer(recent_orders, many=True).data,
                 "recent_payouts": FinanceVendorPayoutSerializer(
                     recent_payouts, many=True
@@ -1126,8 +1250,284 @@ class FinanceDashboardSummaryView(APIView):
         )
 
 
+class AdminDashboardOrdersView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver estas órdenes."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        limit = request.query_params.get("limit")
+        try:
+            limit_value = int(limit) if limit else 100
+        except ValueError:
+            limit_value = 100
+        limit_value = max(1, min(limit_value, 500))
+
+        queryset = (
+            Order.objects.select_related("user")
+            .annotate(items_count=Count("orderitem"))
+            .order_by("-date_issued")[:limit_value]
+        )
+
+        orders = []
+        for order in queryset:
+            customer_name = order.full_name
+            if not customer_name and order.user_id:
+                customer_name = order.user.full_name
+            orders.append(
+                {
+                    "order_id": str(order.id),
+                    "transaction_id": str(order.transaction_id),
+                    "status": order.status,
+                    "date_issued": order.date_issued.isoformat(),
+                    "customer_name": customer_name or "",
+                    "customer_email": getattr(order.user, "email", ""),
+                    "order_total": format(order.amount, ".2f"),
+                    "items_count": order.items_count or 0,
+                }
+            )
+
+        return Response({"orders": orders}, status=status.HTTP_200_OK)
+
+
+class AdminDashboardOrderDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, transaction_id, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver esta orden."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        order = get_object_or_404(
+            Order.objects.select_related("user").prefetch_related("orderitem_set"),
+            transaction_id=transaction_id,
+        )
+
+        items = []
+        for item in order.orderitem_set.all():
+            items.append(
+                {
+                    "order_item_id": str(item.id),
+                    "product_id": str(item.product_id) if item.product_id else None,
+                    "name": item.name,
+                    "price": format(item.price, ".2f"),
+                    "count": item.count,
+                }
+            )
+
+        customer_name = order.full_name
+        if not customer_name and order.user_id:
+            customer_name = order.user.full_name
+
+        payload = {
+            "order_id": str(order.id),
+            "transaction_id": str(order.transaction_id),
+            "status": order.status,
+            "date_issued": order.date_issued,
+            "full_name": customer_name or "",
+            "customer_email": getattr(order.user, "email", ""),
+            "telephone_number": order.telephone_number,
+            "address_line_1": order.address_line_1,
+            "address_line_2": order.address_line_2,
+            "city": order.city,
+            "state_province_region": order.state_province_region,
+            "postal_zip_code": order.postal_zip_code,
+            "country_region": order.country_region,
+            "amount": str(order.amount),
+            "payment_method": getattr(order, "payment_method", None),
+            "items": items,
+        }
+
+        return Response({"order": payload}, status=status.HTTP_200_OK)
+
+
+class AdminDashboardOrderStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para actualizar este pedido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        order = get_object_or_404(Order, pk=pk)
+
+        if order.status in [Order.OrderStatus.delivered, Order.OrderStatus.cancelled]:
+            return Response(
+                {
+                    "error": (
+                        "No se puede modificar un pedido que ya está "
+                        f"{order.get_status_display()}"
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        new_status = request.data.get("status")
+        valid_status = [choice[0] for choice in Order.OrderStatus.choices]
+        if new_status not in valid_status:
+            return Response(
+                {"error": "Estado no válido"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        status_order = {
+            Order.OrderStatus.not_processed: 1,
+            Order.OrderStatus.processed: 2,
+            Order.OrderStatus.shipping: 3,
+            Order.OrderStatus.delivered: 4,
+            Order.OrderStatus.cancelled: 5,
+        }
+        current_order = status_order.get(order.status, 0)
+        new_order = status_order.get(new_status, 0)
+        if new_status != Order.OrderStatus.cancelled and new_order < current_order:
+            return Response(
+                {"error": "No puedes retroceder el estado del pedido"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order.status = new_status
+        update_fields = ["status", "updated_at"]
+        if new_status == Order.OrderStatus.shipping and not order.shipped_at:
+            order.shipped_at = timezone.now()
+            update_fields.append("shipped_at")
+        elif new_status == Order.OrderStatus.delivered and not order.completed_at:
+            order.completed_at = timezone.now()
+            update_fields.append("completed_at")
+
+        order.save(update_fields=update_fields)
+
+        message = STATUS_PUSH_MESSAGES.get(
+            order.status,
+            ("Actualización de pedido", f"El estado ahora es {order.status}"),
+        )
+
+        try:
+            Notification.objects.create(
+                user=order.user,
+                title=message[0],
+                body=message[1],
+                data={
+                    "type": "order_status",
+                    "transaction_id": str(order.transaction_id),
+                    "order_id": str(order.id),
+                    "status": order.status,
+                },
+            )
+            send_push(
+                title=message[0],
+                body=message[1],
+                data={
+                    "type": "order_status",
+                    "transaction_id": str(order.transaction_id),
+                    "order_id": str(order.id),
+                    "status": order.status,
+                },
+                user=order.user,
+            )
+        except Exception as exc:
+            logger.warning("No se pudo enviar push: %s", exc)
+
+        return Response(
+            {
+                "success": "Estado actualizado correctamente",
+                "status": order.status,
+                "order_id": str(order.id),
+                "transaction_id": str(order.transaction_id),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class AdminDashboardProductsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver productos."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        limit = request.query_params.get("limit")
+        try:
+            limit_value = int(limit) if limit else 100
+        except ValueError:
+            limit_value = 100
+        limit_value = max(1, min(limit_value, 500))
+
+        queryset = (
+            Product.objects.select_related(
+                "vendor", "vendor__social_profile", "category"
+            )
+            .prefetch_related("images")
+            .order_by("-created_at")[:limit_value]
+        )
+
+        serializer = ProductSerializer(
+            queryset, many=True, context={"request": request}
+        )
+        return Response({"results": serializer.data}, status=status.HTTP_200_OK)
+
+
+class AdminDashboardReviewsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver reseñas."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        limit = request.query_params.get("limit")
+        try:
+            limit_value = int(limit) if limit else 100
+        except ValueError:
+            limit_value = 100
+        limit_value = max(1, min(limit_value, 500))
+
+        queryset = (
+            Review.objects.select_related("product", "user", "order_item__order")
+            .order_by("-date_created")[:limit_value]
+        )
+
+        data = []
+        for review in queryset:
+            user = review.user
+            customer_name = ""
+            if user:
+                customer_name = getattr(user, "full_name", "") or user.email
+            data.append(
+                {
+                    "id": str(review.id),
+                    "product_id": str(review.product_id),
+                    "product_name": review.product.name if review.product_id else "",
+                    "rating": float(review.rating),
+                    "comment": review.comment,
+                    "date_created": review.date_created,
+                    "user_name": customer_name,
+                    "customer_name": customer_name,
+                    "transaction_id": (
+                        str(review.order_item.order.transaction_id)
+                        if review.order_item_id
+                        else None
+                    ),
+                }
+            )
+
+        return Response({"reviews": data}, status=status.HTTP_200_OK)
+
+
 class FinanceOrderListView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsFinanceOperator]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         queryset = (
@@ -1162,7 +1562,7 @@ class FinanceOrderListView(APIView):
 
 
 class FinanceOrderDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsFinanceOperator]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk, *args, **kwargs):
         order = get_object_or_404(
@@ -1176,7 +1576,7 @@ class FinanceOrderDetailView(APIView):
 
 
 class FinancePayoutListView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsFinanceOperator]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         queryset = (
@@ -1211,7 +1611,7 @@ class FinancePayoutListView(APIView):
 
 
 class FinancePayoutStatusUpdateView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsFinanceOperator]
+    permission_classes = [permissions.IsAuthenticated]
 
     def patch(self, request, pk, *args, **kwargs):
         payout = get_object_or_404(
