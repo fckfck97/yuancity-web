@@ -7,8 +7,8 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 
 export const metadata: Metadata = {
-  title: 'YuanCity - Sustainable Fashion Hub',
-  description: 'Vende tu ropa usada y compra moda sostenible con YuanCity.',
+  title: 'YuanCity - Venta de Productos de China',
+  description: 'Publica y vende tus productos de China con YuanCity.',
 
   icons: { icon: '/logo.png' },
 }
