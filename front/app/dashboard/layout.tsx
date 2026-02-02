@@ -14,6 +14,7 @@ import {
   X,
   Database,
   Plus,
+  Users,
 } from "lucide-react";
 import { DashboardProvider, useDashboard } from "./DashboardContext";
 
@@ -59,6 +60,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     { id: "summary", label: "Resumen", icon: LayoutGrid },
     { id: "products", label: "Productos", icon: Package },
     { id: "orders", label: "Compras", icon: ShoppingCart },
+    { id: "vendors", label: "Vendedores", icon: Users },
     { id: "support", label: "Soporte", icon: MessageCircle },
     { id: "reviews", label: "Valoraciones", icon: Star },
   ];

@@ -19,6 +19,7 @@ from .views import (
     AdminDashboardOrderStatusView,
     AdminDashboardProductsView,
     AdminDashboardReviewsView,
+    AdminDashboardVendorsView,
 )
 
 app_name = "payment"
@@ -44,5 +45,6 @@ urlpatterns = [
     path('admin/orders/<str:transaction_id>/', AdminDashboardOrderDetailView.as_view(), name='admin_order_detail'),
     path('admin/orders/<uuid:pk>/status/', AdminDashboardOrderStatusView.as_view(), name='admin_order_status'),
     path('admin/products/', AdminDashboardProductsView.as_view(), name='admin_products'),
+    path('admin/vendors/', AdminDashboardVendorsView.as_view(), name='admin_vendors'),
     path('admin/reviews/', AdminDashboardReviewsView.as_view(), name='admin_reviews'),
 ]

@@ -12,6 +12,7 @@ import { buildApiUrl, fetchWithAuth, loadAuth, loadUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import SummaryView from "./views/SummaryView";
 import ProductsView from "./views/ProductsView";
+import VendorsView from "./views/VendorsView";
 import OrdersView from "./views/OrdersView";
 import SupportView from "./views/SupportView";
 import ReviewsView from "./views/ReviewsView";
@@ -58,6 +59,7 @@ const requestApi = async (path: string, options: RequestInit = {}) => {
 const dashboardApi = {
   getAdminSummary: () => requestApi("/payment/admin/dashboard/"),
   getOrders: () => requestApi("/payment/admin/orders/"),
+  getVendors: () => requestApi("/payment/admin/vendors/"),
   getOrderDetails: (transactionId: string) =>
     requestApi(`/payment/admin/orders/${transactionId}/`),
   updateOrderStatus: (orderId: string, status: string) =>
@@ -76,13 +78,10 @@ const dashboardApi = {
       body: JSON.stringify({ text: message }),
     }),
   saveProduct: (formData: FormData, productId?: string) =>
-    requestApi(
-      productId ? `/products/${productId}/update/` : "/products/",
-      {
-        method: productId ? "PUT" : "POST",
-        body: formData,
-      },
-    ),
+    requestApi(productId ? `/products/${productId}/update/` : "/products/", {
+      method: productId ? "PUT" : "POST",
+      body: formData,
+    }),
   deleteProduct: (productId: string) =>
     requestApi(`/products/${productId}/update/`, {
       method: "PATCH",
@@ -104,6 +103,7 @@ export default function CrediMuebleDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
@@ -160,12 +160,14 @@ export default function CrediMuebleDashboard() {
         const [
           summaryRes,
           ordersRes,
+          vendorsRes,
           reviewsRes,
           productsRes,
           categoriesRes,
         ] = await Promise.all([
           dashboardApi.getAdminSummary(),
           dashboardApi.getOrders(),
+          dashboardApi.getVendors(),
           dashboardApi.getReviews(),
           dashboardApi.getProducts(),
           dashboardApi.getCategories(),
@@ -200,11 +202,13 @@ export default function CrediMuebleDashboard() {
 
           if (Array.isArray(summaryRes.data.category_breakdown)) {
             setCategoryData(
-              summaryRes.data.category_breakdown.map((item: any, idx: number) => ({
-                name: item.name,
-                value: Number(item.value || 0),
-                color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
-              })),
+              summaryRes.data.category_breakdown.map(
+                (item: any, idx: number) => ({
+                  name: item.name,
+                  value: Number(item.value || 0),
+                  color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+                }),
+              ),
             );
           }
         }
@@ -235,10 +239,12 @@ export default function CrediMuebleDashboard() {
           }
         }
 
+        if (vendorsRes.ok && vendorsRes.data) {
+          setVendors(vendorsRes.data.vendors || []);
+        }
+
         if (reviewsRes.ok && reviewsRes.data) {
-          setReviews(
-            reviewsRes.data.results || reviewsRes.data.reviews || [],
-          );
+          setReviews(reviewsRes.data.results || reviewsRes.data.reviews || []);
         }
 
         if (productsRes.ok && productsRes.data) {
@@ -471,7 +477,6 @@ export default function CrediMuebleDashboard() {
             Gestiona tu tienda y revisa tus estadísticas en tiempo real.
           </p>
         </div>
-
       </header>
 
       <main className="animate-in fade-in duration-500">
@@ -536,6 +541,8 @@ export default function CrediMuebleDashboard() {
             onDelete={handleDeleteProduct}
           />
         )}
+
+        {activeView === "vendors" && <VendorsView vendors={vendors} />}
 
         {activeView === "orders" && (
           <OrdersView

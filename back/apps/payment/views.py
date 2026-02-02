@@ -1526,6 +1526,62 @@ class AdminDashboardReviewsView(APIView):
         return Response({"reviews": data}, status=status.HTTP_200_OK)
 
 
+class AdminDashboardVendorsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver vendedores."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        limit = request.query_params.get("limit")
+        try:
+            limit_value = int(limit) if limit else 100
+        except ValueError:
+            limit_value = 100
+        limit_value = max(1, min(limit_value, 500))
+
+        # Filtramos usuarios que son vendors o que tienen productos
+        queryset = (
+            User.objects.annotate(products_count=Count("product"))
+            .filter(Q(rol="vendor") | Q(products_count__gt=0))
+            .select_related("bank_account")
+            .order_by("-created_at")[:limit_value]
+        )
+
+        data = []
+        for user in queryset:
+            bank_info = None
+            try:
+                if hasattr(user, "bank_account") and user.bank_account:
+                    bank_info = {
+                        "bank_name": user.bank_account.bank_name,
+                        "account_type": user.bank_account.get_account_type_display(),
+                        "account_number": user.bank_account.account_number,
+                        "account_holder_name": user.bank_account.account_holder_name,
+                        "document_type": user.bank_account.get_document_type_display(),
+                        "document_number": user.bank_account.document_number,
+                    }
+            except Exception:
+                pass
+
+            data.append(
+                {
+                    "user_id": str(user.id),
+                    "full_name": user.full_name,
+                    "email": user.email,
+                    "phone": user.phone,
+                    "products_count": user.products_count,
+                    "bank_account": bank_info,
+                    "created_at": user.created_at,
+                }
+            )
+
+        return Response({"vendors": data}, status=status.HTTP_200_OK)
+
+
 class FinanceOrderListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
