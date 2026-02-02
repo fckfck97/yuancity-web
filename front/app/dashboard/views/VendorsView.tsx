@@ -1,6 +1,5 @@
 import React from "react";
-import { Users, CreditCard, Search } from "lucide-react";
-import { Users, ShoppingBag } from "lucide-react";
+import { Users, ShoppingBag, CreditCard, Search } from "lucide-react";
 
 interface VendorsViewProps {
   vendors: any[];
@@ -49,45 +48,91 @@ export default function VendorsView({
                     Fecha Registro
                   </th>
                   <th className="text-right py-4 px-6 font-black text-xs uppercase tracking-widest text-muted-foreground">
-                    Acciones
+                    Cuenta Bancaria
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/10">
                 {vendors.map((vendor: any) => {
-                   const isVendor = vendor.products_count > 0;
-                   return (
-                  <tr 
-                    key={vendor.user_id} 
-                    className="group hover:bg-secondary/5 transition-colors cursor-pointer"
-                    onClick={() => onOpenDetails(vendor.user_id)}
-                  >
+                  const isVendor = vendor.products_count > 0;
+                  return (
+                    <tr
+                      key={vendor.user_id}
+                      className="group hover:bg-secondary/5 transition-colors cursor-pointer"
+                      onClick={() => onOpenDetails(vendor.user_id)}
+                    >
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 font-bold uppercase">
+                            {vendor.full_name?.charAt(0) ||
+                              vendor.email?.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-foreground">
+                              {vendor.full_name || "Sin Nombre"}
+                            </p>
+                            <p className="text-xs text-muted-foreground font-medium">
+                              {vendor.email}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        {isVendor ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wide">
+                            Vendedor
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary/20 text-muted-foreground uppercase tracking-wide">
+                            Cliente
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          <ShoppingBag
+                            size={16}
+                            className={
+                              isVendor
+                                ? "text-primary"
+                                : "text-muted-foreground/50"
+                            }
+                          />
+                          <span
+                            className={`font-bold ${isVendor ? "text-foreground" : "text-muted-foreground"}`}
+                          >
+                            {vendor.products_count}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {vendor.joined_at
+                            ? new Date(vendor.joined_at).toLocaleDateString()
+                            : "N/A"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        {vendor.bank_account ? (
+                          <div className="flex items-center justify-end gap-2 text-primary">
+                            <CreditCard size={16} />
+                            <span className="text-xs font-bold uppercase">
+                              {vendor.bank_account.bank_name}
                             </span>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            {vendor.bank_account.account_type} •{" "}
-                            {vendor.bank_account.account_number}
-                          </div>
-                          <div className="text-[10px] text-muted-foreground">
-                            {vendor.bank_account.document_type}:{" "}
-                            {vendor.bank_account.document_number}
-                          </div>
-                          <div className="text-[10px] font-bold text-foreground">
-                            {vendor.bank_account.account_holder_name}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-xs text-muted-foreground italic">
-                          Sin cuenta registrada
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic">
+                            No registrada
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
