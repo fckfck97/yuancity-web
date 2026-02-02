@@ -1,6 +1,8 @@
 from decimal import Decimal, InvalidOperation
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 from .models import UserAccount as User, LoginLog, UserProfile, UserFollow
 from .data.colombia_locations import (
@@ -8,6 +10,7 @@ from .data.colombia_locations import (
     normalize_city,
     normalize_department,
 )
+from .utils.phone import normalize as normalize_phone
 
 class UserProfileSerializer(serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
@@ -238,15 +241,63 @@ class PublicProfileSerializer(serializers.Serializer):
     full_name = serializers.CharField(allow_blank=True)
     bio = serializers.CharField(allow_blank=True, required=False)
     location = serializers.CharField(allow_blank=True, required=False)
-    department = serializers.CharField(allow_blank=True, required=False)
-    city = serializers.CharField(allow_blank=True, required=False)
-    avatar_url = serializers.CharField(allow_null=True)
-    cover_url = serializers.CharField(allow_null=True)
-    followers_count = serializers.IntegerField()
-    following_count = serializers.IntegerField()
-    posts_count = serializers.IntegerField()
-    is_following = serializers.BooleanField()
-    products = serializers.ListField(child=serializers.DictField())
+
+
+class N8NUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    phone = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "full_name",
+            "email",
+            "phone",
+        )
+
+    def get_full_name(self, obj):
+        first = (obj.first_name or "").strip()
+        last = (obj.last_name or "").strip()
+        full = f"{first} {last}".strip()
+        return full or ""
+
+    def get_email(self, obj):
+        raw = obj.email
+        if raw is None:
+            return None
+        email = str(raw).strip().lower()
+        if not email:
+            return None
+        if email.endswith("@icloud.com"):
+            return None
+        try:
+            validate_email(email)
+        except ValidationError:
+            return None
+        return email
+
+    def get_phone(self, obj):
+        raw = obj.phone
+        if raw is None:
+            return None
+        phone = str(raw).strip()
+        if not phone:
+            return None
+        normalized = normalize_phone(phone)
+        if not normalized:
+            return None
+        if len(normalized) == 10 and not normalized.startswith("57"):
+            normalized = f"57{normalized}"
+        return f"+{normalized}"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Omite email/phone vacíos, conserva full_name
+        for key in ("email", "phone"):
+            if data.get(key) in (None, ""):
+                data.pop(key, None)
+        return data
 
 
 class FollowListEntrySerializer(serializers.ModelSerializer):

@@ -17,6 +17,7 @@ from .views import (
     NotificationMarkReadView,
     NotificationMarkAllView,
     AccountDeleteView,
+    N8NUserListView,
 )
 
 urlpatterns = [
@@ -29,6 +30,7 @@ urlpatterns = [
     path('expo/push/token/', ExpoPushTokenView.as_view(), name='expo_push_token'),
     path('profile/picture/', ProfilePictureUploadView.as_view(), name='profile_picture_upload'),
     path('delete/account/<uuid:pk>/', AccountDeleteView.as_view(), name='account_delete'),
+    path('n8n/users/', N8NUserListView.as_view(), name='n8n_users'),
     # Social Profile endpoints
     path('social/profile/me/', SocialProfileView.as_view(), name='social_profile_me'),
     path('social/profile/<str:identifier>/', SocialProfileView.as_view(), name='social_profile_public'),

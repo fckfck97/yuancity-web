@@ -9,6 +9,7 @@ from .serializers import (
     PublicProfileSerializer,
     FollowActionSerializer,
     FollowListEntrySerializer,
+    N8NUserSerializer,
 )
 from django.conf import settings
 from django.core.mail import send_mail
@@ -28,6 +29,11 @@ from .utils.sendOTP import send_sms_in_background
 from django.db import transaction
 from .utils.password import strong_random_password
 from .utils.phone import normalize
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime, parse_date
+from rest_framework.pagination import LimitOffsetPagination
+from datetime import datetime, time
+import secrets
 import jwt, requests  # pyjwt para Apple
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests 
@@ -54,6 +60,119 @@ def resolve_user_identifier(identifier):
         return User.objects.get(pk=identifier)
     except Exception:
         return None
+
+
+N8N_SHARED_TOKEN = "n8n_9c7b2f1a5d6e4c3b"
+
+
+class IsN8NHeader(permissions.BasePermission):
+    message = "Missing X-N8N-Token header."
+
+    def has_permission(self, request, view):
+        token = request.headers.get("X-N8N-Token", "").strip()
+        if not token:
+            return False
+        if not secrets.compare_digest(token, N8N_SHARED_TOKEN):
+            self.message = "Invalid X-N8N-Token header."
+            return False
+        return True
+
+
+def _parse_bool(value: str):
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    if normalized in ("true", "1", "yes"):
+        return True
+    if normalized in ("false", "0", "no"):
+        return False
+    raise ValueError("Invalid boolean")
+
+
+def _parse_dt(value: str):
+    if not value:
+        return None
+    parsed = parse_datetime(value)
+    if parsed is None:
+        parsed_date = parse_date(value)
+        if parsed_date is None:
+            return None
+        parsed = datetime.combine(parsed_date, time.min)
+    if timezone.is_naive(parsed):
+        parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
+    return parsed
+
+
+class N8NUserPagination(LimitOffsetPagination):
+    default_limit = 200
+    max_limit = 500
+
+
+class N8NUserListView(APIView):
+    permission_classes = [IsN8NHeader]
+    authentication_classes = []
+
+    def get(self, request):
+        try:
+            qs = User.objects.all().order_by("created_at")
+
+            ids_param = request.query_params.get("ids")
+            if ids_param:
+                ids = [item.strip() for item in ids_param.split(",") if item.strip()]
+                qs = qs.filter(id__in=ids)
+
+            emails_param = request.query_params.get("emails")
+            if emails_param:
+                emails = [item.strip().lower() for item in emails_param.split(",") if item.strip()]
+                qs = qs.filter(email__in=emails)
+
+            is_active_param = request.query_params.get("is_active")
+            if is_active_param is not None:
+                try:
+                    is_active = _parse_bool(is_active_param)
+                except ValueError:
+                    return Response(
+                        {"detail": "is_active debe ser true/false/1/0."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                qs = qs.filter(is_active=is_active)
+
+            created_since = request.query_params.get("created_since")
+            if created_since:
+                parsed = _parse_dt(created_since)
+                if not parsed:
+                    return Response(
+                        {"detail": "created_since debe ser una fecha ISO válida."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                qs = qs.filter(created_at__gte=parsed)
+
+            updated_since = request.query_params.get("updated_since")
+            if updated_since:
+                parsed = _parse_dt(updated_since)
+                if not parsed:
+                    return Response(
+                        {"detail": "updated_since debe ser una fecha ISO válida."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                qs = qs.filter(updated_at__gte=parsed)
+
+            paginator = N8NUserPagination()
+            page = paginator.paginate_queryset(qs, request, view=self)
+            serializer = N8NUserSerializer(page if page is not None else qs, many=True)
+            data = [
+                item for item in serializer.data
+                if item.get("email") or item.get("phone")
+            ]
+            if page is not None:
+                return paginator.get_paginated_response(data)
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as exc:
+            print(f"❌ N8NUserListView error: {exc}")
+            return Response(
+                {"detail": "N8N users error", "error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
   
 
 class SocialLoginView(APIView):
