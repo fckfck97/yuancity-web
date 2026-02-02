@@ -1,6 +1,6 @@
 const AUTH_STORAGE_KEY = 'yuancity_auth';
 const USER_STORAGE_KEY = 'yuancity_user';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export const buildApiUrl = (path: string): string => {
     if (!path) {
         return API_BASE_URL;
@@ -8,10 +8,11 @@ export const buildApiUrl = (path: string): string => {
     if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }
-    if (path.startsWith('/')) {
-        return `${API_BASE_URL}${path}`;
+    let apiPath = path;
+    if (!path.startsWith('/api/')) {
+        apiPath = path.startsWith('/') ? `/api${path}` : `/api/${path}`;
     }
-    return `${API_BASE_URL}/${path}`;
+    return `${API_BASE_URL}${apiPath}`;
 };
 
 export interface AuthData {
