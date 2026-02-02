@@ -36,6 +36,7 @@ def annotate_reservations(queryset):
 
 
 def _is_authorized(user):
+    print(f"DEBUG AUTH: User={user.email}, Allowed={settings.WEB_ALLOWED_EMAILS}")
     if user.email and user.email.strip().lower() in settings.WEB_ALLOWED_EMAILS:
         return True
     return user.is_staff
@@ -150,7 +151,11 @@ class ProductAPIView(APIView):
             product, data=request.data, partial=False, context={'request': request}
         )
         if serializer.is_valid():
-            prod = serializer.save(vendor=user)
+            # If authorized admin and not owner, preserve original vendor
+            if product.vendor != user and _is_authorized(user):
+                prod = serializer.save()
+            else:
+                prod = serializer.save(vendor=user)
             return Response(ProductSerializer(prod, context={'request': request}).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -168,7 +173,11 @@ class ProductAPIView(APIView):
             product, data=request.data, partial=True, context={'request': request}
         )
         if serializer.is_valid():
-            prod = serializer.save()
+            # If authorized admin and not owner, preserve original vendor
+            if product.vendor != user and _is_authorized(user):
+                prod = serializer.save()
+            else:
+                prod = serializer.save(vendor=user)
             return Response(ProductSerializer(prod, context={'request': request}).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

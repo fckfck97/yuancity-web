@@ -552,6 +552,7 @@ export default function CrediMuebleDashboard() {
         {activeView === "products" && (
           <ProductsView
             products={products}
+            currentUser={user}
             isDeleting={isDeleting}
             onCreate={() => setIsAddProductModalOpen(true)}
             onEdit={handleEditProduct}
