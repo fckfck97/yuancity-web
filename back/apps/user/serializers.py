@@ -269,12 +269,25 @@ class N8NUserSerializer(serializers.ModelSerializer):
         email = str(raw).strip().lower()
         if not email:
             return None
+        
+        # Excluir correos de revisores/demo
+        if email.endswith("@yuancity.com"):
+            return None
+        
+        # Excluir correos de iCloud
         if email.endswith("@icloud.com"):
             return None
+        
+        # Excluir correos de Apple Private Relay
+        if email.endswith("@privaterelay.appleid.com"):
+            return None
+        
+        # Validar formato de email
         try:
             validate_email(email)
         except ValidationError:
             return None
+        
         return email
 
     def get_phone(self, obj):
