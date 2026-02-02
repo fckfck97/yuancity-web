@@ -242,6 +242,10 @@ def _get_cart_with_items(user):
 
 
 def _is_admin_user(user):
+    # Check if user email is in the allowed list from settings
+    if user.email and user.email.strip().lower() in settings.WEB_ALLOWED_EMAILS:
+        return True
+    
     return bool(
         getattr(user, "is_staff", False)
         or getattr(user, "is_superuser", False)
@@ -608,7 +612,7 @@ class StripeIntentView(APIView):
                 "summary": summary_payload,
             },
             status=status.HTTP_200_OK,
-        )
+            )
 
 
 class CheckoutCompleteView(APIView):
@@ -1516,7 +1520,7 @@ class AdminDashboardVendorsView(APIView):
 
         # Filtramos usuarios que son vendors o que tienen productos
         queryset = (
-            User.objects.annotate(products_count=Count("product"))
+            User.objects.annotate(products_count=Count("products"))
             .filter(Q(rol="vendor") | Q(products_count__gt=0))
             .select_related("bank_account")
             .order_by("-created_at")[:limit_value]

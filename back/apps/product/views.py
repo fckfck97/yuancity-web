@@ -1,5 +1,6 @@
 # products/views.py
 
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -32,6 +33,12 @@ def annotate_reservations(queryset):
             active_reservations.values("cart__user_id")[:1]
         ),
     )
+
+
+def _is_authorized(user):
+    if user.email and user.email.strip().lower() in settings.WEB_ALLOWED_EMAILS:
+        return True
+    return user.is_staff
 
 
 def _normalize_category_ids(category_ids):
@@ -100,7 +107,7 @@ class ProductAPIView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
             # Users only see their own products
-            if product.vendor != user and not user.is_staff:
+            if product.vendor != user and not _is_authorized(user):
                 return Response(
                     {'detail': 'Not found.'},
                     status=status.HTTP_404_NOT_FOUND
