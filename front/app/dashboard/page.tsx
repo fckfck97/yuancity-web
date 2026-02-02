@@ -16,8 +16,9 @@ import VendorsView from "./views/VendorsView";
 import OrdersView from "./views/OrdersView";
 import SupportView from "./views/SupportView";
 import ReviewsView from "./views/ReviewsView";
-import OrderDetailsModal from "./views/OrderDetailsModal";
-import ProductModal from "./views/ProductModal";
+import OrderDetailsModal from "./components/OrderDetailsModal";
+import ProductModal from "./components/ProductModal";
+import VendorDetailsModal from "./components/VendorDetailsModal";
 import { useDashboard } from "./DashboardContext";
 import StatCard from "./components/StatCard";
 
@@ -60,6 +61,8 @@ const dashboardApi = {
   getAdminSummary: () => requestApi("/payment/admin/dashboard/"),
   getOrders: () => requestApi("/payment/admin/orders/"),
   getVendors: () => requestApi("/payment/admin/vendors/"),
+  getVendorDetails: (userId: string) =>
+    requestApi(`/payment/admin/vendors/${userId}/`),
   getOrderDetails: (transactionId: string) =>
     requestApi(`/payment/admin/orders/${transactionId}/`),
   updateOrderStatus: (orderId: string, status: string) =>
@@ -108,6 +111,8 @@ export default function CrediMuebleDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<any>(null);
+  const [selectedVendor, setSelectedVendor] = useState<any>(null);
+  const [isVendorDetailsOpen, setIsVendorDetailsOpen] = useState(false);
   const [selectedOrderChat, setSelectedOrderChat] = useState<any>(null);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -301,6 +306,18 @@ export default function CrediMuebleDashboard() {
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
+    }
+  };
+
+  const handleOpenVendorDetails = async (userId: string) => {
+    try {
+      const response = await dashboardApi.getVendorDetails(userId);
+      if (response.ok && response.data) {
+        setSelectedVendor(response.data);
+        setIsVendorDetailsOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to load vendor details:", error);
     }
   };
 
@@ -542,7 +559,12 @@ export default function CrediMuebleDashboard() {
           />
         )}
 
-        {activeView === "vendors" && <VendorsView vendors={vendors} />}
+        {activeView === "vendors" && (
+          <VendorsView
+            vendors={vendors}
+            onOpenDetails={handleOpenVendorDetails}
+          />
+        )}
 
         {activeView === "orders" && (
           <OrdersView
@@ -593,6 +615,12 @@ export default function CrediMuebleDashboard() {
         onImageChange={handleImageChange}
         onRemovePreview={removeImagePreview}
         onSave={handleSaveProduct}
+      />
+      <VendorDetailsModal
+        isOpen={isVendorDetailsOpen}
+        onClose={() => setIsVendorDetailsOpen(false)}
+        vendor={selectedVendor}
+        loading={false}
       />
     </div>
   );

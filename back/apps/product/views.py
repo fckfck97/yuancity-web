@@ -143,10 +143,9 @@ class ProductAPIView(APIView):
         except Product.DoesNotExist:
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        if not (user.is_staff or product.vendor == user):
+        if not (_is_authorized(user) or product.vendor == user):
             return Response({'detail': 'Forbidden.'}, status=status.HTTP_403_FORBIDDEN)
 
-        
         serializer = ProductSerializer(
             product, data=request.data, partial=False, context={'request': request}
         )
@@ -162,7 +161,7 @@ class ProductAPIView(APIView):
         except Product.DoesNotExist:
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        if not (user.is_staff or product.vendor == user):
+        if not (_is_authorized(user) or product.vendor == user):
             return Response({'detail': 'Forbidden.'}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = ProductSerializer(

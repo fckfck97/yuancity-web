@@ -1557,6 +1557,75 @@ class AdminDashboardVendorsView(APIView):
         return Response({"vendors": data}, status=status.HTTP_200_OK)
 
 
+class AdminDashboardVendorDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk, *args, **kwargs):
+        if not _is_admin_user(request.user):
+            return Response(
+                {"detail": "No tienes permisos para ver este vendedor."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        user = get_object_or_404(
+            User.objects.annotate(products_count=Count("products")), pk=pk
+        )
+
+        # Sales stats
+        # Sales stats are tricky because orders belong to vendors via OrderItems
+        # We need to sum OrderItems where product__vendor=user
+        sales_data = (
+            OrderItem.objects.filter(product__vendor=user)
+            .aggregate(
+                total_sales_amount=Sum('vendor_earnings'),
+                total_items_sold=Sum('count')
+            )
+        )
+        
+        # Recent orders
+        recent_orders = (
+            OrderItem.objects.filter(product__vendor=user)
+            .select_related('order')
+            .order_by('-order__created_at')[:5]
+        )
+        recent_orders_data = []
+        for item in recent_orders:
+            recent_orders_data.append({
+                'order_id': str(item.order.id),
+                'transaction_id': str(item.order.transaction_id),
+                'product_name': item.product.name,
+                'amount': str(item.vendor_earnings),
+                'date': item.order.created_at,
+                'status': item.order.status
+            })
+
+        bank_info = None
+        if hasattr(user, "bank_account") and user.bank_account:
+            bank_info = {
+                "bank_name": user.bank_account.bank_name,
+                "account_type": user.bank_account.get_account_type_display(),
+                "account_number": user.bank_account.account_number,
+                "account_holder_name": user.bank_account.account_holder_name,
+                "document_type": user.bank_account.get_document_type_display(),
+                "document_number": user.bank_account.document_number,
+            }
+
+        profile_data = {
+           "user_id": str(user.id),
+           "full_name": user.full_name,
+           "email": user.email,
+           "phone": getattr(user, "phone", "N/A"),
+           "joined_at": user.created_at,
+           "products_count": user.products_count,
+           "total_sales_amount": str(sales_data.get('total_sales_amount') or 0),
+           "total_items_sold": sales_data.get('total_items_sold') or 0,
+           "bank_account": bank_info,
+           "recent_orders": recent_orders_data
+        }
+
+        return Response(profile_data, status=status.HTTP_200_OK)
+
+
 class FinanceOrderListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

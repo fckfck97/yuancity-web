@@ -3,9 +3,13 @@ import { Users, CreditCard, Search } from "lucide-react";
 
 interface VendorsViewProps {
   vendors: any[];
+  onOpenDetails: (userId: string) => void;
 }
 
-export default function VendorsView({ vendors }: VendorsViewProps) {
+export default function VendorsView({
+  vendors,
+  onOpenDetails,
+}: VendorsViewProps) {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-border/10 shadow-soft-xl">
@@ -53,7 +57,8 @@ export default function VendorsView({ vendors }: VendorsViewProps) {
                 {vendors.map((vendor: any) => (
                   <tr
                     key={vendor.user_id}
-                    className="bg-secondary/10 hover:bg-secondary/20 transition-all group"
+                    onClick={() => onOpenDetails(vendor.user_id)}
+                    className="bg-secondary/10 hover:bg-secondary/20 transition-all group cursor-pointer"
                   >
                     <td className="px-6 py-5 rounded-l-[1.5rem]">
                       <div className="font-bold text-sm text-foreground">
