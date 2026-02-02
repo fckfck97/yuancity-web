@@ -1518,10 +1518,9 @@ class AdminDashboardVendorsView(APIView):
             limit_value = 100
         limit_value = max(1, min(limit_value, 500))
 
-        # Filtramos usuarios que son vendors o que tienen productos
+        # Traemos todos los usuarios, sin filtro de rol
         queryset = (
             User.objects.annotate(products_count=Count("products"))
-            .filter(Q(rol="vendor") | Q(products_count__gt=0))
             .select_related("bank_account")
             .order_by("-created_at")[:limit_value]
         )
