@@ -15,6 +15,13 @@ class SupportTicketCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class AdminTicketListView(generics.ListAPIView):
+    serializer_class = SupportTicketSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return SupportTicket.objects.select_related('user', 'order').prefetch_related('images').order_by('-created_at')
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def chat_with_assistant(request):

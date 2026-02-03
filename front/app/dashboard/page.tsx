@@ -73,6 +73,7 @@ const dashboardApi = {
   getProducts: () => requestApi("/payment/admin/products/"),
   getReviews: () => requestApi("/payment/admin/reviews/"),
   getCategories: () => requestApi("/category/categories/list/"),
+  getSupportTickets: () => requestApi("/support/admin/tickets/"),
   getChatMessages: (transactionId: string) =>
     requestApi(`/orders/chat/${transactionId}/`),
   sendChatMessage: (transactionId: string, message: string) =>
@@ -109,6 +110,7 @@ export default function CrediMuebleDashboard() {
   const [vendors, setVendors] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [supportTickets, setSupportTickets] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<any>(null);
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
@@ -169,6 +171,7 @@ export default function CrediMuebleDashboard() {
           reviewsRes,
           productsRes,
           categoriesRes,
+          ticketsRes,
         ] = await Promise.all([
           dashboardApi.getAdminSummary(),
           dashboardApi.getOrders(),
@@ -176,6 +179,7 @@ export default function CrediMuebleDashboard() {
           dashboardApi.getReviews(),
           dashboardApi.getProducts(),
           dashboardApi.getCategories(),
+          dashboardApi.getSupportTickets(),
         ]);
 
         const hasSummary = summaryRes.ok && summaryRes.data;
@@ -280,6 +284,12 @@ export default function CrediMuebleDashboard() {
 
         if (categoriesRes.ok && categoriesRes.data) {
           setDbCategories(categoriesRes.data.results || []);
+        }
+
+        if (ticketsRes.ok && ticketsRes.data) {
+          setSupportTickets(
+            Array.isArray(ticketsRes.data) ? ticketsRes.data : [],
+          );
         }
       } catch (error) {
         console.error("Error loading dashboard data:", error);
@@ -575,21 +585,7 @@ export default function CrediMuebleDashboard() {
           />
         )}
 
-        {activeView === "support" && (
-          <SupportView
-            orders={orders}
-            selectedOrderChat={selectedOrderChat}
-            chatMessages={chatMessages}
-            newMessage={newMessage}
-            onSelectChat={(order) => {
-              setSelectedOrderChat(order);
-              setChatMessages([]);
-              fetchChatMessages(order.transaction_id);
-            }}
-            onMessageChange={setNewMessage}
-            onSendMessage={sendChatMessage}
-          />
-        )}
+        {activeView === "support" && <SupportView tickets={supportTickets} />}
 
         {activeView === "reviews" && <ReviewsView reviews={reviews} />}
       </main>

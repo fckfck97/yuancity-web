@@ -15,11 +15,14 @@ class SupportTicketSerializer(serializers.ModelSerializer):
         allow_null=True
     )
     images = SupportTicketImageSerializer(many=True, read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    order_id = serializers.CharField(source='order.transaction_id', read_only=True, allow_null=True)
 
     class Meta:
         model = SupportTicket
-        fields = ['id', 'subject', 'message', 'order', 'status', 'created_at', 'images']
-        read_only_fields = ['status', 'created_at']
+        fields = ['id', 'subject', 'message', 'order', 'order_id', 'status', 'created_at', 'updated_at', 'images', 'user_email', 'user_name']
+        read_only_fields = ['status', 'created_at', 'updated_at', 'user_email', 'user_name', 'order_id']
 
     def create(self, validated_data):
         ticket = super().create(validated_data)
