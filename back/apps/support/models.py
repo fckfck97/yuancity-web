@@ -4,7 +4,11 @@ from django.utils.translation import gettext_lazy as _
 from apps.orders.models import Order
 
 def ticket_image_upload_path(instance, filename):
-    return f"support/tickets/{instance.user.id}/{filename}"
+    if hasattr(instance, 'ticket'):
+        user_id = instance.ticket.user.id
+    else:
+        user_id = instance.user.id
+    return f"support/tickets/{user_id}/{filename}"
 
 class SupportTicket(models.Model):
     STATUS_CHOICES = (
@@ -29,6 +33,17 @@ class SupportTicket(models.Model):
 
     def __str__(self):
         return f"{self.subject} - {self.user.email}"
+
+class SupportTicketImage(models.Model):
+    ticket = models.ForeignKey(SupportTicket, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=ticket_image_upload_path)
+    
+    class Meta:
+        verbose_name = _('Support Ticket Image')
+        verbose_name_plural = _('Support Ticket Images')
+
+    def __str__(self):
+        return f"Image for ticket {self.ticket.id}"
 
 class ChatMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_messages')
