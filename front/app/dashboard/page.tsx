@@ -101,7 +101,7 @@ const normalizeChatMessage = (message: any, isLocalSender = false) => {
   };
 };
 
-export default function CrediMuebleDashboard() {
+export default function Dashboard() {
   const router = useRouter();
   const { activeView, createProductRequest } = useDashboard();
 
@@ -287,9 +287,8 @@ export default function CrediMuebleDashboard() {
         }
 
         if (ticketsRes.ok && ticketsRes.data) {
-          setSupportTickets(
-            Array.isArray(ticketsRes.data) ? ticketsRes.data : [],
-          );
+          const ticketsList = ticketsRes.data.results || ticketsRes.data;
+          setSupportTickets(Array.isArray(ticketsList) ? ticketsList : []);
         }
       } catch (error) {
         console.error("Error loading dashboard data:", error);

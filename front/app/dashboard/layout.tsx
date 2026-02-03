@@ -91,7 +91,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
               <Database size={16} />
             </div>
-            CREDIMUEBLE
+            YUAN CITY
           </div>
 
           <div className="w-9" />
