@@ -74,6 +74,11 @@ const dashboardApi = {
   getReviews: () => requestApi("/payment/admin/reviews/"),
   getCategories: () => requestApi("/category/categories/list/"),
   getSupportTickets: () => requestApi("/support/admin/tickets/"),
+  updateTicketStatus: (ticketId: number, status: string) =>
+    requestApi(`/support/admin/tickets/${ticketId}/`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
   getChatMessages: (transactionId: string) =>
     requestApi(`/orders/chat/${transactionId}/`),
   sendChatMessage: (transactionId: string, message: string) =>
@@ -373,6 +378,21 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error("Error updating order status:", error);
+    }
+  };
+
+  const updateTicketStatus = async (ticketId: number, newStatus: string) => {
+    try {
+      const res = await dashboardApi.updateTicketStatus(ticketId, newStatus);
+      if (res.ok) {
+        setSupportTickets((prev: any) =>
+          prev.map((t: any) =>
+            t.id === ticketId ? { ...t, status: newStatus } : t,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Error updating ticket status:", error);
     }
   };
 

@@ -22,6 +22,15 @@ class AdminTicketListView(generics.ListAPIView):
     def get_queryset(self):
         return SupportTicket.objects.select_related('user', 'order').prefetch_related('images').order_by('-created_at')
 
+class AdminTicketUpdateView(generics.UpdateAPIView):
+    serializer_class = SupportTicketSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = SupportTicket.objects.all()
+    lookup_field = 'id'
+    
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def chat_with_assistant(request):

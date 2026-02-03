@@ -23,12 +23,28 @@ interface SupportTicket {
 
 interface SupportViewProps {
   tickets: SupportTicket[];
+  onUpdateStatus: (ticketId: number, status: string) => Promise<void>;
 }
 
-export default function SupportView({ tickets }: SupportViewProps) {
+export default function SupportView({
+  tickets,
+  onUpdateStatus,
+}: SupportViewProps) {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
     null,
   );
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!selectedTicket || isUpdating) return;
+    setIsUpdating(true);
+    try {
+      await onUpdateStatus(selectedTicket.id, newStatus);
+      setSelectedTicket({ ...selectedTicket, status: newStatus });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -146,13 +162,44 @@ export default function SupportView({ tickets }: SupportViewProps) {
                     )}
                   </div>
                 </div>
-                <span
-                  className={`px-3 py-1.5 rounded-full border font-semibold text-xs uppercase ${getStatusColor(
-                    selectedTicket.status,
-                  )}`}
-                >
-                  {selectedTicket.status}
-                </span>
+                <div className="flex flex-col gap-2">
+                  <span
+                    className={`px-3 py-1.5 rounded-full border font-semibold text-xs uppercase text-center ${getStatusColor(
+                      selectedTicket.status,
+                    )}`}
+                  >
+                    {selectedTicket.status}
+                  </span>
+                  <div className="flex gap-1">
+                    {selectedTicket.status !== "in_progress" && (
+                      <button
+                        onClick={() => handleStatusChange("in_progress")}
+                        disabled={isUpdating}
+                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      >
+                        En Proceso
+                      </button>
+                    )}
+                    {selectedTicket.status !== "resolved" && (
+                      <button
+                        onClick={() => handleStatusChange("resolved")}
+                        disabled={isUpdating}
+                        className="px-2 py-1 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                      >
+                        Resolver
+                      </button>
+                    )}
+                    {selectedTicket.status !== "closed" && (
+                      <button
+                        onClick={() => handleStatusChange("closed")}
+                        disabled={isUpdating}
+                        className="px-2 py-1 text-xs bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                      >
+                        Cerrar
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="text-xs text-muted-foreground flex gap-4">
                 <span>Creado: {formatDate(selectedTicket.created_at)}</span>
