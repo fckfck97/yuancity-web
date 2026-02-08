@@ -259,6 +259,7 @@ class ProductHighlightsAPIView(APIView):
       .values_list('product', flat=True)[:top_limit]
     )
 
+    random_fallback_products = None
     if top_ids:
       preserved_order = Case(
         *[When(id=pk, then=pos) for pos, pk in enumerate(top_ids)],
@@ -269,27 +270,46 @@ class ProductHighlightsAPIView(APIView):
         top_products_qs, many=True, context={'request': request}
       ).data
     else:
-      top_products = []
+      # Si no hay ventas, mostrar productos al azar
+      random_fallback_products = base_qs.order_by('?')[:top_limit]
+      top_products = ProductMinimalSerializer(
+        random_fallback_products, many=True, context={'request': request}
+      ).data
 
-    top_categories = [
-      {
-        'id': str(row['product__category__id']),
-        'name': row['product__category__name'],
-        'sold_count': row['total_sold'],
-      }
-      for row in sold_items.values(
-        'product__category__id',
-        'product__category__name',
-      )
-      .annotate(total_sold=Sum('count'))
-      .order_by('-total_sold')[:categories_limit]
-      if row.get('product__category__id')
-    ]
+    if top_ids:
+      top_categories = [
+        {
+          'id': str(row['product__category__id']),
+          'name': row['product__category__name'],
+          'sold_count': row['total_sold'],
+        }
+        for row in sold_items.values(
+          'product__category__id',
+          'product__category__name',
+        )
+        .annotate(total_sold=Sum('count'))
+        .order_by('-total_sold')[:categories_limit]
+        if row.get('product__category__id')
+      ]
+    else:
+      # Sin ventas: categorías al azar (derivadas de productos al azar)
+      fallback_qs = random_fallback_products or base_qs.order_by('?')[:top_limit]
+      seen = set()
+      top_categories = []
+      for product in fallback_qs:
+        if not product.category_id or product.category_id in seen:
+          continue
+        seen.add(product.category_id)
+        top_categories.append({
+          'id': str(product.category_id),
+          'name': product.category.name,
+          'sold_count': 0,
+        })
+        if len(top_categories) >= categories_limit:
+          break
 
-    daily_offers_qs = (
-      base_qs.filter(discount_percent__gt=0)
-      .order_by('-discount_percent', '-updated_at')[:offers_limit]
-    )
+    # Ofertas diarias: últimos publicados
+    daily_offers_qs = base_qs.order_by('-created_at')[:offers_limit]
     daily_offers = ProductMinimalSerializer(
       daily_offers_qs, many=True, context={'request': request}
     ).data

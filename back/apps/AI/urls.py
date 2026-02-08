@@ -3,15 +3,13 @@ from django.urls import path
 from .views import (
     CaseDetailView,
     CaseListView,
-    ChatAPIView,
-    ClientCaseAPIView,
-    FreeCaseChatAPIView,
+    LegalChatAPIView,
+    ProductDraftChatAPIView,
 )
 
 urlpatterns = [
-    path('chat/', ChatAPIView.as_view(), name='chat-api'),
-    path('cases/', CaseListView.as_view(), name='case-list-api'),
-    path('cases/<uuid:pk>/', CaseDetailView.as_view(), name='case-detail-api'),
-    path('free_case/', FreeCaseChatAPIView.as_view(), name='free-case-chat-api'),
-    path('client_case/', ClientCaseAPIView.as_view(), name='client-case-api'),
+    path('AI/chat/', LegalChatAPIView.as_view(), name='chat-api'),
+    path('AI/cases/', CaseListView.as_view(), name='case-list-api'),
+    path('AI/cases/<uuid:pk>/', CaseDetailView.as_view(), name='case-detail-api'),
+    path('assistant/product-draft/chat/', ProductDraftChatAPIView.as_view(), name='product-draft-chat-api'),
 ]

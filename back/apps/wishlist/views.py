@@ -11,7 +11,7 @@ class GetItemsView(APIView):
         user = self.request.user
 
         try:
-            wishlist = WishList.objects.get(user=user)
+            wishlist, _ = WishList.objects.get_or_create(user=user)
             wishlist_items = WishListItem.objects.filter(wishlist=wishlist)
             result = []
 
@@ -55,7 +55,7 @@ class AddItemView(APIView):
                 )
 
             product = Product.objects.get(id=product_id)
-            wishlist = WishList.objects.get(user=user)
+            wishlist, _ = WishList.objects.get_or_create(user=user)
 
             if WishListItem.objects.filter(wishlist=wishlist, product=product).exists():
                 return Response(
@@ -120,7 +120,7 @@ class GetItemTotalView(APIView):
         user = self.request.user
 
         try:
-            wishlist = WishList.objects.get(user=user)
+            wishlist, _ = WishList.objects.get_or_create(user=user)
             total_items = wishlist.total_items
 
             return Response(
@@ -148,7 +148,7 @@ class RemoveItemView(APIView):
             )
 
         try:
-            wishlist = WishList.objects.get(user=user)
+            wishlist, _ = WishList.objects.get_or_create(user=user)
             if not Product.objects.filter(id=product_id).exists():
                 return Response(
                     {'error': 'Product with this ID does not exist'},
@@ -204,7 +204,7 @@ class CheckItemView(APIView):
         user = self.request.user
 
         try:
-            wishlist = WishList.objects.get(user=user)
+            wishlist, _ = WishList.objects.get_or_create(user=user)
             in_wishlist = WishListItem.objects.filter(
                 wishlist=wishlist,
                 product__id=product_id

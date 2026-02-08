@@ -1,6 +1,6 @@
 # memory.py
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain.schema import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from apps.AI.models import ChatMessage
 
 session_memories = {}

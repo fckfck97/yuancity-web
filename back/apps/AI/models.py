@@ -69,3 +69,14 @@ class ClientCase(models.Model):
 
         verbose_name = "Caso del Cliente"
         verbose_name_plural = "Casos de Clientes"
+
+class ProductDraftConversation(models.Model):
+    conversation_id = models.CharField(max_length=64, unique=True)
+    draft = models.JSONField(default=dict)
+    next_field = models.CharField(max_length=20, default="nombre")
+    is_complete = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Conversación de borrador de producto"
+        verbose_name_plural = "Conversaciones de borrador de producto"
