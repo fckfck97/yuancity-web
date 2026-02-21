@@ -254,7 +254,7 @@ def _examples_gallery(examples: list) -> str:
               </td>
             </tr>
             <tr>
-              <td align="left" style="padding:12px;">
+              <td align="center" style="padding:12px;">
                 <p style="margin:0 0 4px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:11px;line-height:14px;font-weight:600;color:#6b7280;text-transform:uppercase;">
                   {item.get("category", "General")}
                 </p>
@@ -273,7 +273,7 @@ def _examples_gallery(examples: list) -> str:
     return f"""
 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f9fafb;padding:32px 20px;">
   <tr>
-    <td>
+    <td align="center">
       <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
           <td style="padding:0 0 24px;text-align:center;">
@@ -304,14 +304,16 @@ def _feature_row(icon: str, title: str, text: str) -> str:
       <td style="padding:8px 20px;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:1px solid #f3f4f6;border-radius:12px;padding:16px;">
           <tr>
-            <td width="48" align="center" style="padding:0 12px 0 0;">
-              <table cellpadding="0" cellspacing="0" border="0" width="40" height="40" style="width:40px;height:40px;background:#eff6ff;border-radius:10px;">
+            <td width="48" align="center" style="padding:0 12px 0 0;vertical-align:middle;">
+              <table cellpadding="0" cellspacing="0" border="0" width="44" height="44" style="width:44px;height:44px;background:#eff6ff;border-radius:50%;border-collapse:separate;">
                 <tr>
-                  <td align="center" valign="middle" style="text-align:center;vertical-align:middle;font-size:20px;line-height:20px;mso-line-height-rule:exactly;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">{icon}</td>
+                  <td align="center" valign="middle" style="text-align:center;vertical-align:middle;font-size:20px;line-height:44px;mso-line-height-rule:exactly;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">
+                    {icon}
+                  </td>
                 </tr>
               </table>
             </td>
-            <td>
+            <td align="left">
               <p style="margin:0 0 2px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:700;color:#111827;">
                 {title}
               </p>
@@ -324,7 +326,6 @@ def _feature_row(icon: str, title: str, text: str) -> str:
       </td>
     </tr>
 """
-
 
 def _build_stage_html(
     preheader: str,
@@ -398,8 +399,8 @@ def _build_stage_html(
         <!-- Header minimal -->
         <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="background:#ffffff;border-radius:16px 16px 0 0;">
           <tr>
-            <td align="left" style="padding:32px 40px 16px;">
-              <img src="{{{{logo_url}}}}" alt="{{{{company_name}}}}" width="140" style="display:block;width:140px;height:auto;">
+            <td align="center" style="padding:40px 40px 16px;">
+              <img src="{{{{logo_url}}}}" alt="{{{{company_name}}}}" width="160" style="display:block;width:160px;height:auto;margin:0 auto;">
             </td>
           </tr>
         </table>
@@ -407,7 +408,7 @@ def _build_stage_html(
         <!-- Contenido principal -->
         <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="background:#ffffff;">
           <tr>
-            <td class="mobile-padding" style="padding:16px 40px 32px;text-align:left;">
+            <td class="mobile-padding" style="padding:16px 40px 32px;text-align:center;">
               <p style="margin:0 0 16px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#6b7280;font-weight:500;">
                 {greeting}
               </p>
