@@ -980,6 +980,7 @@ class N8NUserAdvanceView(APIView):
         """
         Envía notificación push al usuario basada en el stage actual.
         Valida que el usuario tenga tokens activos antes de enviar.
+        Usa templates específicos para push (sin URLs).
         """
         try:
             # Validar que el usuario tenga tokens de push activos
@@ -988,23 +989,26 @@ class N8NUserAdvanceView(APIView):
                 print(f"ℹ️ Usuario {user.id} sin tokens push activos, omitiendo notificación")
                 return
 
-            # Extraer título y cuerpo del payload
-            subject = payload.get("subject", "")
-            sms_text = payload.get("sms_text", "")
+            # Importar función de templates de push
+            from apps.utils.yuancity_stage_templates import build_stage_push_notification
             
-            # Limpiar emojis del subject para el título
-            import re
-            title = re.sub(r'[^\w\s\-\.,!¿?¡:]', '', subject).strip()
-            if not title:
-                title = "Nuevo contenido en YuanCity"
+            # Obtener nombre del usuario
+            user_name = f"{user.first_name} {user.last_name}".strip().title()
             
-            # Usar el texto SMS como cuerpo (más corto y directo)
-            body = sms_text or "Tenemos algo especial para ti"
+            # Construir notificación push usando template específico
+            stage = payload.get("stage", 0)
+            push_notification = build_stage_push_notification(
+                stage=stage,
+                user_name=user_name,
+            )
+            
+            title = push_notification.get("title", "Nuevo contenido en YuanCity")
+            body = push_notification.get("body", "Tenemos algo especial para ti")
             
             # Preparar datos adicionales para la notificación
             push_data = {
                 "type": "stage_update",
-                "stage": payload.get("stage", 0),
+                "stage": stage,
                 "user_id": str(user.id),
             }
             
@@ -1016,7 +1020,7 @@ class N8NUserAdvanceView(APIView):
                 user=user,
             )
             
-            print(f"✅ Notificación push enviada a usuario {user.id} (stage {payload.get('stage', 0)})")
+            print(f"✅ Notificación push enviada a usuario {user.id} (stage {stage})")
             
         except Exception as exc:
             # No fallar el proceso completo si falla el push

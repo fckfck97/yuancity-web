@@ -582,6 +582,64 @@ STAGES = {
 }
 
 
+# Templates específicos para notificaciones push (sin URLs, más directos y concisos)
+PUSH_STAGES = {
+    0: {
+        "title": "Bienvenido a YuanCity",
+        "body": "{{user_name}}, gracias por unirte. Explora productos exclusivos y encuentra lo que buscas.",
+    },
+    1: {
+        "title": "Lo más vendido esta semana",
+        "body": "{{user_name}}, descubre los productos que todos están comprando ahora mismo.",
+    },
+    2: {
+        "title": "Nuevos productos disponibles",
+        "body": "{{user_name}}, acabamos de recibir productos frescos que te encantarán.",
+    },
+    3: {
+        "title": "Ofertas especiales para ti",
+        "body": "{{user_name}}, precios increíbles por tiempo limitado. ¡No te los pierdas!",
+    },
+    4: {
+        "title": "Mejora tu experiencia",
+        "body": "{{user_name}}, descubre herramientas exclusivas para comprar de forma más inteligente.",
+    },
+    5: {
+        "title": "Te extrañamos",
+        "body": "{{user_name}}, hemos renovado nuestro catálogo. Vuelve y descubre las novedades.",
+    },
+}
+
+
+def build_stage_push_notification(
+    stage: int,
+    user_name: str = "",
+) -> dict:
+    """
+    Construye una notificación push específica para un stage.
+    Retorna un diccionario con 'title' y 'body' sin URLs ni elementos complejos.
+    """
+    push_data = PUSH_STAGES.get(stage, PUSH_STAGES[0])
+    
+    # Reemplazar nombre de usuario si existe
+    title = push_data.get("title", "").replace("{{user_name}}", user_name)
+    body = push_data.get("body", "").replace("{{user_name}}", user_name)
+    
+    # Limpiar marcadores no reemplazados
+    title = title.replace("{{user_name}}", "").strip()
+    body = body.replace("{{user_name}}", "").strip()
+    
+    # Ajustar puntuación si se eliminó el nombre
+    if body.startswith(", "):
+        body = body[2:].strip()
+        body = body[0].upper() + body[1:] if body else ""
+    
+    return {
+        "title": title or "Nuevo contenido en YuanCity",
+        "body": body or "Tenemos algo especial para ti",
+    }
+
+
 def build_stage_message_payload(
     stage: int,
     user_name: str = "",
