@@ -161,7 +161,7 @@ export default function DownloadApp() {
                 </a>
 
                 <a
-                  href="https://apps.apple.com/app/idXXXXXXXXX"
+                  href="https://apps.apple.com/co/app/yuan-city/id6755722239?l=es"
                   target="_blank"
                   rel="noreferrer"
                   className="group bg-white text-black border-4 border-border shadow-brutal hover:shadow-brutal-lg transition-all flex items-center justify-center gap-3 px-6 py-3 font-bold"

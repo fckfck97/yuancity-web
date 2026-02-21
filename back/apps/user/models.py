@@ -11,7 +11,7 @@ from apps.wishlist.models import WishList
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-
+from django.utils import timezone
 
 def user_avatar_path(instance, filename):
     """
@@ -83,7 +83,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     subscription = models.CharField(max_length=10, choices=SUBSCRIPTION_CHOICES, default='standard')
 
     otp          = models.CharField(max_length=8, blank=True, null=True)
-
+    stage = models.PositiveSmallIntegerField(default=0)
+    next_send_at = models.DateTimeField(blank=True, null=True)
+    last_sent_at = models.DateTimeField(blank=True, null=True)
+    consent_notifications = models.BooleanField(default=True)
     objects      = UserAccountManager()
 
     USERNAME_FIELD  = 'email'
@@ -107,6 +110,45 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         self.otp = code
         self.save(update_fields=['otp'])
         return code
+
+
+    
+    def schedule_first(self):
+        """Programa el primer mensaje de onboarding si el usuario dio consentimiento"""
+        if self.consent_notifications:
+            self.stage = 0
+            self.next_send_at = timezone.now()
+            self.save(update_fields=['stage', 'next_send_at'])
+
+    def advance_schedule(self):
+        """Avanza al siguiente stage con los delays configurados"""
+        from datetime import timedelta
+        
+        now = timezone.now()
+        self.last_sent_at = now
+
+        delays = {
+            0: timedelta(days=1),
+            1: timedelta(days=2),
+            2: timedelta(days=3),
+            3: timedelta(days=4),
+            4: timedelta(days=4),
+            5: None,
+        }
+
+        if self.stage >= 6:
+            self.next_send_at = None
+            return
+
+        if self.stage in delays and delays[self.stage] is None:
+            self.stage = 6
+            self.next_send_at = None
+            return
+
+        delay = delays.get(self.stage, timedelta(days=7))
+        self.stage = min(self.stage + 1, 6)
+        self.next_send_at = now + delay
+        self.save(update_fields=['stage', 'next_send_at', 'last_sent_at'])
 
 
 class UserProfile(models.Model):

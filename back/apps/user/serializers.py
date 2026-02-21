@@ -3,7 +3,7 @@ from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
+from apps.utils.yuancity_stage_templates import build_stage_message_payload
 from .models import UserAccount as User, LoginLog, UserProfile, UserFollow
 from .data.colombia_locations import (
     is_valid_location,
@@ -243,73 +243,99 @@ class PublicProfileSerializer(serializers.Serializer):
     location = serializers.CharField(allow_blank=True, required=False)
 
 
-class N8NUserSerializer(serializers.ModelSerializer):
+
+class N8NUserStageSerializer(serializers.ModelSerializer):
+    """Serializer para stages de mensajes automáticos a usuarios"""
     full_name = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
-    phone = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
+    message = serializers.SerializerMethodField()
+    html = serializers.SerializerMethodField()
+    sms_text = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = (
-            "full_name",
-            "email",
-            "phone",
-        )
+        fields = [
+            'id',
+            'email',
+            'phone',
+            'full_name',
+            'consent_notifications',
+            'created_at',
+            'stage',
+            'next_send_at',
+            'last_sent_at',
+            'subject',
+            'message',
+            'html',
+            'sms_text',
+        ]
 
     def get_full_name(self, obj):
         first = (obj.first_name or "").strip()
         last = (obj.last_name or "").strip()
         full = f"{first} {last}".strip()
-        return full or ""
+        return full.title() if full else ""
 
-    def get_email(self, obj):
-        raw = obj.email
-        if raw is None:
-            return None
-        email = str(raw).strip().lower()
-        if not email:
-            return None
-        
-        # Excluir correos de revisores/demo
-        if email.endswith("@yuancity.com"):
-            return None
-        
-        # Excluir correos de iCloud
-        if email.endswith("@icloud.com"):
-            return None
-        
-        # Excluir correos de Apple Private Relay
-        if email.endswith("@privaterelay.appleid.com"):
-            return None
-        
-        # Validar formato de email
-        try:
-            validate_email(email)
-        except ValidationError:
-            return None
-        
-        return email
+    def _payload(self, obj):
+        user_name = self.get_full_name(obj)
+        return build_stage_message_payload(
+            obj.stage,
+            user_name=user_name,
+            user_email=(obj.email or "").strip(),
+            user_id=str(obj.id)
+        )
 
-    def get_phone(self, obj):
-        raw = obj.phone
-        if raw is None:
-            return None
-        phone = str(raw).strip()
-        if not phone:
-            return None
-        normalized = normalize_phone(phone)
-        if not normalized:
-            return None
-        if len(normalized) == 10 and not normalized.startswith("57"):
-            normalized = f"57{normalized}"
-        return f"+{normalized}"
 
+    def get_subject(self, obj):
+        return self._payload(obj).get('subject', '')
+
+    def get_message(self, obj):
+        return self._payload(obj).get('sms_text', '')
+
+    def get_html(self, obj):
+        return self._payload(obj).get('html', '')
+
+    def get_sms_text(self, obj):
+        return self._payload(obj).get('sms_text', '')
+    
     def to_representation(self, instance):
+        # Verificar si el usuario ha completado nombre y apellido
+        first = (instance.first_name or "").strip()
+        last = (instance.last_name or "").strip()
+        full_name = f"{first} {last}".strip()
+        
+        # No incluir usuario si no tiene nombre completo
+        if not full_name:
+            return None
+        
         data = super().to_representation(instance)
+        
+        # Validar y limpiar email
+        email = data.get('email')
+        if email:
+            email = str(email).strip().lower()
+            # Excluir correos de revisores/demo
+            if email.endswith("@yuancity.com"):
+                data.pop('email', None)
+            # Excluir correos de iCloud
+            elif email.endswith("@icloud.com"):
+                data.pop('email', None)
+            # Excluir correos de Apple Private Relay
+            elif email.endswith("@privaterelay.appleid.com"):
+                data.pop('email', None)
+            else:
+                # Validar formato de email
+                try:
+                    validate_email(email)
+                    data['email'] = email
+                except ValidationError:
+                    data.pop('email', None)
+        
         # Omite email/phone vacíos, conserva full_name
         for key in ("email", "phone"):
             if data.get(key) in (None, ""):
                 data.pop(key, None)
+        
         return data
 
 

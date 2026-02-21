@@ -9,7 +9,7 @@ from .serializers import (
     PublicProfileSerializer,
     FollowActionSerializer,
     FollowListEntrySerializer,
-    N8NUserSerializer,
+    N8NUserStageSerializer,
 )
 from django.conf import settings
 from django.core.mail import send_mail
@@ -48,6 +48,7 @@ from .models import LoginLog
 from .utils.push import send_push
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
+from apps.utils.yuancity_stage_templates import build_stage_output
 def normalize_email(email: str) -> str:
     return email.strip().lower()
 
@@ -60,120 +61,6 @@ def resolve_user_identifier(identifier):
         return User.objects.get(pk=identifier)
     except Exception:
         return None
-
-
-N8N_SHARED_TOKEN = "n8n_9c7b2f1a5d6e4c3b"
-
-
-class IsN8NHeader(permissions.BasePermission):
-    message = "Missing X-N8N-Token header."
-
-    def has_permission(self, request, view):
-        token = request.headers.get("X-N8N-Token", "").strip()
-        if not token:
-            return False
-        if not secrets.compare_digest(token, N8N_SHARED_TOKEN):
-            self.message = "Invalid X-N8N-Token header."
-            return False
-        return True
-
-
-def _parse_bool(value: str):
-    if value is None:
-        return None
-    normalized = value.strip().lower()
-    if normalized in ("true", "1", "yes"):
-        return True
-    if normalized in ("false", "0", "no"):
-        return False
-    raise ValueError("Invalid boolean")
-
-
-def _parse_dt(value: str):
-    if not value:
-        return None
-    parsed = parse_datetime(value)
-    if parsed is None:
-        parsed_date = parse_date(value)
-        if parsed_date is None:
-            return None
-        parsed = datetime.combine(parsed_date, time.min)
-    if timezone.is_naive(parsed):
-        parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
-    return parsed
-
-
-class N8NUserPagination(LimitOffsetPagination):
-    default_limit = 200
-    max_limit = 500
-
-
-class N8NUserListView(APIView):
-    permission_classes = [IsN8NHeader]
-    authentication_classes = []
-
-    def get(self, request):
-        try:
-            qs = User.objects.all().order_by("created_at")
-
-            ids_param = request.query_params.get("ids")
-            if ids_param:
-                ids = [item.strip() for item in ids_param.split(",") if item.strip()]
-                qs = qs.filter(id__in=ids)
-
-            emails_param = request.query_params.get("emails")
-            if emails_param:
-                emails = [item.strip().lower() for item in emails_param.split(",") if item.strip()]
-                qs = qs.filter(email__in=emails)
-
-            is_active_param = request.query_params.get("is_active")
-            if is_active_param is not None:
-                try:
-                    is_active = _parse_bool(is_active_param)
-                except ValueError:
-                    return Response(
-                        {"detail": "is_active debe ser true/false/1/0."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                qs = qs.filter(is_active=is_active)
-
-            created_since = request.query_params.get("created_since")
-            if created_since:
-                parsed = _parse_dt(created_since)
-                if not parsed:
-                    return Response(
-                        {"detail": "created_since debe ser una fecha ISO válida."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                qs = qs.filter(created_at__gte=parsed)
-
-            updated_since = request.query_params.get("updated_since")
-            if updated_since:
-                parsed = _parse_dt(updated_since)
-                if not parsed:
-                    return Response(
-                        {"detail": "updated_since debe ser una fecha ISO válida."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                qs = qs.filter(updated_at__gte=parsed)
-
-            paginator = N8NUserPagination()
-            page = paginator.paginate_queryset(qs, request, view=self)
-            serializer = N8NUserSerializer(page if page is not None else qs, many=True)
-            data = [
-                item for item in serializer.data
-                if item.get("email") or item.get("phone")
-            ]
-            if page is not None:
-                return paginator.get_paginated_response(data)
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as exc:
-            print(f"❌ N8NUserListView error: {exc}")
-            return Response(
-                {"detail": "N8N users error", "error": str(exc)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-  
 
 class SocialLoginView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -910,3 +797,349 @@ class AccountDeleteView(APIView):
             raise Http404
         request.user.delete()
         return Response(status=204)
+
+
+
+N8N_SHARED_TOKEN = "n8n_9c7b2f1a5d6e4c3b"
+class IsN8NHeader(permissions.BasePermission):
+    message = "Missing X-N8N-Token header."
+
+    def has_permission(self, request, view):
+        token = request.headers.get("X-N8N-Token", "").strip()
+        if not token:
+            return False
+        if not secrets.compare_digest(token, N8N_SHARED_TOKEN):
+            self.message = "Invalid X-N8N-Token header."
+            return False
+        return True
+
+class N8NUserPagination(LimitOffsetPagination):
+    default_limit = 200
+    max_limit = 500
+
+
+
+class N8NUserStageListView(APIView):
+    """
+    Vista unificada para obtener usuarios con todos sus datos de stage.
+    Devuelve la lista completa de usuarios con email/phone + datos de stage (subject, html, sms).
+    
+    Parámetros opcionales:
+    - pending_only: Si es 'true', solo devuelve usuarios con mensajes pendientes
+    - updated_since: Filtrar por fecha de actualización
+    """
+    permission_classes = [IsN8NHeader]
+    authentication_classes = []
+
+    def get(self, request):
+        try:
+            now = timezone.now()
+            
+            # Iniciar con todos los usuarios activos que tienen nombre completo
+            qs = User.objects.filter(
+                is_active=True,
+                first_name__isnull=False,
+                last_name__isnull=False,
+            ).exclude(first_name='').exclude(last_name='')
+            
+            # Filtro opcional: solo usuarios con mensajes pendientes
+            pending_only = request.GET.get('pending_only', '').lower() == 'true'
+            if pending_only:
+                qs = qs.filter(
+                    consent_notifications=True,
+                    next_send_at__isnull=False,
+                    next_send_at__lte=now,
+                    stage__lt=6,
+                )
+            
+            # Filtro por fecha de actualización
+            updated_since = request.GET.get('updated_since')
+            if updated_since:
+                try:
+                    parsed = parse_datetime(updated_since)
+                    if not parsed:
+                        return Response(
+                            {"detail": "updated_since debe ser una fecha ISO válida."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    qs = qs.filter(updated_at__gte=parsed)
+                except Exception:
+                    return Response(
+                        {"detail": "updated_since debe ser una fecha ISO válida."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            
+            # Ordenar por fecha de próximo envío o creación
+            qs = qs.order_by('-next_send_at', '-created_at')
+
+            # Paginación
+            paginator = N8NUserPagination()
+            page = paginator.paginate_queryset(qs, request, view=self)
+            serializer = N8NUserStageSerializer(page if page is not None else qs, many=True)
+            
+            # Filtrar usuarios sin email ni phone
+            data = [
+                item for item in serializer.data
+                if item and (item.get("email") or item.get("phone"))
+            ]
+            
+            if page is not None:
+                return paginator.get_paginated_response(data)
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as exc:
+            print(f"❌ N8NUserStageListView error: {exc}")
+            return Response(
+                {"detail": "N8N user stages error", "error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class N8NUserAdvanceView(APIView):
+    """Vista para avanzar al siguiente stage de un usuario y enviar notificación push"""
+    permission_classes = [IsN8NHeader]
+    authentication_classes = []
+
+    def post(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+
+            # Si ya completó todos los stages (6), verificar si han pasado 3 días para reiniciar
+            if user.stage >= 6 and user.last_sent_at:
+                now = timezone.now()
+                days_since_last = (now - user.last_sent_at).days
+                if days_since_last >= 3:
+                    # Reiniciar el ciclo
+                    user.stage = 0
+                    user.next_send_at = now
+                    user.save(update_fields=["stage", "next_send_at"])
+                    
+                    user_name = f"{user.first_name} {user.last_name}".strip().title()
+                    payload = build_stage_output(
+                        {
+                            "id": str(user.id),
+                            "email": user.email,
+                            "phone": user.phone,
+                            "stage": user.stage,
+                            "next_send_at": user.next_send_at.isoformat() if user.next_send_at else None,
+                            "last_sent_at": user.last_sent_at.isoformat() if user.last_sent_at else None,
+                        },
+                        user_name=user_name,
+                    )
+                    
+                    # Enviar notificación push al reiniciar
+                    self._send_stage_push_notification(user, payload, restarted=True)
+                    
+                    return Response(
+                        {
+                            **payload,
+                            "restarted": True,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    # No han pasado 3 días aún
+                    return Response(
+                        {
+                            "detail": f"Ciclo completado. Reinicio disponible en {3 - days_since_last} días.",
+                            "id": str(user.id),
+                            "stage": user.stage,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+
+            # Avanzar al siguiente stage
+            user.advance_schedule()
+            
+            user_name = f"{user.first_name} {user.last_name}".strip().title()
+            payload = build_stage_output(
+                {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "phone": user.phone,
+                    "stage": user.stage,
+                    "next_send_at": user.next_send_at.isoformat() if user.next_send_at else None,
+                    "last_sent_at": user.last_sent_at.isoformat() if user.last_sent_at else None,
+                },
+                user_name=user_name,
+            )
+            
+            # Enviar notificación push
+            self._send_stage_push_notification(user, payload)
+
+            return Response(payload, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as exc:
+            print(f"❌ N8NUserAdvanceView error: {exc}")
+            return Response(
+                {"detail": "error", "error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def _send_stage_push_notification(self, user: User, payload: dict, restarted: bool = False) -> None:
+        """
+        Envía notificación push al usuario basada en el stage actual.
+        Valida que el usuario tenga tokens activos antes de enviar.
+        """
+        try:
+            # Validar que el usuario tenga tokens de push activos
+            has_active_tokens = user.push_tokens.filter(active=True).exists()
+            if not has_active_tokens:
+                print(f"ℹ️ Usuario {user.id} sin tokens push activos, omitiendo notificación")
+                return
+
+            # Extraer título y cuerpo del payload
+            subject = payload.get("subject", "")
+            sms_text = payload.get("sms_text", "")
+            
+            # Limpiar emojis del subject para el título
+            import re
+            title = re.sub(r'[^\w\s\-\.,!¿?¡:]', '', subject).strip()
+            if not title:
+                title = "Nuevo contenido en YuanCity"
+            
+            # Usar el texto SMS como cuerpo (más corto y directo)
+            body = sms_text or "Tenemos algo especial para ti"
+            
+            # Preparar datos adicionales para la notificación
+            push_data = {
+                "type": "stage_update",
+                "stage": payload.get("stage", 0),
+                "user_id": str(user.id),
+            }
+            
+            # Enviar notificación push
+            send_push(
+                title=title,
+                body=body,
+                data=push_data,
+                user=user,
+            )
+            
+            print(f"✅ Notificación push enviada a usuario {user.id} (stage {payload.get('stage', 0)})")
+            
+        except Exception as exc:
+            # No fallar el proceso completo si falla el push
+            print(f"⚠️ Error al enviar push a usuario {user.id}: {exc}")
+
+
+class UnsubscribeView(APIView):
+    """Vista pública para darse de baja de notificaciones por email"""
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    @staticmethod
+    def _extract_identifiers(request):
+        email = (request.GET.get('email') or request.data.get('email') or '').strip()
+        user_id = (
+            request.GET.get('id')
+            or request.GET.get('user_id')
+            or request.GET.get('uid')
+            or request.data.get('id')
+            or request.data.get('user_id')
+            or request.data.get('uid')
+            or ''
+        )
+        user_id = str(user_id).strip()
+        return email, user_id
+
+    def get(self, request):
+        """
+        GET /api/user/unsubscribe/?email=user@example.com
+        o
+        GET /api/user/unsubscribe/?id=uuid
+        """
+        email, user_id = self._extract_identifiers(request)
+
+        if not email and not user_id:
+            return Response(
+                {"detail": "Se requiere email o id"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if user_id:
+                user = User.objects.get(pk=user_id)
+            else:
+                user = User.objects.get(email__iexact=email)
+
+            # Verificar si ya está desuscrito
+            if not user.consent_notifications:
+                return Response(
+                    {
+                        "detail": "Ya estás desuscrito",
+                        "id": str(user.id),
+                        "email": user.email,
+                        "unsubscribed": True
+                    },
+                    status=status.HTTP_200_OK
+                )
+
+            return Response(
+                {
+                    "detail": "Usuario encontrado",
+                    "id": str(user.id),
+                    "email": user.email,
+                    "full_name": f"{user.first_name} {user.last_name}".strip(),
+                    "unsubscribed": False
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Usuario no encontrado"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as exc:
+            print(f"❌ UnsubscribeView GET error: {exc}")
+            return Response(
+                {"detail": "Error al procesar solicitud", "error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        """
+        POST /api/user/unsubscribe/
+        Body: { "email": "user@example.com" } o { "id": "uuid" }
+        """
+        email, user_id = self._extract_identifiers(request)
+
+        if not email and not user_id:
+            return Response(
+                {"detail": "Se requiere email o id"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if user_id:
+                user = User.objects.get(pk=user_id)
+            else:
+                user = User.objects.get(email__iexact=email)
+
+            # Desuscribir al usuario
+            user.consent_notifications = False
+            user.next_send_at = None
+            user.save(update_fields=['consent_notifications', 'next_send_at'])
+
+            return Response(
+                {
+                    "detail": "Te has desuscrito exitosamente",
+                    "id": str(user.id),
+                    "email": user.email,
+                    "unsubscribed": True
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Usuario no encontrado"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as exc:
+            print(f"❌ UnsubscribeView POST error: {exc}")
+            return Response(
+                {"detail": "Error al desuscribir", "error": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
