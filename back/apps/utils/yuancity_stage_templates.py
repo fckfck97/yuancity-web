@@ -305,9 +305,11 @@ def _feature_row(icon: str, title: str, text: str) -> str:
         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:1px solid #f3f4f6;border-radius:12px;padding:16px;">
           <tr>
             <td width="48" align="center" style="padding:0 12px 0 0;">
-              <span style="display:inline-block;width:40px;height:40px;background:#eff6ff;border-radius:10px;text-align:center;line-height:40px;font-size:20px;">
-                {icon}
-              </span>
+              <table cellpadding="0" cellspacing="0" border="0" width="40" height="40" style="width:40px;height:40px;background:#eff6ff;border-radius:10px;">
+                <tr>
+                  <td align="center" valign="middle" style="text-align:center;vertical-align:middle;font-size:20px;line-height:20px;mso-line-height-rule:exactly;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">{icon}</td>
+                </tr>
+              </table>
             </td>
             <td>
               <p style="margin:0 0 2px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:700;color:#111827;">
