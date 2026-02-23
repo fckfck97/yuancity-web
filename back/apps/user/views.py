@@ -823,17 +823,41 @@ class N8NUserStageListView(APIView):
     """
     Vista unificada para obtener usuarios con todos sus datos de stage.
     Devuelve la lista completa de usuarios con email/phone + datos de stage (subject, html, sms).
-    
+
+    Nota: los usuarios que ya completaron el ciclo (stage >= 6) se excluyen
+    completamente de la respuesta para evitar reenvíos involuntarios. Después
+    de 3 días de haber alcanzado el stage 6, el ciclo se reinicia a 0
+    automáticamente en la misma petición GET.
+
     Parámetros opcionales:
     - pending_only: Si es 'true', solo devuelve usuarios con mensajes pendientes
     - updated_since: Filtrar por fecha de actualización
     """
     permission_classes = [IsN8NHeader]
     authentication_classes = []
+    STAGE_RESTART_AFTER_DAYS = 3
+
+    def _restart_completed_cycles_if_due(self, now):
+        """Reinicia en stage 0 usuarios que completaron el ciclo hace >= N días."""
+        restart_before = now - timedelta(days=self.STAGE_RESTART_AFTER_DAYS)
+        due_users = User.objects.filter(
+            is_active=True,
+            consent_notifications=True,
+            stage__gte=6,
+            last_sent_at__isnull=False,
+            last_sent_at__lte=restart_before,
+        ).only("id", "stage", "next_send_at", "last_sent_at")
+
+        restarted = 0
+        for user in due_users:
+            user.restart_stage_cycle(now=now)
+            restarted += 1
+        return restarted
 
     def get(self, request):
         try:
             now = timezone.now()
+            self._restart_completed_cycles_if_due(now)
             
             # Iniciar con todos los usuarios activos que tienen nombre completo
             qs = User.objects.filter(
@@ -841,7 +865,12 @@ class N8NUserStageListView(APIView):
                 first_name__isnull=False,
                 last_name__isnull=False,
             ).exclude(first_name='').exclude(last_name='')
-            
+
+            # Nunca devolvemos usuarios que ya completaron el ciclo (stage >= 6).
+            # De esta forma N8N no los reenviará accidentalmente antes de que
+            # pasen los 3 días y se reinicien automáticamente en stage 0.
+            qs = qs.filter(stage__lt=6)
+
             # Filtro opcional: solo usuarios con mensajes pendientes
             pending_only = request.GET.get('pending_only', '').lower() == 'true'
             if pending_only:
@@ -849,7 +878,7 @@ class N8NUserStageListView(APIView):
                     consent_notifications=True,
                     next_send_at__isnull=False,
                     next_send_at__lte=now,
-                    stage__lt=6,
+                    # stage__lt=6 ya aplicado arriba
                 )
             
             # Filtro por fecha de actualización
@@ -892,7 +921,6 @@ class N8NUserStageListView(APIView):
                 {"detail": "N8N user stages error", "error": str(exc)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
 
 class N8NUserAdvanceView(APIView):
     """Vista para avanzar al siguiente stage de un usuario y enviar notificación push"""
@@ -977,54 +1005,51 @@ class N8NUserAdvanceView(APIView):
             )
 
     def _send_stage_push_notification(self, user: User, payload: dict, restarted: bool = False) -> None:
-        """
-        Envía notificación push al usuario basada en el stage actual.
-        Valida que el usuario tenga tokens activos antes de enviar.
-        Usa templates específicos para push (sin URLs).
-        """
-        try:
-            # Validar que el usuario tenga tokens de push activos
-            has_active_tokens = user.push_tokens.filter(active=True).exists()
-            if not has_active_tokens:
-                print(f"ℹ️ Usuario {user.id} sin tokens push activos, omitiendo notificación")
-                return
+      try:
+          has_active_tokens = user.push_tokens.filter(active=True).exists()
+          if not has_active_tokens:
+              print(f"ℹ️ Usuario {user.id} sin tokens push activos, omitiendo notificación")
+              return
 
-            # Importar función de templates de push
-            from apps.utils.yuancity_stage_templates import build_stage_push_notification
-            
-            # Obtener nombre del usuario
-            user_name = f"{user.first_name} {user.last_name}".strip().title()
-            
-            # Construir notificación push usando template específico
-            stage = payload.get("stage", 0)
-            push_notification = build_stage_push_notification(
-                stage=stage,
-                user_name=user_name,
-            )
-            
-            title = push_notification.get("title", "Nuevo contenido en YuanCity")
-            body = push_notification.get("body", "Tenemos algo especial para ti")
-            
-            # Preparar datos adicionales para la notificación
-            push_data = {
-                "type": "stage_update",
-                "stage": stage,
-                "user_id": str(user.id),
-            }
-            
-            # Enviar notificación push
-            send_push(
-                title=title,
-                body=body,
-                data=push_data,
-                user=user,
-            )
-            
-            print(f"✅ Notificación push enviada a usuario {user.id} (stage {stage})")
-            
-        except Exception as exc:
-            # No fallar el proceso completo si falla el push
-            print(f"⚠️ Error al enviar push a usuario {user.id}: {exc}")
+          if not user.consent_notifications:
+              print(f"ℹ️ Usuario {user.id} sin consentimiento, omitiendo notificación")
+              return
+
+          from apps.utils.yuancity_stage_templates import build_stage_push_notification
+
+          user_name = f"{user.first_name} {user.last_name}".strip().title()
+
+          stage = int(getattr(user, "stage", 0) or 0)
+
+          # ✅ Si es 6, no enviar push
+          if stage >= 6:
+              print(f"ℹ️ Usuario {user.id} en stage {stage} (ciclo completo), no se envía push")
+              return
+
+          # ✅ Para stage 1..5 usar template stage-1 (para que coincida con “lo que acaba de pasar”)
+          push_stage = max(0, stage - 1)
+
+          print(f"🔍 DEBUG push stage: user.stage={stage} payload.stage={payload.get('stage', None)} push_stage={push_stage}")
+
+          push_notification = build_stage_push_notification(stage=push_stage, user_name=user_name)
+
+          title = push_notification.get("title") or "Nuevo contenido en Mikiguiki"
+          body = push_notification.get("body") or "Tenemos algo especial para ti"
+
+          push_data = {
+              "type": "stage_update",
+              "stage": stage,            # real
+              "push_stage": push_stage,  # template usado
+              "user_id": str(user.id),
+              "restarted": restarted,
+          }
+
+          send_push(title=title, body=body, data=push_data, user=user)
+
+          print(f"✅ Notificación push enviada a usuario {user.id} (stage {stage} push_stage {push_stage})")
+
+      except Exception as exc:
+          print(f"⚠️ Error al enviar push a usuario {user.id}: {exc}")
 
 
 class UnsubscribeView(APIView):
