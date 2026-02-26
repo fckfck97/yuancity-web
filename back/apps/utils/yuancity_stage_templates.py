@@ -6,7 +6,7 @@ CONFIG = {
     "cta_url": "https://yuancity.com/",
     "unsubscribe_url": "https://yuancity.com/unsubscribe",
     "logo_url": "https://yuancity.com/templates/logo.png",
-    "poster_fallback_url": "https://yuancity.com/template/logo.png",
+    "poster_fallback_url": "https://yuancity.com/templates/logo.png",
     "company_name": "YuanCity",
     "company_address": "YuanCity - Compra lo que quieras, cuando quieras",
 }
@@ -238,7 +238,7 @@ def _replace_vars(
 
 
 def _examples_gallery(examples: list) -> str:
-    """Genera galería de productos con diseño superior."""
+    """Genera galería de productos con diseño inspirado en GreenCloset."""
     items = _normalize_media_items(examples)
     if not items:
         return ""
@@ -246,22 +246,32 @@ def _examples_gallery(examples: list) -> str:
     cards_html = ""
     for item in items:
         cards_html += f"""
-        <td align="center" style="padding:10px;vertical-align:top;" width="{int(100 / len(items))}%">
-          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;height:100%;">
+        <td align="center" style="padding:8px;vertical-align:top;" width="{int(100 / len(items))}%">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#ffffff"
+                 style="background-color:#ffffff;border:1px solid #e5e7eb;">
             <tr>
               <td style="padding:0;">
-                <img src="{item["poster_url"]}" alt="{item.get("title")}" width="100%" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px 12px 0 0;">
+                <img src="{item["poster_url"]}" alt="{item.get("title")}" width="100%" style="display:block;width:100%;height:auto;">
               </td>
             </tr>
             <tr>
-              <td align="center" style="padding:12px;">
-                <p style="margin:0 0 4px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:11px;line-height:14px;font-weight:600;color:#6b7280;text-transform:uppercase;">
+              <td align="left" style="padding:12px;">
+                <table cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td bgcolor="#dc2626" style="background-color:#dc2626;padding:3px 8px;">
+                      <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.5px;">
+                        DESTACADO
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:8px 0 3px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:10px;line-height:14px;font-weight:bold;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;">
                   {item.get("category", "General")}
                 </p>
-                <p style="margin:0 0 8px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:13px;line-height:18px;font-weight:600;color:#111827;height:36px;overflow:hidden;">
+                <p style="margin:0 0 8px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:13px;line-height:18px;font-weight:bold;color:#7f1d1d;">
                   {item.get("title", "")}
                 </p>
-                <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:20px;font-weight:700;color:#2563eb;">
+                <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;font-weight:bold;color:#dc2626;">
                   {item.get("content_type", "")}
                 </p>
               </td>
@@ -271,17 +281,21 @@ def _examples_gallery(examples: list) -> str:
         """
 
     return f"""
-<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f9fafb;padding:32px 20px;">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#fff1f2"
+       style="background-color:#fff1f2;padding:32px 16px;">
   <tr>
     <td align="center">
       <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
-          <td style="padding:0 0 24px;text-align:center;">
-            <h2 style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:20px;line-height:28px;font-weight:700;color:#111827;">
-              Recomendados para ti
+          <td style="padding:0 0 20px;text-align:center;">
+            <p style="margin:0 0 6px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:11px;line-height:16px;font-weight:bold;color:#dc2626;text-transform:uppercase;letter-spacing:1px;">
+              🛍️ Para ti
+            </p>
+            <h2 style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:bold;color:#7f1d1d;">
+              Productos recomendados
             </h2>
-            <p style="margin:4px 0 0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#6b7280;">
-              Productos seleccionados según tus intereses
+            <p style="margin:6px 0 0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#6b7280;">
+              Seleccionados especialmente para ti
             </p>
           </td>
         </tr>
@@ -291,6 +305,21 @@ def _examples_gallery(examples: list) -> str:
           {cards_html}
         </tr>
       </table>
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;">
+        <tr>
+          <td align="center">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td bgcolor="#dc2626" style="background-color:#dc2626;padding:12px 32px;">
+                  <a href="{{{{cta_url}}}}" style="color:#ffffff;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;">
+                    Ver todos los productos →
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 </table>
@@ -298,26 +327,26 @@ def _examples_gallery(examples: list) -> str:
 
 
 def _feature_row(icon: str, title: str, text: str) -> str:
-    """Genera una fila de característica con un diseño minimalista y moderno."""
+    """Genera una fila de característica con icono directo sin bordes circulares."""
     return f"""
     <tr>
-      <td style="padding:8px 20px;">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:1px solid #f3f4f6;border-radius:12px;padding:16px;">
+      <td style="padding:6px 16px;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#ffffff"
+               style="background-color:#ffffff;border:1px solid #fecaca;">
           <tr>
-            <td width="48" align="center" style="padding:0 12px 0 0;vertical-align:middle;">
-              <table cellpadding="0" cellspacing="0" border="0" width="44" height="44" style="width:44px;height:44px;background:#eff6ff;border-radius:50%;border-collapse:separate;">
-                <tr>
-                  <td align="center" valign="middle" style="text-align:center;vertical-align:middle;font-size:20px;line-height:44px;mso-line-height-rule:exactly;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">
-                    {icon}
-                  </td>
-                </tr>
-              </table>
+            <td width="48" valign="middle"
+                style="width:48px;padding:16px 8px 16px 16px;vertical-align:middle;text-align:center;
+                       font-size:26px;line-height:1;
+                       font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',Arial,sans-serif;">
+              {icon}
             </td>
-            <td align="left">
-              <p style="margin:0 0 2px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:700;color:#111827;">
+            <td valign="middle" style="padding:16px 16px 16px 8px;vertical-align:middle;">
+              <p style="margin:0 0 4px;font-family:'Inter',Helvetica,Arial,sans-serif;
+                        font-size:15px;line-height:20px;font-weight:700;color:#7f1d1d;">
                 {title}
               </p>
-              <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:13px;line-height:18px;color:#6b7280;">
+              <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;
+                        font-size:13px;line-height:18px;color:#6b7280;">
                 {text}
               </p>
             </td>
@@ -372,9 +401,9 @@ def _build_stage_html(
   </style>
   <![endif]-->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
     * {{ margin:0; padding:0; }}
-    body {{ margin:0; padding:0; width:100%; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; background:#f3f4f6; }}
+    body {{ margin:0; padding:0; width:100%; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; background:#fef2f2; }}
     table {{ border:0; border-spacing:0; }}
     table, td {{ border-collapse:collapse; }}
     img {{ border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; display:block; }}
@@ -382,51 +411,83 @@ def _build_stage_html(
     .content {{ width:600px; }}
     @media only screen and (max-width:640px) {{
       .content {{ width:100% !important; min-width:0 !important; }}
-      .mobile-padding {{ padding:24px 20px !important; }}
+      .mobile-padding {{ padding:24px 16px !important; }}
       h1 {{ font-size:26px !important; line-height:34px !important; }}
     }}
   </style>
 </head>
-<body style="margin:0;padding:0;background:#f3f4f6;">
-  <div style="display:none;font-size:1px;color:#f3f4f6;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+<body style="margin:0;padding:0;background:#fef2f2;">
+  <div style="display:none;font-size:1px;color:#fef2f2;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
     {preheader}
   </div>
-  
-  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f3f4f6;">
-    <tr>
-      <td align="center" style="padding:32px 10px;">
 
-        <!-- Header minimal -->
-        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="background:#ffffff;border-radius:16px 16px 0 0;">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#fef2f2;">
+    <tr>
+      <td align="center" style="padding:28px 10px;">
+
+        <!-- Barra top -->
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#7f1d1d"
+               style="background-color:#7f1d1d;">
           <tr>
-            <td align="center" style="padding:40px 40px 16px;">
+            <td align="center" style="padding:12px 24px;">
+              <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:11px;line-height:16px;font-weight:bold;color:#fecaca;text-transform:uppercase;letter-spacing:1.5px;">
+                🛍️ Compra lo que quieras · Envíos seguros · Pagos protegidos
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Header con logo -->
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#ffffff"
+               style="background-color:#ffffff;border-left:1px solid #fecaca;border-right:1px solid #fecaca;">
+          <tr>
+            <td align="center" style="padding:32px 40px 12px;">
               <img src="{{{{logo_url}}}}" alt="{{{{company_name}}}}" width="160" style="display:block;width:160px;height:auto;margin:0 auto;">
             </td>
           </tr>
         </table>
 
-        <!-- Contenido principal -->
-        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="background:#ffffff;">
+        <!-- Héroe con saludo -->
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#ffffff"
+               style="background-color:#ffffff;border-left:1px solid #fecaca;border-right:1px solid #fecaca;">
           <tr>
-            <td class="mobile-padding" style="padding:16px 40px 32px;text-align:center;">
-              <p style="margin:0 0 16px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#6b7280;font-weight:500;">
+            <td class="mobile-padding" style="padding:8px 40px 36px;text-align:center;">
+              <p style="margin:0 0 14px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;color:#6b7280;font-weight:500;">
                 {greeting}
               </p>
-              <h1 style="margin:0 0 12px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:32px;line-height:40px;font-weight:800;color:#111827;letter-spacing:-0.5px;">
+              <h1 style="margin:0 0 10px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:34px;line-height:42px;font-weight:800;color:#7f1d1d;">
                 {title}
               </h1>
-              <p style="margin:0 0 16px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:18px;line-height:26px;font-weight:600;color:#2563eb;">
+              <p style="margin:0 0 14px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:18px;line-height:26px;font-weight:600;color:#dc2626;">
                 {subtitle}
               </p>
               <p style="margin:0 0 24px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#4b5563;">
                 {intro}
               </p>
+              <!-- Sello de confianza -->
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td align="center">
+                    <table cellpadding="0" cellspacing="0" border="0" bgcolor="#fff1f2"
+                           style="background-color:#fff1f2;border:1px solid #fecaca;">
+                      <tr>
+                        <td align="center" style="padding:8px 20px;">
+                          <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:12px;font-weight:600;color:#dc2626;">🔒 Compra segura · Envío garantizado · Soporte 24/7</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
+        </table>
 
-          <!-- Caracteristas -->
+        <!-- Características -->
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#ffffff"
+               style="background-color:#ffffff;border-left:1px solid #fecaca;border-right:1px solid #fecaca;">
           <tr>
-            <td style="padding:0 20px 24px;">
+            <td style="padding:0 16px 28px;">
               <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 {features_html}
               </table>
@@ -436,39 +497,42 @@ def _build_stage_html(
 
         {examples_section}
 
-        <!-- Footer y CTA -->
-        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="background:#ffffff;border-radius:0 0 16px 16px;">
+        <!-- CTA principal -->
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#7f1d1d"
+               style="background-color:#7f1d1d;">
           <tr>
-            <td align="center" style="padding:32px 40px 24px;">
+            <td align="center" style="padding:36px 40px 28px;">
+              <h2 style="margin:0 0 8px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:bold;color:#fff1f2;">
+                {cta_text}
+              </h2>
+              <p style="margin:0 0 24px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#fca5a5;">
+                {cta_hint}
+              </p>
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td align="center" style="background:#111827;border-radius:8px;">
-                    <a href="{{{{cta_url}}}}" style="display:inline-block;padding:16px 40px;color:#ffffff;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;text-decoration:none;">
-                      {cta_text}
+                  <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;">
+                    <a href="{{{{cta_url}}}}" style="display:inline-block;padding:18px 48px;color:#7f1d1d;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;">
+                      {cta_text} →
                     </a>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-          <tr>
-            <td align="center" style="padding:0 40px 40px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#6b7280;">
-              {cta_hint}
-            </td>
-          </tr>
         </table>
 
         <!-- Footer secundario -->
-        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" style="margin-top:24px;">
+        <table class="content" cellpadding="0" cellspacing="0" border="0" width="600" bgcolor="#fff1f2"
+               style="background-color:#fff1f2;border-left:1px solid #fecaca;border-right:1px solid #fecaca;border-bottom:1px solid #fecaca;">
           <tr>
-            <td align="center" style="padding:0 20px;">
-              <p style="margin:0 0 8px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#9ca3af;font-weight:500;">
+            <td align="center" style="padding:20px 20px 24px;">
+              <p style="margin:0 0 6px;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#7f1d1d;font-weight:500;">
                 © 2026 {{{{company_address}}}}
               </p>
               <p style="margin:0;font-family:'Inter',Helvetica,Arial,sans-serif;font-size:11px;line-height:16px;color:#9ca3af;">
                 Recibes este correo porque eres parte de la comunidad de YuanCity.
                 <br>
-                <a href="{{{{unsubscribe_url}}}}" style="color:#6b7280;text-decoration:underline;">Cancelar suscripción</a>
+                <a href="{{{{unsubscribe_url}}}}" style="color:#dc2626;text-decoration:underline;">Cancelar suscripción</a>
               </p>
             </td>
           </tr>
