@@ -32,7 +32,7 @@ from .utils.phone import normalize
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime, parse_date
 from rest_framework.pagination import LimitOffsetPagination
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import secrets
 import jwt, requests  # pyjwt para Apple
 from google.oauth2 import id_token as google_id_token

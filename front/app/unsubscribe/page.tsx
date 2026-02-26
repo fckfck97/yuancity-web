@@ -14,6 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react"
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -25,6 +26,7 @@ interface UserData {
 }
 
 function DesuscribirContent() {
+  const { t } = useTranslation()
   const searchParams = useSearchParams()
 
   const normalizeParam = (value: string | null) => (value || "").trim() || null
@@ -70,7 +72,7 @@ function DesuscribirContent() {
     const idToCheck = (idValue || "").trim() || null
 
     if (!emailToCheck && !idToCheck) {
-      setError("Por favor ingresa tu email")
+      setError(t("unsubscribe.errors.enterEmail"))
       setLoading(false)
       return
     }
@@ -100,9 +102,9 @@ function DesuscribirContent() {
     } catch (err: any) {
       console.error("Error checking unsubscribe status:", err)
       if (err?.message === "404") {
-        setError("Usuario no encontrado con ese email")
+        setError(t("unsubscribe.errors.userNotFoundByEmail"))
       } else {
-        setError("Error al verificar estado")
+        setError(t("unsubscribe.errors.checkStatus"))
       }
       setShowForm(true)
       setUserData(null)
@@ -114,7 +116,7 @@ function DesuscribirContent() {
   const handleSubmitEmail = (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim()) {
-      setError("Por favor ingresa tu email")
+      setError(t("unsubscribe.errors.enterEmail"))
       return
     }
     setLoading(true)
@@ -153,8 +155,8 @@ function DesuscribirContent() {
       setResolvedId(data?.id || idToUse)
     } catch (err: any) {
       console.error("Error unsubscribing:", err)
-      if (err?.message === "404") setError("Usuario no encontrado")
-      else setError("Error al desuscribir. Intenta de nuevo.")
+      if (err?.message === "404") setError(t("unsubscribe.errors.userNotFound"))
+      else setError(t("unsubscribe.errors.unsubscribeFailed"))
     } finally {
       setUnsubscribing(false)
     }
@@ -180,7 +182,7 @@ function DesuscribirContent() {
       style={{ color: "var(--color-foreground)", opacity: 0.7 }}
     >
       <ArrowLeft className="mr-2 h-4 w-4" />
-      Volver al Inicio
+      {t("unsubscribe.backToHome")}
     </Link>
   )
 
@@ -221,7 +223,7 @@ function DesuscribirContent() {
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 text-orange-500 animate-spin mb-4" />
             <p className="text-lg" style={{ opacity: 0.75 }}>
-              Verificando...
+              {t("unsubscribe.loading.checking")}
             </p>
           </div>
         </div>
@@ -237,9 +239,9 @@ function DesuscribirContent() {
           <BackButton />
 
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Desuscribirse</h1>
+            <h1 className="text-4xl font-bold mb-2">{t("unsubscribe.title")}</h1>
             <p className="mb-4" style={{ opacity: 0.75 }}>
-              Ingresa tu email para gestionar tu suscripción
+              {t("unsubscribe.subtitleManage")}
             </p>
           </div>
 
@@ -248,14 +250,14 @@ function DesuscribirContent() {
               <form onSubmit={handleSubmitEmail} className="space-y-6">
                 <div>
                   <label htmlFor="email" className="block font-medium mb-2">
-                    Email
+                    {t("unsubscribe.emailLabel")}
                   </label>
                   <input
                     type="email"
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="tu@email.com"
+                    placeholder={t("unsubscribe.emailPlaceholder")}
                     className="w-full px-4 py-3 rounded-xl placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors"
                     style={{
                       backgroundColor: "var(--color-background)",
@@ -280,10 +282,10 @@ function DesuscribirContent() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Verificando...
+                      {t("unsubscribe.loading.checking")}
                     </>
                   ) : (
-                    "Continuar"
+                    t("unsubscribe.continue")
                   )}
                 </button>
               </form>
@@ -307,7 +309,7 @@ function DesuscribirContent() {
                 <div className="w-16 h-16 bg-red-500/15 rounded-full flex items-center justify-center mb-4 border border-red-500/25">
                   <XCircle className="h-8 w-8 text-red-400" />
                 </div>
-                <h1 className="text-2xl font-bold mb-2">Error</h1>
+                <h1 className="text-2xl font-bold mb-2">{t("unsubscribe.errors.title")}</h1>
                 <p className="mb-6" style={{ opacity: 0.75 }}>
                   {error}
                 </p>
@@ -319,7 +321,7 @@ function DesuscribirContent() {
                     color: "var(--color-main-foreground)",
                   }}
                 >
-                  Volver al Inicio
+                  {t("unsubscribe.backToHome")}
                 </Link>
               </div>
             </div>
@@ -342,7 +344,7 @@ function DesuscribirContent() {
                 <div className="w-16 h-16 bg-green-500/15 rounded-full flex items-center justify-center mb-4 border border-green-500/25">
                   <CheckCircle className="h-8 w-8 text-green-400" />
                 </div>
-                <h1 className="text-3xl font-bold mb-2">Ya estás desuscrito</h1>
+                <h1 className="text-3xl font-bold mb-2">{t("unsubscribe.alreadyUnsubscribedTitle")}</h1>
                 <p className="mb-2" style={{ opacity: 0.7 }}>
                   {userData.email}
                 </p>
@@ -355,8 +357,7 @@ function DesuscribirContent() {
                   }}
                 >
                   <p style={{ opacity: 0.8 }}>
-                    Ya no recibirás correos de Mikiguiki. Si cambias de opinión,
-                    puedes volver a suscribirte desde la configuración de tu cuenta.
+                    {t("unsubscribe.alreadyUnsubscribedMessage")}
                   </p>
                 </div>
 
@@ -368,7 +369,7 @@ function DesuscribirContent() {
                     color: "var(--color-main-foreground)",
                   }}
                 >
-                  Volver al Inicio
+                  {t("unsubscribe.backToHome")}
                 </Link>
               </div>
             </div>
@@ -385,9 +386,9 @@ function DesuscribirContent() {
         <BackButton />
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Desuscribirse</h1>
+          <h1 className="text-4xl font-bold mb-2">{t("unsubscribe.title")}</h1>
           <p className="mb-4" style={{ opacity: 0.75 }}>
-            Deja de recibir correos de Mikiguiki
+            {t("unsubscribe.subtitleStop")}
           </p>
 
           <div
@@ -399,7 +400,7 @@ function DesuscribirContent() {
           >
             <Clock className="h-4 w-4 text-orange-500" />
             <span className="text-sm" style={{ opacity: 0.7 }}>
-              Última actualización: 20 de febrero de 2026
+              {t("unsubscribe.lastUpdated")}
             </span>
           </div>
         </div>
@@ -415,7 +416,7 @@ function DesuscribirContent() {
           >
             <div className="flex items-center gap-3 mb-4">
               <Mail className="h-6 w-6 text-orange-500" />
-              <h2 className="text-xl font-bold">Tu cuenta</h2>
+              <h2 className="text-xl font-bold">{t("unsubscribe.accountTitle")}</h2>
             </div>
             {userData?.full_name && <p className="font-medium mb-1">{userData.full_name}</p>}
             {userData?.email && <p style={{ opacity: 0.7 }}>{userData.email}</p>}
@@ -432,22 +433,16 @@ function DesuscribirContent() {
             <div className="flex items-center gap-3 mb-4">
               <MailX className="h-6 w-6 text-orange-500" />
               <h2 className="text-xl font-bold">
-                Si te desuscribes, dejarás de recibir:
+                {t("unsubscribe.willStopTitle")}
               </h2>
             </div>
             <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
-                <p style={{ opacity: 0.8 }}>Notificaciones de nuevos contenidos y estrenos</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
-                <p style={{ opacity: 0.8 }}>Recomendaciones personalizadas</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
-                <p style={{ opacity: 0.8 }}>Actualizaciones sobre nuevas funciones</p>
-              </div>
+              {(t("unsubscribe.willStopItems", { returnObjects: true }) as string[]).map((item, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
+                  <p style={{ opacity: 0.8 }}>{item}</p>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -465,9 +460,9 @@ function DesuscribirContent() {
             >
               <AlertCircle className="text-orange-400 flex-shrink-0 mt-0.5" size={20} />
               <div>
-                <p className="font-semibold">Puedes volver cuando quieras</p>
+                <p className="font-semibold">{t("unsubscribe.youCanReturnTitle")}</p>
                 <p className="mt-1" style={{ opacity: 0.8 }}>
-                  Esta acción se puede revertir en cualquier momento desde la configuración de tu cuenta.
+                  {t("unsubscribe.youCanReturnMessage")}
                 </p>
               </div>
             </div>
@@ -484,10 +479,10 @@ function DesuscribirContent() {
               {unsubscribing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Procesando...
+                  {t("unsubscribe.loading.processing")}
                 </>
               ) : (
-                "Confirmar desuscripción"
+                t("unsubscribe.confirm")
               )}
             </button>
 
@@ -499,12 +494,12 @@ function DesuscribirContent() {
                 color: "var(--color-foreground)",
               }}
             >
-              Cancelar
+              {t("unsubscribe.cancel")}
             </Link>
           </div>
 
           <p className="text-sm text-center" style={{ opacity: 0.65 }}>
-            Puedes volver a suscribirte en cualquier momento desde la configuración de tu cuenta.
+            {t("unsubscribe.resubscribeHint")}
           </p>
         </div>
       </div>
@@ -513,6 +508,8 @@ function DesuscribirContent() {
 }
 
 function PageFallback() {
+  const { t } = useTranslation()
+
   return (
     <div
       className="min-h-screen"
@@ -527,7 +524,7 @@ function PageFallback() {
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 text-orange-500 animate-spin mb-4" />
             <p className="text-lg" style={{ opacity: 0.75 }}>
-              Cargando...
+              {t("unsubscribe.loading.loading")}
             </p>
           </div>
         </div>

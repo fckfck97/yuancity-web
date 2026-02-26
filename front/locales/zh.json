@@ -479,6 +479,43 @@
       "note": "我们可能要求额外验证以保护你的账户。"
     }
   },
+  "unsubscribe": {
+    "title": "取消订阅",
+    "subtitleManage": "请输入你的邮箱以管理订阅",
+    "subtitleStop": "停止接收来自 Mikiguiki 的邮件",
+    "backToHome": "返回首页",
+    "emailLabel": "邮箱",
+    "emailPlaceholder": "you@email.com",
+    "continue": "继续",
+    "confirm": "确认取消订阅",
+    "cancel": "取消",
+    "accountTitle": "你的账户",
+    "alreadyUnsubscribedTitle": "你已取消订阅",
+    "alreadyUnsubscribedMessage": "你将不再收到来自 Mikiguiki 的邮件。若你改变主意，可在账户设置中重新订阅。",
+    "youCanReturnTitle": "你可以随时回来",
+    "youCanReturnMessage": "你可随时在账户设置中撤销此操作。",
+    "resubscribeHint": "你可随时在账户设置中重新订阅。",
+    "lastUpdated": "最后更新：2026年2月20日",
+    "willStopTitle": "如果你取消订阅，你将不再收到：",
+    "willStopItems": [
+      "新内容与首发通知",
+      "个性化推荐",
+      "新功能更新"
+    ],
+    "loading": {
+      "checking": "正在验证...",
+      "loading": "加载中...",
+      "processing": "处理中..."
+    },
+    "errors": {
+      "title": "错误",
+      "enterEmail": "请输入你的邮箱",
+      "userNotFoundByEmail": "未找到该邮箱对应的用户",
+      "checkStatus": "验证状态时出错",
+      "userNotFound": "未找到用户",
+      "unsubscribeFailed": "取消订阅失败，请重试。"
+    }
+  },
   "privacyPolicy": {
     "title": "隐私政策 — 元城",
     "subtitle": "你的隐私对我们至关重要",

@@ -479,6 +479,43 @@
       "note": "Podemos solicitar verificación adicional para proteger tu cuenta."
     }
   },
+  "unsubscribe": {
+    "title": "Desuscribirse",
+    "subtitleManage": "Ingresa tu email para gestionar tu suscripción",
+    "subtitleStop": "Deja de recibir correos de Mikiguiki",
+    "backToHome": "Volver al Inicio",
+    "emailLabel": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "continue": "Continuar",
+    "confirm": "Confirmar desuscripción",
+    "cancel": "Cancelar",
+    "accountTitle": "Tu cuenta",
+    "alreadyUnsubscribedTitle": "Ya estás desuscrito",
+    "alreadyUnsubscribedMessage": "Ya no recibirás correos de Mikiguiki. Si cambias de opinión, puedes volver a suscribirte desde la configuración de tu cuenta.",
+    "youCanReturnTitle": "Puedes volver cuando quieras",
+    "youCanReturnMessage": "Esta acción se puede revertir en cualquier momento desde la configuración de tu cuenta.",
+    "resubscribeHint": "Puedes volver a suscribirte en cualquier momento desde la configuración de tu cuenta.",
+    "lastUpdated": "Última actualización: 20 de febrero de 2026",
+    "willStopTitle": "Si te desuscribes, dejarás de recibir:",
+    "willStopItems": [
+      "Notificaciones de nuevos contenidos y estrenos",
+      "Recomendaciones personalizadas",
+      "Actualizaciones sobre nuevas funciones"
+    ],
+    "loading": {
+      "checking": "Verificando...",
+      "loading": "Cargando...",
+      "processing": "Procesando..."
+    },
+    "errors": {
+      "title": "Error",
+      "enterEmail": "Por favor ingresa tu email",
+      "userNotFoundByEmail": "Usuario no encontrado con ese email",
+      "checkStatus": "Error al verificar estado",
+      "userNotFound": "Usuario no encontrado",
+      "unsubscribeFailed": "Error al desuscribir. Intenta de nuevo."
+    }
+  },
   "privacyPolicy": {
     "title": "Política de privacidad — YuanCity",
     "subtitle": "Tu privacidad es esencial para nosotros",

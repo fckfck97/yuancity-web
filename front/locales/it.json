@@ -479,6 +479,43 @@
       "note": "Potremmo richiedere una verifica aggiuntiva per proteggere il tuo account."
     }
   },
+  "unsubscribe": {
+    "title": "Disiscriviti",
+    "subtitleManage": "Inserisci la tua email per gestire la tua iscrizione",
+    "subtitleStop": "Smetti di ricevere email da Mikiguiki",
+    "backToHome": "Torna alla Home",
+    "emailLabel": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "continue": "Continua",
+    "confirm": "Conferma disiscrizione",
+    "cancel": "Annulla",
+    "accountTitle": "Il tuo account",
+    "alreadyUnsubscribedTitle": "Sei già disiscritto/a",
+    "alreadyUnsubscribedMessage": "Non riceverai più email da Mikiguiki. Se cambi idea, puoi iscriverti di nuovo dalle impostazioni del tuo account.",
+    "youCanReturnTitle": "Puoi tornare quando vuoi",
+    "youCanReturnMessage": "Questa azione può essere annullata in qualsiasi momento dalle impostazioni del tuo account.",
+    "resubscribeHint": "Puoi iscriverti di nuovo in qualsiasi momento dalle impostazioni del tuo account.",
+    "lastUpdated": "Ultimo aggiornamento: 20 febbraio 2026",
+    "willStopTitle": "Se ti disiscrivi, non riceverai più:",
+    "willStopItems": [
+      "Notifiche su nuovi contenuti e uscite",
+      "Raccomandazioni personalizzate",
+      "Aggiornamenti su nuove funzionalità"
+    ],
+    "loading": {
+      "checking": "Verifica in corso...",
+      "loading": "Caricamento...",
+      "processing": "Elaborazione..."
+    },
+    "errors": {
+      "title": "Errore",
+      "enterEmail": "Per favore inserisci la tua email",
+      "userNotFoundByEmail": "Utente non trovato con questa email",
+      "checkStatus": "Errore durante la verifica dello stato",
+      "userNotFound": "Utente non trovato",
+      "unsubscribeFailed": "Errore durante la disiscrizione. Riprova."
+    }
+  },
   "privacyPolicy": {
     "title": "Informativa sulla privacy — YuanCity",
     "subtitle": "La tua privacy è essenziale per noi",
