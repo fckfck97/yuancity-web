@@ -799,7 +799,6 @@ class AccountDeleteView(APIView):
         return Response(status=204)
 
 
-
 N8N_SHARED_TOKEN = "n8n_9c7b2f1a5d6e4c3b"
 class IsN8NHeader(permissions.BasePermission):
     message = "Missing X-N8N-Token header."
@@ -922,8 +921,16 @@ class N8NUserStageListView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+
+
 class N8NUserAdvanceView(APIView):
-    """Vista para avanzar al siguiente stage de un usuario y enviar notificación push"""
+    """Vista para avanzar al siguiente stage de un usuario y enviar notificación push.
+
+    - Si el usuario está en stage 6 y no han pasado 3 días desde el último envío,
+      la petición devuelve un objeto con `blocked: True` y no avanza el stage.
+    - Cuando se cumplen los 3 días el stage se reinicia a 0 y se envía un push con
+      `restarted: True` en la respuesta.
+    """
     permission_classes = [IsN8NHeader]
     authentication_classes = []
 
@@ -932,51 +939,54 @@ class N8NUserAdvanceView(APIView):
             user = User.objects.get(pk=pk)
 
             # Si ya completó todos los stages (6), verificar si han pasado 3 días para reiniciar
-            if user.stage >= 6 and user.last_sent_at:
+            if user.can_restart_stage_cycle(days=3):
+                now = timezone.now()
+                user.restart_stage_cycle(now=now)
+                
+                user_name = f"{user.first_name} {user.last_name}".strip().title()
+                payload = build_stage_output(
+                    {
+                        "id": str(user.id),
+                        "email": user.email,
+                        "phone": user.phone,
+                        "stage": user.stage,
+                        "next_send_at": user.next_send_at.isoformat() if user.next_send_at else None,
+                        "last_sent_at": user.last_sent_at.isoformat() if user.last_sent_at else None,
+                    },
+                    user_name=user_name,
+                )
+                
+                # Enviar notificación push al reiniciar
+                self._send_stage_push_notification(user, payload, restarted=True)
+                
+                return Response(
+                    {
+                        **payload,
+                        "restarted": True,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            elif user.stage >= 6 and user.last_sent_at:
                 now = timezone.now()
                 days_since_last = (now - user.last_sent_at).days
-                if days_since_last >= 3:
-                    # Reiniciar el ciclo
-                    user.stage = 0
-                    user.next_send_at = now
-                    user.save(update_fields=["stage", "next_send_at"])
-                    
-                    user_name = f"{user.first_name} {user.last_name}".strip().title()
-                    payload = build_stage_output(
-                        {
-                            "id": str(user.id),
-                            "email": user.email,
-                            "phone": user.phone,
-                            "stage": user.stage,
-                            "next_send_at": user.next_send_at.isoformat() if user.next_send_at else None,
-                            "last_sent_at": user.last_sent_at.isoformat() if user.last_sent_at else None,
-                        },
-                        user_name=user_name,
-                    )
-                    
-                    # Enviar notificación push al reiniciar
-                    self._send_stage_push_notification(user, payload, restarted=True)
-                    
-                    return Response(
-                        {
-                            **payload,
-                            "restarted": True,
-                        },
-                        status=status.HTTP_200_OK,
-                    )
-                else:
-                    # No han pasado 3 días aún
-                    return Response(
-                        {
-                            "detail": f"Ciclo completado. Reinicio disponible en {3 - days_since_last} días.",
-                            "id": str(user.id),
-                            "stage": user.stage,
-                        },
-                        status=status.HTTP_200_OK,
-                    )
+                # Enviar push de "espera" según el día del ciclo bloqueado
+                self._send_blocked_push_notification(user, days_since_last=days_since_last)
+                # No han pasado 3 días aún: informamos a N8N para que lo bloquee.
+                return Response(
+                    {
+                        "detail": f"Ciclo completado. Reinicio disponible en {max(0, 3 - days_since_last)} días.",
+                        "id": str(user.id),
+                        "stage": user.stage,
+                        "blocked": True,                # marca explícita para que N8N no intente avanzar
+                        "can_restart": days_since_last >= 3,
+                        "days_since_last": days_since_last,
+                    },
+                    status=status.HTTP_200_OK,
+                )
 
             # Avanzar al siguiente stage
             user.advance_schedule()
+            print(f"🔍 Usuario {user.id} avanzado a stage: {user.stage}")
             
             user_name = f"{user.first_name} {user.last_name}".strip().title()
             payload = build_stage_output(
@@ -990,6 +1000,7 @@ class N8NUserAdvanceView(APIView):
                 },
                 user_name=user_name,
             )
+            print(f"🔍 Payload construido con stage: {payload.get('stage')}")
             
             # Enviar notificación push
             self._send_stage_push_notification(user, payload)
@@ -1050,6 +1061,42 @@ class N8NUserAdvanceView(APIView):
 
       except Exception as exc:
           print(f"⚠️ Error al enviar push a usuario {user.id}: {exc}")
+
+    def _send_blocked_push_notification(self, user: User, days_since_last: int = 0) -> None:
+        """Envía una notificación push a usuarios bloqueados (stage 6) según el día de espera."""
+        try:
+            has_active_tokens = user.push_tokens.filter(active=True).exists()
+            if not has_active_tokens:
+                print(f"ℹ️ Usuario {user.id} sin tokens push activos, omitiendo push bloqueado")
+                return
+
+            if not user.consent_notifications:
+                print(f"ℹ️ Usuario {user.id} sin consentimiento, omitiendo push bloqueado")
+                return
+
+            from apps.utils.yuancity_stage_templates import build_blocked_push_notification
+
+            user_name = f"{user.first_name} {user.last_name}".strip().title()
+            push_notification = build_blocked_push_notification(
+                days_since_last=days_since_last,
+                user_name=user_name,
+            )
+
+            title = push_notification.get("title") or "Nuevo contenido en Mikiguiki"
+            body = push_notification.get("body") or "Tenemos algo especial para ti"
+
+            push_data = {
+                "type": "stage_blocked",
+                "stage": user.stage,
+                "days_since_last": days_since_last,
+                "user_id": str(user.id),
+            }
+
+            send_push(title=title, body=body, data=push_data, user=user)
+            print(f"✅ Push bloqueado enviado a usuario {user.id} (día {days_since_last} de espera)")
+
+        except Exception as exc:
+            print(f"⚠️ Error al enviar push bloqueado a usuario {user.id}: {exc}")
 
 
 class UnsubscribeView(APIView):

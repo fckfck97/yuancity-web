@@ -775,3 +775,56 @@ def build_stage_output(data: dict, user_name: str = "", examples: list = None) -
         **payload,
 
     }
+
+#Notificaciones push para usuarios en periodo de espera (stage 6, días 0-2)
+PUSH_BLOCKED_STAGES = {
+    0: {
+        "title": "¡Te extrañamos!",
+        "body": "{{user_name}}, hay productos nuevos esperándote en YuanCity.",
+    },
+    1: {
+        "title": "Contenido nuevo para ti",
+        "body": "{{user_name}}, productos frescos que no te puedes perder.",
+    },
+    2: {
+        "title": "Vuelve a YuanCity",
+        "body": "{{user_name}}, tu próximo producto favorito ya está disponible.",
+    },
+}
+
+
+def build_blocked_push_notification(days_since_last: int = 0, user_name: str = "") -> dict:
+    """
+    Construye una notificación push para usuarios bloqueados (stage 6, esperando reinicio).
+    days_since_last: días transcurridos desde el último envío (0, 1 o 2).
+    Retorna: {"title": str, "body": str}
+    """
+    try:
+        day_key = int(days_since_last)
+    except (TypeError, ValueError):
+        day_key = 0
+
+    day_key = max(0, min(day_key, 2))
+    push_tpl = PUSH_BLOCKED_STAGES.get(day_key, PUSH_BLOCKED_STAGES[0])
+
+    name = (user_name or "").strip()
+    title = str(push_tpl.get("title", "") or "").strip()
+    body = str(push_tpl.get("body", "") or "").strip()
+
+    if name:
+        body = body.replace("{{user_name}}", name)
+        title = title.replace("{{user_name}}", name)
+    else:
+        body = body.replace("{{user_name}}", "").strip()
+        title = title.replace("{{user_name}}", "").strip()
+        if body.startswith(","):
+            body = body[1:].strip()
+        if body:
+            body = body[0].upper() + body[1:]
+
+    result = {
+        "title": title or "Nuevo contenido en YuanCity",
+        "body": body or "Tenemos algo especial para ti",
+    }
+    print(f"🔍 Blocked push notification (day {day_key}): {result}")
+    return result

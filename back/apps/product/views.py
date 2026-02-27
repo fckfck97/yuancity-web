@@ -5,14 +5,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import ValidationError
 from .models import Product
-from .serializers import ProductSerializer,ProductMinimalSerializer
+from .serializers import ProductSerializer, ProductMinimalSerializer
 from ..utils.pagination import LargeSetPagination
 from django.http import Http404
 from django.db.models import Case, IntegerField, OuterRef, Q, Subquery, Sum, When
 from django.utils import timezone
 from apps.cart.models import CartItem
 from apps.orders.models import OrderItem, Order
+from apps.category.models import Category
+from .utils.ai_search import (
+    execute_product_search,
+    product_catalog_index_for_ai,
+    call_openai_product_search_interpreter,
+    call_openai_product_result_filter,
+)
 
 
 def annotate_reservations(queryset):
@@ -321,3 +329,140 @@ class ProductHighlightsAPIView(APIView):
       },
       'daily_offers': daily_offers,
     })
+
+
+class AIProductSearchAPIView(APIView):
+    """
+    Búsqueda de productos interpretada por IA (OpenAI).
+
+    FLUJO:
+    1. Usuario envía texto natural (?q=...).
+    2. OpenAI interpreta el prompt y devuelve query optimizado + categorías.
+    3. Se buscan CANDIDATOS amplios en la BD (nombre y descripción).
+    4. OpenAI valida los candidatos y devuelve los UUIDs más relevantes.
+    5. Se consultan esos UUIDs en la BD → resultados finales.
+
+    Parámetros:
+      ?q=<prompt>   texto libre (mín. 2 caracteres)
+      &limit=<int>  máx resultados (1-50, default 20)
+
+    Respuesta incluye objeto ``ai`` con:
+      - answer:      mensaje breve para mostrar al usuario
+      - suggestions: búsquedas relacionadas sugeridas
+      - error:       mensaje de error si la IA falló (opcional)
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        prompt = (request.query_params.get("q") or "").strip()
+        if len(prompt) < 2:
+            raise ValidationError({"q": "Ingresa al menos 2 caracteres para buscar."})
+
+        per_limit = 20
+        limit_param = request.query_params.get("limit")
+        if limit_param not in (None, ""):
+            try:
+                per_limit = max(1, min(int(limit_param), 50))
+            except (TypeError, ValueError):
+                raise ValidationError({"limit": "Debe ser un entero positivo."})
+
+        # ── PASO 1: Preparar categorías y contexto para la IA ───────────
+        categories = list(
+            Category.objects.values("id", "name").order_by("name")
+        )
+        # Serializar IDs como strings
+        categories = [{"id": str(c["id"]), "name": c["name"]} for c in categories]
+
+        catalog_index = product_catalog_index_for_ai(
+            max_desc_chars=150,
+            max_products=100,
+        )
+
+        # ── PASO 2: OpenAI interpreta el prompt ─────────────────────────
+        ai_error = None
+        try:
+            ai_filters = call_openai_product_search_interpreter(
+                user_prompt=prompt,
+                categories=categories,
+                catalog_index=catalog_index,
+            )
+        except Exception as exc:
+            ai_error = str(exc)
+            ai_filters = {
+                "query": prompt,
+                "category_ids": [],
+                "suggestions": [],
+                "answer": f"Buscando: {prompt}",
+            }
+
+        # ── PASO 3: Búsqueda amplia en BD para obtener candidatos ────────
+        candidates_payload = execute_product_search(
+            query=ai_filters["query"],
+            category_ids=ai_filters.get("category_ids") or [],
+            per_limit=50,
+            request=request,
+        )
+        candidates = candidates_payload["results"]["products"]
+
+        # ── PASO 4: OpenAI filtra candidatos y devuelve UUIDs ────────────
+        filter_result = None
+        try:
+            filter_result = call_openai_product_result_filter(
+                user_prompt=prompt,
+                candidates=list(candidates),
+            )
+        except Exception as exc:
+            ai_error = str(exc) if not ai_error else f"{ai_error}; {exc}"
+
+        # ── PASO 5: Resultados finales por UUIDs seleccionados ───────────
+        if filter_result and filter_result.get("selected_ids"):
+            selected_ids = filter_result["selected_ids"]
+            qs = (
+                Product.objects.filter(
+                    id__in=selected_ids,
+                    is_available=True,
+                    stock__gt=0,
+                )
+                .select_related("vendor", "vendor__social_profile", "category", "category__parent")
+                .prefetch_related("images")
+            )
+            # Preservar orden de relevancia decidido por la IA
+            from django.db.models import Case as DbCase, When as DbWhen, IntegerField as DbInt
+            preserved = DbCase(
+                *[DbWhen(id=pk, then=pos) for pos, pk in enumerate(selected_ids)],
+                output_field=DbInt(),
+            )
+            qs = qs.order_by(preserved)
+            items = list(qs[:per_limit])
+            serialized = ProductMinimalSerializer(
+                items, many=True, context={"request": request}
+            ).data
+
+            payload = {
+                "query": ai_filters["query"],
+                "limit": per_limit,
+                "total": len(serialized),
+                "results": {"products": list(serialized)},
+                "ai": {
+                    "answer": filter_result.get("answer") or ai_filters.get("answer") or "",
+                    "suggestions": ai_filters.get("suggestions", []),
+                },
+            }
+        else:
+            # Fallback: usar candidatos originales limitados
+            fallback = list(candidates)[:per_limit]
+            payload = {
+                "query": ai_filters["query"],
+                "limit": per_limit,
+                "total": len(fallback),
+                "results": {"products": fallback},
+                "ai": {
+                    "answer": ai_filters.get("answer") or "",
+                    "suggestions": ai_filters.get("suggestions", []),
+                },
+            }
+
+        if ai_error:
+            payload["ai"]["error"] = ai_error
+
+        return Response(payload)
