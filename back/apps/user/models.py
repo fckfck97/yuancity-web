@@ -138,17 +138,33 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
         if self.stage >= 6:
             self.next_send_at = None
+            self.save(update_fields=['next_send_at', 'last_sent_at'])
             return
 
         if self.stage in delays and delays[self.stage] is None:
             self.stage = 6
             self.next_send_at = None
+            self.save(update_fields=['stage', 'next_send_at', 'last_sent_at'])
             return
 
         delay = delays.get(self.stage, timedelta(days=7))
         self.stage = min(self.stage + 1, 6)
         self.next_send_at = now + delay
         self.save(update_fields=['stage', 'next_send_at', 'last_sent_at'])
+
+    def can_restart_stage_cycle(self, now=None, days=3):
+        """Retorna True si el ciclo terminó y ya puede reiniciarse."""
+        if self.stage < 6 or not self.last_sent_at:
+            return False
+        current = now or timezone.now()
+        return self.last_sent_at <= (current - timezone.timedelta(days=days))
+
+    def restart_stage_cycle(self, now=None):
+        """Reinicia el ciclo de mensajes para reenviar desde el stage 0."""
+        current = now or timezone.now()
+        self.stage = 0
+        self.next_send_at = current
+        self.save(update_fields=['stage', 'next_send_at'])
 
 
 class UserProfile(models.Model):
