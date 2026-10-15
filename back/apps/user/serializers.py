@@ -195,6 +195,8 @@ class OTPRequestSerializer(serializers.Serializer):
     """
     email = serializers.EmailField(required=False)
     phone = serializers.CharField(required=False)
+    # Las apps nuevas piden 6 dígitos; las versiones ya publicadas no envían el campo y reciben 4.
+    code_length = serializers.ChoiceField(choices=(4, 6), required=False, default=4)
 
     def validate(self, attrs):
         email = attrs.get("email")
@@ -212,13 +214,12 @@ class OTPVerifySerializer(serializers.Serializer):
     )
 
     def validate(self, data):
-        expected_len = 6 if data['source'] == 'web' else 4
-        otp = data['otp']
-
-        if not otp.isdigit() or len(otp) != expected_len:
+        otp = data['otp'].strip()
+        if not otp.isdigit() or len(otp) not in (4, 6):
             raise serializers.ValidationError(
-                {"otp": f"El código debe tener {expected_len} dígitos numéricos."}
+                {"otp": "El código debe tener 4 o 6 dígitos numéricos."}
             )
+        data['otp'] = otp
         return data
 class LoginLogSerializer(serializers.ModelSerializer):
     class Meta:
@@ -430,3 +431,20 @@ class FollowActionSerializer(serializers.Serializer):
         if follower and target and follower == target:
             raise serializers.ValidationError("No puedes seguir tu propia cuenta.")
         return attrs
+
+
+class DeleteAccountSerializer(serializers.Serializer):
+    reason = serializers.CharField(required=False, allow_blank=True, max_length=2000)
+    # Apple exige revocar el acceso: la app reautentica y envía el authorization_code.
+    apple_authorization_code = serializers.CharField(required=False, allow_blank=True)
+    google_revoked = serializers.BooleanField(required=False, default=False)
+
+
+class AccountDeletionRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class AccountDeletionConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.RegexField(r"^\d{6}$", error_messages={"invalid": "El código tiene 6 dígitos."})
+    reason = serializers.CharField(required=False, allow_blank=True, max_length=2000)

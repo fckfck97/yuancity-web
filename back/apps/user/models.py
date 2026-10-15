@@ -256,6 +256,7 @@ class LoginLog(models.Model):
                      on_delete=models.CASCADE,
                      related_name='login_logs'
                  )
+    provider   = models.CharField(max_length=16, default="otp")  # otp, google, apple, biometric…
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     user_agent = models.TextField(blank=True)
     success    = models.BooleanField(default=True)
@@ -370,3 +371,224 @@ class LawyerProfile(models.Model):
         return f"{self.user.email} - {self.specialties}"
     def current_cases(self):
         return self.user.cases_assigned.all().order_by('-created_at')
+
+# ---------------------------------------------------------------------------
+# Acceso sin contraseña, identidades sociales y eliminación de cuentas
+# (portado de base-project y adaptado a YuanCity)
+# ---------------------------------------------------------------------------
+
+class LoginCode(models.Model):
+    """
+    Código de acceso por correo o SMS. Solo se guarda su hash.
+    Las apps nuevas piden 6 dígitos; las versiones publicadas antes siguen recibiendo 4.
+    """
+
+    CODE_TTL_MINUTES = 10
+    MAX_ATTEMPTS = 5
+    RESEND_AFTER_SECONDS = 60
+    ALLOWED_LENGTHS = (4, 6)
+
+    identifier = models.CharField(max_length=255)  # correo en minúsculas o teléfono normalizado
+    code_hash = models.CharField(max_length=128)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(blank=True, null=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Código de acceso"
+        verbose_name_plural = "Códigos de acceso"
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["identifier", "created_at"])]
+
+    def __str__(self):
+        return f"{self.identifier} ({self.created_at:%Y-%m-%d %H:%M})"
+
+    @property
+    def is_usable(self):
+        return self.used_at is None and timezone.now() < self.expires_at and self.attempts < self.MAX_ATTEMPTS
+
+    def check_code(self, code):
+        from django.contrib.auth.hashers import check_password
+
+        return check_password(code, self.code_hash)
+
+    @classmethod
+    def issue(cls, identifier, length=6, ip_address=None):
+        """Invalida los códigos anteriores y crea uno nuevo. Devuelve (registro, código en claro)."""
+        import secrets
+        from datetime import timedelta
+        from django.contrib.auth.hashers import make_password
+
+        length = length if length in cls.ALLOWED_LENGTHS else 6
+        now = timezone.now()
+        cls.objects.filter(identifier=identifier, used_at__isnull=True).update(used_at=now)
+        code = f"{secrets.randbelow(10 ** length):0{length}d}"
+        record = cls.objects.create(
+            identifier=identifier,
+            code_hash=make_password(code),
+            expires_at=now + timedelta(minutes=cls.CODE_TTL_MINUTES),
+            ip_address=ip_address,
+        )
+        return record, code
+
+
+class SocialIdentity(models.Model):
+    """Cuenta de Google o Apple vinculada. Se identifica por `sub`, no por el correo."""
+
+    class Provider(models.TextChoices):
+        GOOGLE = "google", "Google"
+        APPLE = "apple", "Apple"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="social_identities")
+    provider = models.CharField(max_length=16, choices=Provider.choices)
+    subject = models.CharField(max_length=255)
+    # Datos tal como los entregó la plataforma (Apple solo envía el nombre la primera vez).
+    email = models.EmailField(max_length=255, blank=True, default="")
+    email_verified = models.BooleanField(default=False)
+    is_private_email = models.BooleanField(default=False, help_text="Correo de reenvío privado de Apple.")
+    first_name = models.CharField(max_length=120, blank=True, default="")
+    last_name = models.CharField(max_length=120, blank=True, default="")
+    picture_url = models.URLField(max_length=500, blank=True, default="")
+    locale = models.CharField(max_length=16, blank=True, default="")
+    last_login_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Cuenta vinculada"
+        verbose_name_plural = "Cuentas vinculadas"
+        constraints = [models.UniqueConstraint(fields=("provider", "subject"), name="unique_social_provider_subject")]
+
+    def __str__(self):
+        return f"{self.provider}:{self.email or self.subject}"
+
+
+class AccountDeletionRequest(models.Model):
+    """Solicitud de eliminación iniciada desde la web (sin sesión): código por correo + confirmación."""
+
+    CODE_TTL_MINUTES = 15
+    MAX_ATTEMPTS = 5
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pendiente"
+        COMPLETED = "completed", "Completada"
+        CANCELLED = "cancelled", "Cancelada"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="deletion_requests",
+    )
+    code_hash = models.CharField(max_length=128, blank=True, default="")
+    reason = models.TextField(blank=True, default="")
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    expires_at = models.DateTimeField()
+    completed_at = models.DateTimeField(blank=True, null=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Solicitud de eliminación de cuenta"
+        verbose_name_plural = "Solicitudes de eliminación de cuenta"
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["email", "status"])]
+
+    def __str__(self):
+        return f"{self.email} ({self.status})"
+
+    @property
+    def is_usable(self):
+        return self.status == self.Status.PENDING and timezone.now() < self.expires_at and self.attempts < self.MAX_ATTEMPTS
+
+    def check_code(self, code):
+        from django.contrib.auth.hashers import check_password
+
+        return check_password(code, self.code_hash)
+
+    @classmethod
+    def issue(cls, email, user=None, ip_address=None, user_agent=""):
+        """Cancela las solicitudes previas, crea una nueva y devuelve (solicitud, código)."""
+        import secrets
+        from datetime import timedelta
+        from django.contrib.auth.hashers import make_password
+
+        email = email.strip().lower()
+        cls.objects.filter(email=email, status=cls.Status.PENDING).update(status=cls.Status.CANCELLED)
+        code = f"{secrets.randbelow(10 ** 6):06d}"
+        deletion_request = cls.objects.create(
+            email=email,
+            user=user,
+            code_hash=make_password(code),
+            expires_at=timezone.now() + timedelta(minutes=cls.CODE_TTL_MINUTES),
+            ip_address=ip_address,
+            user_agent=(user_agent or "")[:2000],
+        )
+        return deletion_request, code
+
+
+class DeletedAccountRecord(models.Model):
+    """
+    Rastro de una cuenta eliminada. No guarda datos personales en claro: correo,
+    teléfono e identificadores de Google/Apple se guardan como HMAC para reconocer
+    a la persona si vuelve a registrarse, sin poder reconstruirlos.
+    """
+
+    class Source(models.TextChoices):
+        APP = "app", "App"
+        WEB = "web", "Web"
+        ADMIN = "admin", "Administrador"
+
+    class Mode(models.TextChoices):
+        DELETED = "deleted", "Eliminada por completo"
+        ANONYMIZED = "anonymized", "Anonimizada (tenía pedidos)"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    original_user_id = models.UUIDField(db_index=True)
+    email_hash = models.CharField(max_length=64, db_index=True)
+    email_hint = models.CharField(max_length=120, blank=True, default="", help_text="Correo enmascarado, solo de referencia.")
+    phone_hash = models.CharField(max_length=64, blank=True, default="", db_index=True)
+    social_subject_hashes = models.JSONField(default=list, blank=True)
+    social_providers = models.JSONField(default=list, blank=True)
+    role = models.CharField(max_length=20, blank=True, default="")
+    orders_count = models.PositiveIntegerField(default=0, help_text="Pedidos como comprador.")
+    products_count = models.PositiveIntegerField(default=0, help_text="Productos publicados como vendedor.")
+    mode = models.CharField(max_length=12, choices=Mode.choices, default=Mode.DELETED)
+    account_created_at = models.DateTimeField(blank=True, null=True)
+    source = models.CharField(max_length=10, choices=Source.choices)
+    reason = models.TextField(blank=True, default="")
+    platform_revocation = models.JSONField(default=dict, blank=True, help_text="Resultado de revocar el acceso en Google/Apple.")
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="deleted_accounts",
+        help_text="Administrador que eliminó la cuenta.",
+    )
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.TextField(blank=True, default="")
+    deleted_at = models.DateTimeField(auto_now_add=True)
+    rejoined_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="previous_deletions",
+    )
+    rejoined_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Cuenta eliminada"
+        verbose_name_plural = "Cuentas eliminadas"
+        ordering = ["-deleted_at"]
+
+    def __str__(self):
+        return f"{self.email_hint or self.original_user_id} ({self.get_source_display()})"

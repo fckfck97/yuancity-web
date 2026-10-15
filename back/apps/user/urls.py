@@ -1,4 +1,12 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
+from .views_account import (
+    AccountDeletionConfirmView,
+    AccountDeletionRequestView,
+    AccountDeletionStatusView,
+    DeleteMyAccountView,
+    LogoutView,
+)
 from .views import (
     SocialLoginView,
     UserEditView,
@@ -32,6 +40,17 @@ urlpatterns = [
     path('expo/push/token/', ExpoPushTokenView.as_view(), name='expo_push_token'),
     path('profile/picture/', ProfilePictureUploadView.as_view(), name='profile_picture_upload'),
     path('delete/account/<uuid:pk>/', AccountDeleteView.as_view(), name='account_delete'),
+    # Sesión
+    path("auth/logout/", LogoutView.as_view(), name="auth_logout"),
+    path("auth/refresh/", TokenRefreshView.as_view(), name="auth_refresh"),
+    # Alias: las versiones publicadas de la app renuevan aquí (services/api.ts).
+    path("auth/jwt/refresh/", TokenRefreshView.as_view(), name="auth_jwt_refresh_legacy"),
+    # Eliminación de cuenta desde la app
+    path("users/me/", DeleteMyAccountView.as_view(), name="user_delete_me"),
+    path("users/me/deletion/", AccountDeletionStatusView.as_view(), name="user_deletion_status"),
+    # Eliminación de cuenta desde la web, sin sesión: código por correo + confirmación
+    path("account/deletion/request/", AccountDeletionRequestView.as_view(), name="account_deletion_request"),
+    path("account/deletion/confirm/", AccountDeletionConfirmView.as_view(), name="account_deletion_confirm"),
         # N8N Endpoints
     path('n8n/users/', N8NUserStageListView.as_view(), name='n8n_users'),
     path('n8n/users/<uuid:pk>/advance/', N8NUserAdvanceView.as_view(), name='n8n_user_advance'),

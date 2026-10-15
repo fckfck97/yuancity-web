@@ -109,94 +109,7 @@
     "termsAndConditions": "Terms and Conditions",
     "pages": "pages"
   },
-  "privacy": {
-    "title": "Privacy Policy",
-    "lastUpdated": "Last updated: 10 October 2025",
-    "sections": {
-      "informationWeCollect": {
-        "title": "1. Information We Collect",
-        "content": "We collect personal data during registration (name, email, date of birth, phone) and usage data related to streaming (watch history, preferences, device and network information)."
-      },
-      "howWeUseInformation": {
-        "title": "2. How We Use Your Information",
-        "content": "Your data allows us to manage your account, personalise recommendations, improve streaming quality and send transactional communications (e.g., payment receipts, service updates). Marketing e-mails are strictly opt-in in line with GDPR."
-      },
-      "subscriptionsBilling": {
-        "title": "3. Subscriptions & Billing",
-        "content": "Mikiguiki offers auto-renewable subscriptions (",
-        "basic": "Basic",
-        "standard": "Standard",
-        "premium": "Premium",
-        "contentContinued": "). Prices and renewal periods are shown on the purchase screen before payment. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. You can manage or cancel your plan at any time via your App Store account settings. Restoring purchases is available with the \"Restore Purchases\" button in the app, as required by ",
-        "appReviewGuideline": "App Review Guideline 3.1.2",
-        "period": "."
-      },
-      "sharingInformation": {
-        "title": "4. Sharing Information",
-        "content": "We never sell your data. We only share information with trusted processors (e.g., payments, email/SMS/WhatsApp providers, analytics, hosting/CDN) under data processing agreements, or when legally required. We do not allow these providers to use your data for their own purposes."
-      },
-      "processorsTransfers": {
-        "title": "4.1. Processors and International Transfers",
-        "content": "We may process data on infrastructure located outside your country. Where applicable, we rely on standard contractual clauses or equivalent safeguards to protect your information, and we assess our vendors’ security and compliance posture regularly."
-      },
-      "cookiesTechnologies": {
-        "title": "5. Cookies & Similar Technologies",
-        "content": "We use cookies and local storage to remember preferences and analyse platform usage. You may disable cookies in your browser; some features might not function properly. For EU users we display a cookie-consent banner in compliance with GDPR and ePrivacy directives."
-      },
-      "dataSecurity": {
-        "title": "6. Data Security",
-        "content": "We employ encryption in transit (TLS 1.2+), hashed passwords (Argon2) and role-based access controls. Despite our efforts, no system is 100% secure."
-      },
-      "yourRights": {
-        "title": "7. Your Rights",
-        "content": "You may access, correct or delete your personal data, object to processing, or request data portability. Send your request to ",
-        "supportEmail": "contact@mikiguiki.com",
-        "contentContinued": ". We respond within 30 days as required by GDPR/CCPA."
-      },
-      "childrensPrivacy": {
-        "title": "8. Children's Privacy",
-        "content": "Mikiguiki is not directed to children under 13 years old. We do not knowingly collect data from minors. If you believe a child has provided us personal information, contact us and we will delete it immediately."
-      },
-      "changesToPolicy": {
-        "title": "9. Changes to This Policy",
-        "content": "We may update this policy to reflect new legal requirements or service changes. We will notify you in-app or by e-mail before significant changes take effect."
-      },
-      "contact": {
-        "title": "10. Contact",
-        "content": "Questions? Reach us at ",
-        "supportEmail": "contact@mikiguiki.com",
-        "contentContinued": " or ",
-        "address": "Address (Ovalcampus USA): 1129 N Saint Lucas St Allentown, PA 18104, United States",
-        "period": "."
-      },
-      "deviceIds": {
-        "title": "11. Device & Other IDs (Push)",
-        "content": "We collect an installation identifier (e.g., push notification token) to enable push notifications and associate them with your account or device. We do not sell this data or use it for advertising. Data is encrypted in transit and retained only while your account remains active or until you disable notifications or delete your account."
-      },
-      "authOtp": {
-        "title": "12. Authentication and OTP",
-        "content": "For passwordless login and security verification, we may send one-time passcodes (OTP) via e-mail, SMS or WhatsApp to the contact details you provide. We share the necessary contact data with our messaging providers solely to deliver the OTP. These providers act as processors and may not use your data for their own purposes."
-      },
-      "pushNotifications": {
-        "title": "13. Push Notifications",
-        "content": "With your permission, we send push notifications about account activity, new releases and service updates. You can disable notifications at any time in your device settings or within the app. Disabling notifications may prevent us from delivering certain service messages."
-      },
-      "dataDeletion": {
-        "title": "14. Data Deletion and Account Management",
-        "content": "You can request deletion of your account and associated personal data using the following link: ",
-        "deleteUrlLabel": "Delete Account",
-        "contentContinued": ". Once we verify your request, we will delete or anonymise your data except where retention is required by law, dispute resolution or to enforce our terms."
-      },
-      "dataRetention": {
-        "title": "15. Data Retention",
-        "content": "We retain personal data only for as long as necessary to provide our services, comply with legal obligations, resolve disputes and enforce agreements. Examples: (i) subscription and billing records for statutory periods; (ii) security logs for a limited time; (iii) push tokens while your account is active or until you revoke notifications."
-      }
-    },
-    "links": {
-      "termsOfUse": "Terms of Use (EULA)",
-      "privacyPolicyPdf": "Privacy Policy (PDF)"
-    }
-  },
+
   "terms": {
     "title": "Terms and Conditions",
     "subtitle": "Terms and conditions of use of the YuanCity platform (Ovalcampus) and EULA.",
@@ -387,12 +300,19 @@
         "emailLabel": "Your account email",
         "emailPlaceholder": "your-email@YuanCity.com",
         "emailHint": "Must match the email registered in YuanCity.",
-        "otpLabel": "OTP code (if required)",
-        "otpPlaceholder": "Enter your verification code",
-        "otpHint": "We send it to you by email/SMS/WhatsApp if your account requires it.",
+        "otpLabel": "Confirmation code",
+        "otpPlaceholder": "6 digits",
+        "otpHint": "We sent it to your account email. It expires in 15 minutes.",
         "reasonLabel": "Reason (optional)",
         "reasonPlaceholder": "Tell us briefly why (optional)",
-        "deleteButton": "Delete my account"
+        "deleteButton": "Delete my account",
+        "sendCodeButton": "Send me the code",
+        "sendingCode": "Sending…",
+        "codeSent": "If the email is registered, we sent you a 6-digit code. Check your spam folder too.",
+        "changeEmail": "Change email",
+        "resendCode": "Resend code",
+        "invalidEmail": "Enter a valid email.",
+        "invalidCode": "The code has 6 digits."
       },
       "contact": {
         "number": "4",
@@ -466,7 +386,7 @@
     },
     "footer": {
       "content": "For your security, we may request additional verification in some cases. If you need help, write to ",
-      "email": "contact@YuanCity.com"
+      "email": "contacto@yuancity.com"
     },
     "modal": {
       "title": "Confirmation required",
@@ -480,7 +400,7 @@
   "unsubscribe": {
     "title": "Unsubscribe",
     "subtitleManage": "Enter your email to manage your subscription",
-    "subtitleStop": "Stop receiving emails from Mikiguiki",
+    "subtitleStop": "Stop receiving emails from YuanCity",
     "backToHome": "Back to Home",
     "emailLabel": "Email",
     "emailPlaceholder": "you@email.com",
@@ -489,7 +409,7 @@
     "cancel": "Cancel",
     "accountTitle": "Your account",
     "alreadyUnsubscribedTitle": "You are already unsubscribed",
-    "alreadyUnsubscribedMessage": "You will no longer receive emails from Mikiguiki. If you change your mind, you can subscribe again from your account settings.",
+    "alreadyUnsubscribedMessage": "You will no longer receive emails from YuanCity. If you change your mind, you can subscribe again from your account settings.",
     "youCanReturnTitle": "You can come back anytime",
     "youCanReturnMessage": "This action can be reversed at any time from your account settings.",
     "resubscribeHint": "You can subscribe again at any time from your account settings.",

@@ -5,9 +5,9 @@ import DeepLinkLauncher from '@/components/DeepLinkLauncher';
 import { useTranslation } from 'react-i18next';
 import { FaApple, FaFacebookF, FaGooglePlay, FaInstagram, FaTimes, FaWhatsapp } from 'react-icons/fa';
 
-const APP_STORE_URL = 'https://apps.apple.com/us/app/mikiguiki/id6748412273';
+const APP_STORE_URL = 'https://apps.apple.com/us/app/yuancity/id6748412273';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.ovalcampus.yuancity';
-const HOME_DEEP_LINK = 'mikiguiki://home';
+const HOME_DEEP_LINK = 'yuancity://home';
 const WHATSAPP_NUMBER = '573116617105';
 const WHATSAPP_MESSAGE = encodeURIComponent(
     'Descarga la app de Yuancity y ve contenido exclusivo https://yuancity.com',
@@ -94,7 +94,7 @@ export function SocialPromoModal({ onClose }: SocialPromoModalProps) {
                             </p>
                             <div className="flex justify-center gap-4">
                                 <a
-                                    href="https://www.facebook.com/mikiguiki"
+                                    href="https://www.facebook.com/YuanCity"
                                     target="_blank"
                                     rel="noreferrer"
                                     className="w-12 h-12 flex items-center justify-center bg-black text-white border-2 border-border shadow-brutal hover:shadow-brutal-lg hover:bg-main transition-all"
@@ -103,7 +103,7 @@ export function SocialPromoModal({ onClose }: SocialPromoModalProps) {
                                     <FaFacebookF className="w-5 h-5" />
                                 </a>
                                 <a
-                                    href="https://www.instagram.com/mikiguiki/"
+                                    href="https://www.instagram.com/YuanCity/"
                                     target="_blank"
                                     rel="noreferrer"
                                     className="w-12 h-12 flex items-center justify-center bg-black text-white border-2 border-border shadow-brutal hover:shadow-brutal-lg hover:bg-main transition-all"

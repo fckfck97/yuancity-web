@@ -6,32 +6,90 @@ import { AlertTriangle, Mail, CheckCircle, XCircle, ShieldCheck } from "lucide-r
 import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/navigation/footer";
 import { useTranslation } from "react-i18next";
+import { buildApiUrl } from "@/lib/auth";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function postJson(path: string, body: Record<string, unknown>) {
+  const res = await fetch(buildApiUrl(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  let data: Record<string, any> = {};
+  try {
+    data = await res.json();
+  } catch {
+    /* sin cuerpo */
+  }
+  return { ok: res.ok, status: res.status, detail: typeof data.detail === "string" ? data.detail : "" };
+}
 
 export default function DeleteAccountPage() {
   const { t } = useTranslation();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [status, setStatus] = useState<"success" | "error" | null>(null);
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState(""); // correo registrado
-  const [otp, setOtp] = useState(""); // OTP opcional
+  const [otp, setOtp] = useState(""); // código de confirmación enviado por correo
   const [reason, setReason] = useState(""); // motivo opcional
+  const [notice, setNotice] = useState(""); // mensaje informativo
+  const [error, setError] = useState(""); // mensaje de error del servidor
 
-  const handleDeleteRequest = () => setShowConfirmation(true);
+  // Paso 1: el backend envía un código al correo (respuesta genérica: no revela si existe).
+  const sendCode = async () => {
+    const normalized = email.trim().toLowerCase();
+    if (!EMAIL_PATTERN.test(normalized)) {
+      setError(t("deleteAccount.sections.verification.invalidEmail"));
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await postJson("/account/deletion/request/", { email: normalized });
+      if (!res.ok) throw new Error(res.detail);
+      setEmail(normalized);
+      setOtp("");
+      setStep("code");
+      setNotice(t("deleteAccount.sections.verification.codeSent"));
+    } catch (err) {
+      setError((err as Error).message || t("deleteAccount.status.error"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleDeleteRequest = () => {
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setError(t("deleteAccount.sections.verification.invalidCode"));
+      return;
+    }
+    setError("");
+    setShowConfirmation(true);
+  };
+
+  // Paso 2: valida el código y elimina la cuenta (o la anonimiza si tiene pedidos).
   const confirmDelete = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/account/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: otp || null, reason: reason || null }),
+      const res = await postJson("/account/deletion/confirm/", {
+        email,
+        otp: otp.trim(),
+        reason: reason.trim(),
       });
-
-      if (!res.ok) throw new Error("Request failed");
+      if (!res.ok) {
+        setError(res.detail || t("deleteAccount.status.error"));
+        setStatus(res.status >= 500 ? "error" : null);
+        setShowConfirmation(false);
+        return;
+      }
       setStatus("success");
+      setNotice("");
       setShowConfirmation(false);
     } catch {
       setStatus("error");
+      setShowConfirmation(false);
     } finally {
       setLoading(false);
     }
@@ -99,50 +157,94 @@ export default function DeleteAccountPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="col-span-2 md:col-span-1">
-              <label className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.emailLabel')}</label>
+              <label htmlFor="delete-email" className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.emailLabel')}</label>
               <input
+                id="delete-email"
                 type="email"
+                autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                disabled={step === "code" || status === "success"}
+                onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter" && step === "email") sendCode(); }}
                 placeholder={t('deleteAccount.sections.verification.emailPlaceholder')}
-                className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-70"
               />
               <p className="text-xs text-foreground/70 mt-1">{t('deleteAccount.sections.verification.emailHint')}</p>
+              {step === "code" && status !== "success" && (
+                <button
+                  type="button"
+                  onClick={() => { setStep("email"); setOtp(""); setNotice(""); setError(""); }}
+                  className="mt-2 text-xs font-black underline text-foreground"
+                >
+                  {t('deleteAccount.sections.verification.changeEmail')}
+                </button>
+              )}
             </div>
 
-            <div className="col-span-2 md:col-span-1">
-              <label className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.otpLabel')}</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder={t('deleteAccount.sections.verification.otpPlaceholder')}
-                className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <p className="text-xs text-foreground/70 mt-1">{t('deleteAccount.sections.verification.otpHint')}</p>
-            </div>
+            {step === "code" && (
+              <div className="col-span-2 md:col-span-1">
+                <label htmlFor="delete-otp" className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.otpLabel')}</label>
+                <input
+                  id="delete-otp"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={otp}
+                  disabled={status === "success"}
+                  onChange={(e) => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+                  placeholder={t('deleteAccount.sections.verification.otpPlaceholder')}
+                  className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal tracking-[0.4em] font-black focus:outline-none focus:ring-2 focus:ring-black"
+                />
+                <p className="text-xs text-foreground/70 mt-1">{t('deleteAccount.sections.verification.otpHint')}</p>
+                <button
+                  type="button"
+                  onClick={sendCode}
+                  disabled={loading || status === "success"}
+                  className="mt-2 text-xs font-black underline text-foreground disabled:opacity-50"
+                >
+                  {t('deleteAccount.sections.verification.resendCode')}
+                </button>
+              </div>
+            )}
 
-            <div className="col-span-2">
-              <label className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.reasonLabel')}</label>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                rows={3}
-                placeholder={t('deleteAccount.sections.verification.reasonPlaceholder')}
-                className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black"
-              />
-            </div>
+            {step === "code" && (
+              <div className="col-span-2">
+                <label htmlFor="delete-reason" className="block text-sm font-black text-foreground mb-1">{t('deleteAccount.sections.verification.reasonLabel')}</label>
+                <textarea
+                  id="delete-reason"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  rows={3}
+                  maxLength={2000}
+                  placeholder={t('deleteAccount.sections.verification.reasonPlaceholder')}
+                  className="w-full bg-white border-2 border-border px-3 py-2 shadow-brutal focus:outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+            )}
           </div>
 
+          {notice && status !== "success" && (
+            <p role="status" className="mt-4 bg-white border-2 border-border p-3 shadow-brutal text-sm font-semibold text-foreground">{notice}</p>
+          )}
+          {error && (
+            <p role="alert" className="mt-4 bg-white border-2 border-border p-3 shadow-brutal text-sm font-bold text-red-700 flex items-start gap-2">
+              <XCircle className="text-red-600 flex-shrink-0" size={18} />
+              {error}
+            </p>
+          )}
+
           {/* Botón principal */}
-          {!status && (
+          {status !== "success" && (
             <div className="text-center mt-6">
               <button
-                onClick={handleDeleteRequest}
-                className="bg-black text-white border-4 border-border px-8 py-3 font-black shadow-brutal hover:shadow-[14px_14px_0px_0px_var(--color-border)] transition-all"
+                onClick={step === "email" ? sendCode : handleDeleteRequest}
+                disabled={loading}
+                className="bg-black text-white border-4 border-border px-8 py-3 font-black shadow-brutal hover:shadow-[14px_14px_0px_0px_var(--color-border)] transition-all disabled:opacity-60"
               >
-                {t('deleteAccount.sections.verification.deleteButton')}
+                {step === "email"
+                  ? (loading ? t('deleteAccount.sections.verification.sendingCode') : t('deleteAccount.sections.verification.sendCodeButton'))
+                  : t('deleteAccount.sections.verification.deleteButton')}
               </button>
             </div>
           )}
@@ -302,7 +404,7 @@ export default function DeleteAccountPage() {
             <div className="flex gap-4">
               <button
                 onClick={confirmDelete}
-                disabled={loading || !email}
+                disabled={loading || !email || otp.length !== 6}
                 className="flex-1 bg-black text-white border-4 border-border px-4 py-2 font-black shadow-brutal hover:shadow-[12px_12px_0px_0px_var(--color-border)] disabled:opacity-50 transition-all"
               >
                 {loading ? t('deleteAccount.modal.processing') : t('deleteAccount.modal.confirmButton')}

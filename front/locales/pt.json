@@ -111,94 +111,7 @@
     "termsAndConditions": "Termos e Condições",
     "pages": "páginas"
   },
-  "privacy": {
-    "title": "Política de Privacidade",
-    "lastUpdated": "Última atualização: 10 de outubro de 2025",
-    "sections": {
-      "informationWeCollect": {
-        "title": "1. Informações que coletamos",
-        "content": "Coletamos dados pessoais durante o cadastro (nome, e-mail, data de nascimento, telefone) e dados de uso relacionados ao streaming (histórico de visualização, preferências, informações do dispositivo e da rede)."
-      },
-      "howWeUseInformation": {
-        "title": "2. Como usamos suas informações",
-        "content": "Seus dados nos permitem gerenciar sua conta, personalizar recomendações, melhorar a qualidade do streaming e enviar comunicações transacionais (por exemplo, recibos de pagamento, atualizações do serviço). E-mails de marketing são estritamente opt-in, em conformidade com o GDPR."
-      },
-      "subscriptionsBilling": {
-        "title": "3. Assinaturas e cobrança",
-        "content": "A Mikiguiki oferece assinaturas com renovação automática (",
-        "basic": "Básico",
-        "standard": "Padrão",
-        "premium": "Premium",
-        "contentContinued": "). Os preços e os períodos de renovação são exibidos na tela de compra antes do pagamento. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período vigente. Você pode gerenciar ou cancelar seu plano a qualquer momento nas configurações da sua conta na App Store. A restauração de compras está disponível pelo botão \"Restaurar compras\" no app, conforme exigido pela ",
-        "appReviewGuideline": "Diretriz de Revisão de Apps 3.1.2",
-        "period": "."
-      },
-      "sharingInformation": {
-        "title": "4. Compartilhamento de informações",
-        "content": "Nós nunca vendemos seus dados. Compartilhamos informações apenas com operadores confiáveis (por exemplo, pagamentos, provedores de e-mail/SMS/WhatsApp, analytics, hospedagem/CDN) sob acordos de processamento de dados, ou quando exigido por lei. Não permitimos que esses provedores usem seus dados para fins próprios."
-      },
-      "processorsTransfers": {
-        "title": "4.1. Operadores e transferências internacionais",
-        "content": "Podemos processar dados em infraestrutura localizada fora do seu país. Quando aplicável, utilizamos cláusulas contratuais padrão ou salvaguardas equivalentes para proteger suas informações e avaliamos regularmente a postura de segurança e conformidade de nossos fornecedores."
-      },
-      "cookiesTechnologies": {
-        "title": "5. Cookies e tecnologias semelhantes",
-        "content": "Usamos cookies e armazenamento local para lembrar preferências e analisar o uso da plataforma. Você pode desativar cookies no navegador; alguns recursos podem não funcionar corretamente. Para usuários da UE exibimos um banner de consentimento de cookies em conformidade com o GDPR e a diretiva ePrivacy."
-      },
-      "dataSecurity": {
-        "title": "6. Segurança dos dados",
-        "content": "Empregamos criptografia em trânsito (TLS 1.2+), senhas com hash (Argon2) e controles de acesso baseados em função. Apesar dos nossos esforços, nenhum sistema é 100% seguro."
-      },
-      "yourRights": {
-        "title": "7. Seus direitos",
-        "content": "Você pode acessar, corrigir ou excluir seus dados pessoais, se opor ao processamento ou solicitar portabilidade. Envie sua solicitação para ",
-        "supportEmail": "contact@mikiguiki.com",
-        "contentContinued": ". Respondemos em até 30 dias, conforme GDPR/CCPA."
-      },
-      "childrensPrivacy": {
-        "title": "8. Privacidade de crianças",
-        "content": "A Mikiguiki não é direcionada a crianças menores de 13 anos. Não coletamos intencionalmente dados de menores. Se você acredita que uma criança forneceu informações pessoais, entre em contato e nós as excluiremos imediatamente."
-      },
-      "changesToPolicy": {
-        "title": "9. Alterações nesta política",
-        "content": "Podemos atualizar esta política para refletir novos requisitos legais ou mudanças no serviço. Notificaremos no app ou por e-mail antes que alterações significativas entrem em vigor."
-      },
-      "contact": {
-        "title": "10. Contato",
-        "content": "Dúvidas? Fale conosco em ",
-        "supportEmail": "contact@mikiguiki.com",
-        "contentContinued": " ou em ",
-        "address": "Endereço (Ovalcampus USA): 1129 N Saint Lucas St Allentown, PA 18104, United States",
-        "period": "."
-      },
-      "deviceIds": {
-        "title": "11. IDs do dispositivo e outros identificadores (Push)",
-        "content": "Coletamos um identificador de instalação (por exemplo, token de notificação push) para habilitar notificações e associá-las à sua conta ou dispositivo. Não vendemos esses dados nem os usamos para publicidade. Os dados são criptografados em trânsito e retidos apenas enquanto sua conta permanecer ativa ou até você desativar notificações ou excluir sua conta."
-      },
-      "authOtp": {
-        "title": "12. Autenticação e OTP",
-        "content": "Para login sem senha e verificação de segurança, podemos enviar códigos de uso único (OTP) por e-mail, SMS ou WhatsApp para os contatos fornecidos. Compartilhamos os dados necessários com nossos provedores de mensagens somente para entregar o OTP. Esses provedores atuam como operadores e não podem usar seus dados para fins próprios."
-      },
-      "pushNotifications": {
-        "title": "13. Notificações push",
-        "content": "Com sua permissão, enviamos notificações push sobre atividade da conta, novos lançamentos e atualizações do serviço. Você pode desativar a qualquer momento nas configurações do dispositivo ou dentro do app. Desativar notificações pode impedir o recebimento de algumas mensagens de serviço."
-      },
-      "dataDeletion": {
-        "title": "14. Exclusão de dados e gerenciamento da conta",
-        "content": "Você pode solicitar a exclusão da sua conta e dos dados pessoais associados pelo seguinte link: ",
-        "deleteUrlLabel": "Excluir conta",
-        "contentContinued": ". Após verificarmos sua solicitação, excluiremos ou anonimizaremos seus dados, exceto quando a retenção for exigida por lei, resolução de disputas ou para fazer cumprir nossos termos."
-      },
-      "dataRetention": {
-        "title": "15. Retenção de dados",
-        "content": "Retemos dados pessoais apenas pelo tempo necessário para prestar o serviço, cumprir obrigações legais, resolver disputas e fazer cumprir acordos. Exemplos: (i) registros de assinatura e cobrança pelos períodos legais; (ii) logs de segurança por tempo limitado; (iii) tokens push enquanto sua conta estiver ativa ou até você revogar as notificações."
-      }
-    },
-    "links": {
-      "termsOfUse": "Termos de uso (EULA)",
-      "privacyPolicyPdf": "Política de Privacidade (PDF)"
-    }
-  },
+
   "terms": {
     "title": "Termos e condições",
     "subtitle": "Termos e condições de uso da plataforma YuanCity (Ovalcampus) e EULA.",
@@ -389,12 +302,19 @@
         "emailLabel": "E-mail da sua conta",
         "emailPlaceholder": "seu-email@YuanCity.com",
         "emailHint": "Deve corresponder ao e-mail cadastrado na YuanCity.",
-        "otpLabel": "Código OTP (se necessário)",
-        "otpPlaceholder": "Digite seu código de verificação",
-        "otpHint": "Enviamos por e-mail/SMS/WhatsApp se sua conta exigir.",
+        "otpLabel": "Código de confirmação",
+        "otpPlaceholder": "6 dígitos",
+        "otpHint": "Enviamos para o e-mail da sua conta. Expira em 15 minutos.",
         "reasonLabel": "Motivo (opcional)",
         "reasonPlaceholder": "Conte rapidamente o motivo (opcional)",
-        "deleteButton": "Excluir minha conta"
+        "deleteButton": "Excluir minha conta",
+        "sendCodeButton": "Enviar o código",
+        "sendingCode": "Enviando…",
+        "codeSent": "Se o e-mail estiver cadastrado, enviamos um código de 6 dígitos. Verifique também o spam.",
+        "changeEmail": "Alterar e-mail",
+        "resendCode": "Reenviar código",
+        "invalidEmail": "Digite um e-mail válido.",
+        "invalidCode": "O código tem 6 dígitos."
       },
       "contact": {
         "number": "4",
@@ -482,7 +402,7 @@
   "unsubscribe": {
     "title": "Cancelar inscrição",
     "subtitleManage": "Digite seu e-mail para gerenciar sua inscrição",
-    "subtitleStop": "Pare de receber e-mails da Mikiguiki",
+    "subtitleStop": "Pare de receber e-mails da YuanCity",
     "backToHome": "Voltar para a Home",
     "emailLabel": "E-mail",
     "emailPlaceholder": "seu@email.com",
@@ -491,7 +411,7 @@
     "cancel": "Cancelar",
     "accountTitle": "Sua conta",
     "alreadyUnsubscribedTitle": "Você já está sem inscrição",
-    "alreadyUnsubscribedMessage": "Você não receberá mais e-mails da Mikiguiki. Se mudar de ideia, pode se inscrever novamente nas configurações da sua conta.",
+    "alreadyUnsubscribedMessage": "Você não receberá mais e-mails da YuanCity. Se mudar de ideia, pode se inscrever novamente nas configurações da sua conta.",
     "youCanReturnTitle": "Você pode voltar quando quiser",
     "youCanReturnMessage": "Esta ação pode ser revertida a qualquer momento nas configurações da sua conta.",
     "resubscribeHint": "Você pode se inscrever novamente a qualquer momento nas configurações da sua conta.",

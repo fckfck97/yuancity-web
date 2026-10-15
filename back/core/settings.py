@@ -73,6 +73,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'apps.user',
+    'apps.mobile',
     'apps.count',
     'apps.support',
     'apps.AI',
@@ -249,6 +250,18 @@ APPLE_EXPO_AUD = "host.exp.Exponent"     # tokens emitidos dentro de Expo Go
 
 APPLE_ALLOWED_AUDS = [APPLE_SERVICE_ID, APPLE_APP_ID, APPLE_EXPO_AUD]
 
+# Revocar «Iniciar sesión con Apple» al eliminar la cuenta (exigido por Apple).
+# Llave .p8 de Sign in with Apple; en .env los saltos de línea van como \n.
+APPLE_TEAM_ID = os.environ.get("APPLE_TEAM_ID", "A37Q5VM7ZA")
+APPLE_KEY_ID = os.environ.get("APPLE_KEY_ID", "")
+APPLE_PRIVATE_KEY = os.environ.get("APPLE_PRIVATE_KEY", "").replace("\\n", "\n")
+
+APP_NAME = os.environ.get("APP_NAME", "YuanCity")
+
+# Clave del HMAC de identificadores de cuentas eliminadas. No cambiarla en producción:
+# se perdería el reconocimiento de quienes vuelven a registrarse.
+DELETION_HASH_KEY = os.environ.get("DELETION_HASH_KEY") or SECRET_KEY or "dev-only-deletion-key"
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
@@ -382,6 +395,43 @@ UNFOLD = {
                         "icon": "group",
                         "link": reverse_lazy("admin:auth_group_changelist"),
                     }
+                ],
+            },
+            {
+                "title": "Cuentas y acceso",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Cuentas eliminadas",
+                        "icon": "person_remove",
+                        "link": reverse_lazy("admin:user_deletedaccountrecord_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": "Solicitudes de eliminación",
+                        "icon": "mark_email_unread",
+                        "link": reverse_lazy("admin:user_accountdeletionrequest_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": "Cuentas vinculadas",
+                        "icon": "link",
+                        "link": reverse_lazy("admin:user_socialidentity_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": "Registro de accesos",
+                        "icon": "login",
+                        "link": reverse_lazy("admin:user_loginlog_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": "Versiones de la app",
+                        "icon": "system_update",
+                        "link": reverse_lazy("admin:mobile_mobileappversion_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
                 ],
             },
         ],

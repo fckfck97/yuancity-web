@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/reviews/', include('apps.reviews.urls')),
     path('api/promotions/', include('apps.promotions.urls')),
     path('api/wishlist/', include('apps.wishlist.urls')),
+    path('api/mobile/', include('apps.mobile.urls')),
     path('api/', include('apps.count.urls')),
     path('api/', include('apps.user.urls')),
     path('api/', include('apps.AI.urls')),

@@ -101,3 +101,64 @@ class NotificationAdmin(ModelAdmin):
         'style': 'width: 100%;'
       })
     return form
+
+
+# ---------------------------------------------------------------------------
+# Acceso, cuentas vinculadas y eliminación de cuentas
+# ---------------------------------------------------------------------------
+from unfold.decorators import display
+
+from .models import AccountDeletionRequest, DeletedAccountRecord, LoginCode, LoginLog, SocialIdentity
+
+
+@admin.register(SocialIdentity)
+class SocialIdentityAdmin(ModelAdmin):
+  list_display = ("user", "provider", "email", "is_private_email", "last_login_at", "created_at")
+  list_filter = ("provider", "is_private_email")
+  search_fields = ("user__email", "email", "subject")
+  readonly_fields = [field.name for field in SocialIdentity._meta.fields]
+
+
+@admin.register(LoginCode)
+class LoginCodeAdmin(ModelAdmin):
+  # El código nunca se muestra: solo se guarda su hash.
+  list_display = ("identifier", "attempts", "expires_at", "used_at", "ip_address", "created_at")
+  search_fields = ("identifier",)
+  exclude = ("code_hash",)
+  readonly_fields = ("identifier", "attempts", "expires_at", "used_at", "ip_address", "created_at")
+
+
+@admin.register(LoginLog)
+class LoginLogAdmin(ModelAdmin):
+  list_display = ("user", "provider", "success", "ip_address", "created_at")
+  list_filter = ("provider", "success")
+  search_fields = ("user__email", "ip_address")
+  readonly_fields = [field.name for field in LoginLog._meta.fields]
+
+
+@admin.register(AccountDeletionRequest)
+class AccountDeletionRequestAdmin(ModelAdmin):
+  list_display = ("email", "status_label", "attempts", "expires_at", "completed_at", "created_at")
+  list_filter = ("status",)
+  search_fields = ("email",)
+  exclude = ("code_hash",)
+  readonly_fields = ("email", "user", "status", "reason", "attempts", "expires_at", "completed_at", "ip_address", "user_agent", "created_at")
+
+  @display(description="Estado", label={"Pendiente": "warning", "Completada": "success", "Cancelada": "danger"})
+  def status_label(self, obj):
+    return obj.get_status_display()
+
+
+@admin.register(DeletedAccountRecord)
+class DeletedAccountRecordAdmin(ModelAdmin):
+  list_display = ("email_hint", "mode_label", "source", "role", "orders_count", "products_count", "deleted_at", "rejoined_user")
+  list_filter = ("mode", "source", "role")
+  search_fields = ("email_hint", "original_user_id", "reason")
+  readonly_fields = [field.name for field in DeletedAccountRecord._meta.fields]
+
+  @display(description="Tipo", label={"Eliminada por completo": "danger", "Anonimizada (tenía pedidos)": "info"})
+  def mode_label(self, obj):
+    return obj.get_mode_display()
+
+  def has_add_permission(self, request):
+    return False

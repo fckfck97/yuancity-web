@@ -49,6 +49,24 @@ from .utils.push import send_push
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from apps.utils.yuancity_stage_templates import build_stage_output
+import logging
+from django.core.cache import cache
+from .models import LoginCode, SocialIdentity, DeletedAccountRecord
+from .deletion import AccountDeletionBlocked, client_ip, delete_account
+from .utils.avatar import import_remote_avatar
+
+logger = logging.getLogger(__name__)
+
+
+def log_login(request, user, provider, success=True):
+    LoginLog.objects.create(
+        user=user,
+        provider=provider,
+        success=success,
+        ip_address=client_ip(request),
+        user_agent=request.META.get("HTTP_USER_AGENT", "")[:2000],
+    )
+
 def normalize_email(email: str) -> str:
     return email.strip().lower()
 
@@ -63,42 +81,53 @@ def resolve_user_identifier(identifier):
         return None
 
 class SocialLoginView(APIView):
+    """
+    POST /api/social/login/  { provider: "google"|"apple", id_token, first_name?, last_name? }
+    Valida el id_token, vincula la cuenta por `sub` (SocialIdentity) y devuelve los JWT.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         provider = request.data.get("provider")
         raw_token = request.data.get("id_token")
-        first_name = request.data.get("first_name")
-        last_name = request.data.get("last_name")
+        first_name = str(request.data.get("first_name") or "").strip()
+        last_name = str(request.data.get("last_name") or "").strip()
 
-        if not provider or not raw_token:
-            return Response({"detail": "Faltan parámetros"}, status=400)
+        if provider not in ("google", "apple") or not raw_token:
+            return Response({"detail": "Proveedor o token inválido."}, status=400)
 
         if provider == "google":
+            allowed = [client_id for client_id in settings.GOOGLE_CLIENT_IDS if client_id]
+            if not allowed:
+                return Response({"detail": "Google Sign-In aún no está configurado en el servidor."}, status=503)
             try:
-                payload = google_id_token.verify_oauth2_token(
-                    raw_token,
-                    google_requests.Request(),          # sin audience fija
-                )
-                if payload["aud"] not in settings.GOOGLE_CLIENT_IDS:
-                    return Response({"detail": "audience no permitido"}, status=400)
-            except ValueError:
-                return Response({"detail": "Token Google inválido"}, status=400)
-
-            email       = payload["email"]
-            first_name  = payload.get("given_name", "")
-            last_name   = payload.get("family_name", "")
-
-        elif provider == "apple":
-            # Descarga las claves públicas de Apple (cachea 24 h)
-            jwks = requests.get("https://appleid.apple.com/auth/keys").json()   # :contentReference[oaicite:1]{index=1}
-            header = jwt.get_unverified_header(raw_token)
-            key = next((k for k in jwks["keys"] if k["kid"] == header["kid"]), None)
-            if not key:
-                return Response({"detail": "Clave Apple no encontrada"}, status=400)
-
-            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+                payload = google_id_token.verify_oauth2_token(raw_token, google_requests.Request())
+            except (ValueError, KeyError):
+                return Response({"detail": "Token de Google inválido."}, status=400)
+            if payload.get("aud") not in allowed:
+                return Response({"detail": "Cliente de Google no autorizado."}, status=400)
+            if not payload.get("email_verified"):
+                return Response({"detail": "Google no verificó el correo."}, status=400)
+            subject = payload.get("sub")
+            email = payload.get("email")
+            first_name = payload.get("given_name") or first_name
+            last_name = payload.get("family_name") or last_name
+            platform_data = {
+                "email_verified": True,
+                "picture_url": payload.get("picture", ""),
+                "locale": payload.get("locale", ""),
+            }
+        else:
             try:
+                keys = cache.get("apple-jwks")
+                if keys is None:
+                    jwks_response = requests.get("https://appleid.apple.com/auth/keys", timeout=8)
+                    jwks_response.raise_for_status()
+                    keys = jwks_response.json().get("keys", [])
+                    cache.set("apple-jwks", keys, 86400)
+                header = jwt.get_unverified_header(raw_token)
+                key_data = next(key for key in keys if key.get("kid") == header.get("kid"))
+                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
                 payload = jwt.decode(
                     raw_token,
                     public_key,
@@ -106,27 +135,70 @@ class SocialLoginView(APIView):
                     audience=settings.APPLE_ALLOWED_AUDS,
                     issuer="https://appleid.apple.com",
                 )
-            except jwt.PyJWTError:
-                return Response({"detail": "Token Apple inválido"}, status=400)
+            except (requests.RequestException, jwt.PyJWTError, StopIteration, KeyError, ValueError):
+                # Apple rota sus llaves: si el kid no está en caché se vuelve a descargar la próxima vez.
+                cache.delete("apple-jwks")
+                return Response({"detail": "Token de Apple inválido."}, status=400)
+            subject = payload.get("sub")
+            email = payload.get("email")
+            # Apple manda los booleanos como texto ("true") en algunos tokens.
+            platform_data = {
+                "email_verified": str(payload.get("email_verified", "")).lower() == "true",
+                "is_private_email": str(payload.get("is_private_email", "")).lower() == "true",
+            }
 
-            email       = payload.get("email")
-            first_name  = first_name
-            last_name   = last_name
+        if not subject:
+            return Response({"detail": "El proveedor no entregó un identificador."}, status=400)
 
+        identity = SocialIdentity.objects.select_related("user").filter(provider=provider, subject=subject).first()
+        is_new_user = False
+        if identity:
+            user = identity.user
         else:
-            return Response({"detail": "Proveedor no soportado"}, status=400)
+            if not email:
+                return Response({"detail": "El proveedor no entregó el correo."}, status=400)
+            email_norm = normalize_email(email)
+            user = User.objects.filter(email__iexact=email_norm).first()
+            if user is None:
+                # create_user crea también el carrito y la lista de deseos.
+                user = User.objects.create_user(
+                    email=email_norm,
+                    password=strong_random_password(),
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+                is_new_user = True
+            identity = SocialIdentity.objects.create(user=user, provider=provider, subject=subject)
 
-        # Crear / actualizar usuario
-        user, _ = User.objects.get_or_create(
-            email=email,
-            defaults={
-                "first_name": first_name,
-                "last_name":  last_name,
-                "password":   strong_random_password(),
-            },
-        )
-        return Response(build_tokens(user), status=200)
-      
+        if not user.is_active:
+            return Response({"detail": "Esta cuenta está desactivada."}, status=403)
+
+        # Apple solo entrega el nombre en el primer inicio: nunca se sobrescribe con vacío.
+        identity.email = email or identity.email
+        identity.first_name = first_name or identity.first_name
+        identity.last_name = last_name or identity.last_name
+        for field, value in platform_data.items():
+            setattr(identity, field, value or getattr(identity, field))
+        identity.last_login_at = timezone.now()
+        identity.save()
+
+        # Completa el perfil con lo que dio la plataforma, sin pisar lo que el usuario ya editó.
+        updated = []
+        if not user.first_name and first_name:
+            user.first_name = first_name
+            updated.append("first_name")
+        if not user.last_name and last_name:
+            user.last_name = last_name
+            updated.append("last_name")
+        if updated:
+            user.save(update_fields=updated)
+        profile = getattr(user, "social_profile", None)
+        if profile and identity.picture_url:
+            import_remote_avatar(profile, identity.picture_url)
+
+        log_login(request, user, provider)
+        return Response({**build_tokens(user), "is_new_user": is_new_user}, status=200)
+
 class UserEditView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -177,83 +249,119 @@ class ProfilePictureUploadView(APIView):
         return Response({"avatar_url": avatar_url}, status=status.HTTP_200_OK)
       
    
+DEMO_ACCOUNTS = {
+    "apple.revisor@yuancity.com",
+    "google.revisor@yuancity.com",
+    "huawei.revisor@yuancity.com",
+}
+
+
+def is_demo_account(email):
+    return (email or "").strip().lower() in DEMO_ACCOUNTS
+
+
+def throttle_login_code(identifier):
+    """Devuelve una Response 429 si se piden códigos demasiado seguido; None si se puede enviar."""
+    window_start = timezone.now() - timedelta(minutes=OTP_THROTTLE_WINDOW_MINUTES)
+    recent = LoginCode.objects.filter(identifier=identifier, created_at__gte=window_start)
+    last = recent.first()
+    if last:
+        wait = LoginCode.RESEND_AFTER_SECONDS - int((timezone.now() - last.created_at).total_seconds())
+        if wait > 0:
+            return Response(
+                {"detail": f"Espera {wait} segundos para pedir otro código.", "resend_in": wait},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+    if recent.count() >= OTP_THROTTLE_MAX_REQUESTS:
+        return Response(
+            {"detail": "Demasiadas solicitudes. Inténtalo de nuevo en unos minutos."},
+            status=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+    return None
+
+
+def send_login_code_email(email, code):
+    minutes = LoginCode.CODE_TTL_MINUTES
+    send_mail(
+        f"Tu código de acceso a {settings.APP_NAME}",
+        (
+            f"Tu código para ingresar a {settings.APP_NAME} es: {code}\n\n"
+            f"Vence en {minutes} minutos. Si no lo pediste, ignora este correo."
+        ),
+        settings.DEFAULT_FROM_EMAIL,
+        [email],
+    )
+
+
+OTP_THROTTLE_WINDOW_MINUTES = 15
+OTP_THROTTLE_MAX_REQUESTS = 5
+
+
 class OTPLoginRequestView(APIView):
   """
-  POST /auth/login/otp/request/
-    { "email": "..."}  ó  { "phone": "3001234567", "channel": "sms|whatsapp" }
-  Crea usuario si no existe y envía OTP.
+  POST /api/login/otp/request/
+    { "email": "...", "code_length": 6 }  ó  { "phone": "3001234567", "channel": "sms|whatsapp" }
+  Envía un código (solo se guarda su hash). La cuenta se crea al validarlo.
+  `code_length` es 6 en las apps nuevas; las versiones publicadas antes no lo envían y reciben 4.
   """
   permission_classes = [permissions.AllowAny]
 
-  @transaction.atomic
   def post(self, request):
-    print(request.data)
     ser = OTPRequestSerializer(data=request.data)
     ser.is_valid(raise_exception=True)
 
-    email   = ser.validated_data.get("email")
-    phone   = ser.validated_data.get("phone")
-
-    user = None
-    created = False
+    email = ser.validated_data.get("email")
+    phone = ser.validated_data.get("phone")
+    length = ser.validated_data.get("code_length") or 4
 
     if email:
-      email_norm = normalize_email(email)
-      
-      # Check for demo account
-      if email_norm == "apple.revisor@yuancity.com" or email_norm == "google.revisor@yuancity.com" or email_norm == "huawei.revisor@yuancity.com":
-        user = User.objects.filter(email=email_norm).first()
+      identifier = normalize_email(email)
+      # Cuentas de revisión de las tiendas: entran sin código.
+      if is_demo_account(identifier):
+        user = User.objects.filter(email=identifier).first()
         if user:
           return Response(build_tokens(user), status=200)
-      
-      user, created = User.objects.get_or_create(
-        email=email_norm,
-        defaults={
-          "password": strong_random_password(),
-          "first_name": "",
-          "last_name": "",
-        },
-      )
+      is_new_user = not User.objects.filter(email__iexact=identifier).exists()
     else:
-      phone_norm = normalize(phone)
-      user = User.objects.filter(phone=phone_norm).first()
-      if not user:
-        pseudo_email = f"{phone_norm}@yuancity.com"
-        user = User.objects.create_user(
-          email=pseudo_email,
-          password=strong_random_password(),
-          phone=phone_norm,
-          first_name="",
-          last_name="",
-        )
-        created = True
+      identifier = normalize(phone)
+      if not identifier.isdigit() or len(identifier) < 7:
+        return Response({"detail": "Número de teléfono inválido."}, status=400)
+      is_new_user = not User.objects.filter(phone=identifier).exists()
 
-    if created:
-      user.rol = "client"
-      user.save(update_fields=["rol"])
+    throttled = throttle_login_code(identifier)
+    if throttled:
+      return throttled
 
-    # OTP
-    otp = user.generate_otp()
+    record, code = LoginCode.issue(identifier, length=length, ip_address=client_ip(request))
 
     if email:
-      send_mail(
-        "Código de acceso a YuanCity",
-        f"Tu código es: {otp}",
-        settings.DEFAULT_FROM_EMAIL,
-        [email],
-      )
+      try:
+        send_login_code_email(identifier, code)
+      except Exception:  # noqa: BLE001 - el correo caído no debe dejar un código que nadie recibió
+        logger.exception("No se pudo enviar el código de acceso a %s", identifier)
+        record.delete()
+        return Response({"detail": "No pudimos enviar el correo. Inténtalo de nuevo en unos minutos."}, status=503)
     else:
       send_sms_in_background(
-        f"+{normalize(phone)}",
-        f"Tu código de acceso a YuanCity es: {otp}",
+        f"+{identifier}",
+        f"Tu código de acceso a {settings.APP_NAME} es: {code}",
       )
 
-    return Response({"detail": "OTP enviado.", "is_new_user": created}, status=200)
+    # NUNCA devolver el código en la respuesta (ni con DEBUG).
+    return Response({
+      "detail": f"Te enviamos un código de {length} dígitos.",
+      "is_new_user": is_new_user,
+      "code_length": length,
+      "expires_in": LoginCode.CODE_TTL_MINUTES * 60,
+      "resend_in": LoginCode.RESEND_AFTER_SECONDS,
+    }, status=200)
+
 
 class OTPLoginVerifyView(APIView):
   """
-  POST /auth/login/otp/verify/
-    { "identifier": "correo@dominio.com" ó "+573001234567", "otp": "12345678" }
+  POST /api/login/otp/verify/
+    { "identifier": "correo@dominio.com" ó "+573001234567", "otp": "123456" }
+  Valida el código (máx. 5 intentos, vence en 10 min). Si no hay cuenta, la crea.
   """
   permission_classes = [permissions.AllowAny]
 
@@ -261,42 +369,75 @@ class OTPLoginVerifyView(APIView):
     ser = OTPVerifySerializer(data=request.data)
     ser.is_valid(raise_exception=True)
 
-    ident = ser.validated_data["identifier"]
-    otp   = ser.validated_data["otp"]
-    
-    # localizar usuario
-    if "@" in ident:                             # es un correo
-      email_norm = normalize_email(ident)
-      user = User.objects.filter(email__iexact=email_norm).first()
-    else:                                        # es teléfono
-      user = User.objects.filter(phone=normalize(ident)).first()
+    raw = ser.validated_data["identifier"].strip()
+    otp = ser.validated_data["otp"]
+    is_email = "@" in raw
+    identifier = normalize_email(raw) if is_email else normalize(raw)
+    invalid = Response({"detail": "Código incorrecto o vencido. Solicita uno nuevo."}, status=400)
 
-    if not user:
-      print("No se encontró el usuario.")
-      return Response({"detail": "Usuario no encontrado."}, status=404)
+    # Cuentas de revisión de las tiendas: no validan código.
+    if is_email and is_demo_account(identifier):
+      user = User.objects.filter(email=identifier).first()
+      if user:
+        return Response(build_tokens(user), status=200)
 
-    # Check for demo account - skip OTP verification
-    if hasattr(user, 'email') and (user.email == "apple.revisor@yuancity.com" or user.email ==  "google.revisor@yuancity.com" or user.email == "huawei.revisor@yuancity.com"):
-      return Response(build_tokens(user), status=200)
+    record = (
+      LoginCode.objects.select_for_update()
+      .filter(identifier=identifier, used_at__isnull=True)
+      .first()
+    )
+    if not record or not record.is_usable:
+      return invalid
+    if not record.check_code(otp):
+      record.attempts += 1
+      record.save(update_fields=["attempts"])
+      left = LoginCode.MAX_ATTEMPTS - record.attempts
+      if left <= 0:
+        return invalid
+      return Response({"detail": f"Código incorrecto. Te quedan {left} intentos.", "attempts_left": left}, status=400)
 
-    if user.otp != otp:
-      return Response({"detail": "OTP inválido."}, status=400)
-      
-    # invalidar OTP y marcar verificado
-    user.otp = None
-    if not user.phone_verified and user.phone:
-      user.phone_verified = True
-    user.save(update_fields=["otp", "phone_verified"])
+    record.used_at = timezone.now()
+    record.save(update_fields=["used_at"])
 
-    return Response(build_tokens(user), status=200)
+    is_new_user = False
+    if is_email:
+      user = User.objects.filter(email__iexact=identifier).first()
+      if user is None:
+        user = User.objects.create_user(
+          email=identifier,
+          password=strong_random_password(),
+          first_name="",
+          last_name="",
+        )
+        is_new_user = True
+    else:
+      user = User.objects.filter(phone=identifier).first()
+      if user is None:
+        user = User.objects.create_user(
+          email=f"{identifier}@yuancity.com",
+          password=strong_random_password(),
+          phone=identifier,
+          first_name="",
+          last_name="",
+        )
+        is_new_user = True
+      if not user.phone_verified:
+        user.phone_verified = True
+        user.save(update_fields=["phone_verified"])
+
+    if not user.is_active:
+      return invalid
+
+    log_login(request, user, "otp")
+    return Response({**build_tokens(user), "is_new_user": is_new_user}, status=200)
 
 
 
 class OTPLoginRequestWebView(APIView):
     """
-    POST /auth/login/otp/request/
+    POST /api/login/otp/request/web/
       { "email": "usuario@dominio.com" }
-    Envia OTP solo si el usuario existe, está activo y está autorizado para web.
+    Envía un código de 6 dígitos solo si el usuario existe, está activo y está autorizado para web.
     """
     permission_classes = [permissions.AllowAny]
 
@@ -304,35 +445,34 @@ class OTPLoginRequestWebView(APIView):
         ser = OTPRequestSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
 
-        email_norm = normalize_email(ser.validated_data["email"])
-        
+        email_norm = normalize_email(ser.validated_data.get("email") or "")
+
         # Validar que el correo esté en la lista de autorizados para web
         if email_norm not in settings.WEB_ALLOWED_EMAILS:
             return Response(
                 {"detail": "No tienes autorización para acceder a la plataforma web. Contacta al administrador."},
                 status=403,
             )
-        
+
         user = User.objects.filter(email=email_norm, is_active=True).first()
-
         if not user:
-            return Response(
-                {"detail": "Correo no autorizado."},
-                status=403,
-            )
+            return Response({"detail": "Correo no autorizado."}, status=403)
 
-        # Generar y enviar OTP
-        otp = user.generate_otp("web")
-        send_mail(
-            "Código de acceso",
-            f"Tu código es: {otp}",
-            settings.DEFAULT_FROM_EMAIL,
-            [email_norm],
-        )
+        throttled = throttle_login_code(email_norm)
+        if throttled:
+            return throttled
+
+        record, code = LoginCode.issue(email_norm, length=6, ip_address=client_ip(request))
+        try:
+            send_login_code_email(email_norm, code)
+        except Exception:  # noqa: BLE001
+            logger.exception("No se pudo enviar el código web a %s", email_norm)
+            record.delete()
+            return Response({"detail": "No pudimos enviar el correo. Inténtalo de nuevo en unos minutos."}, status=503)
 
         return Response({"detail": "OTP enviado."}, status=200)
-      
-      
+
+
 
 class ExpoPushTokenView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -790,12 +930,19 @@ class NotificationDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AccountDeleteView(APIView):
+    """
+    DELETE /api/delete/account/<uuid>/  — ruta de las versiones anteriores de la app.
+    Usa el mismo flujo que /api/users/me/ (registro, revocación y anonimización si hay pedidos).
+    """
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk, *args, **kwargs):
         if pk != request.user.pk:          # evita borrar cuentas ajenas
             raise Http404
-        request.user.delete()
+        try:
+            delete_account(request.user, source=DeletedAccountRecord.Source.APP, request=request)
+        except AccountDeletionBlocked as blocked:
+            return Response({"detail": blocked.message, "code": blocked.code}, status=409)
         return Response(status=204)
 
 
@@ -1044,7 +1191,7 @@ class N8NUserAdvanceView(APIView):
 
           push_notification = build_stage_push_notification(stage=push_stage, user_name=user_name)
 
-          title = push_notification.get("title") or "Nuevo contenido en Mikiguiki"
+          title = push_notification.get("title") or "Nuevos productos en YuanCity"
           body = push_notification.get("body") or "Tenemos algo especial para ti"
 
           push_data = {
@@ -1082,7 +1229,7 @@ class N8NUserAdvanceView(APIView):
                 user_name=user_name,
             )
 
-            title = push_notification.get("title") or "Nuevo contenido en Mikiguiki"
+            title = push_notification.get("title") or "Nuevos productos en YuanCity"
             body = push_notification.get("body") or "Tenemos algo especial para ti"
 
             push_data = {
