@@ -10,6 +10,7 @@ from .data.colombia_locations import (
     normalize_city,
     normalize_department,
 )
+from .data.countries import normalize_country, public_location
 from .utils.phone import normalize as normalize_phone
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             'bio',
             'location',
+            'country',
             'department',
             'city',
             'address_line',
@@ -40,6 +42,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'bio': {'required': False, 'allow_blank': True},
             'location': {'read_only': True},
+            'country': {'required': False, 'allow_blank': True},
             'department': {'required': False, 'allow_blank': True},
             'city': {'required': False, 'allow_blank': True},
             'address_line': {'required': False, 'allow_blank': True},
@@ -96,6 +99,20 @@ class UserSerializerEdit(serializers.ModelSerializer):
             'rol',
             'social_profile',
         )
+        # El correo identifica la cuenta (login por código): no se cambia sin verificarlo.
+        read_only_fields = ('id', 'email')
+
+    # El usuario solo puede elegir entre comprador y vendedor. «admin» o «delivery» los asigna
+    # el equipo desde el admin: antes cualquiera podía enviar rol=admin y entrar al panel.
+    SELF_SERVICE_ROLES = ("client", "vendor")
+
+    def validate_rol(self, value):
+        current = getattr(self.instance, "rol", None)
+        if value == current:
+            return value
+        if value not in self.SELF_SERVICE_ROLES or current not in (None, *self.SELF_SERVICE_ROLES):
+            raise serializers.ValidationError("No puedes cambiar a ese rol.")
+        return value
 
     def to_internal_value(self, data):
         """
@@ -123,21 +140,29 @@ class UserSerializerEdit(serializers.ModelSerializer):
             if "bio" in social_data and social_data["bio"] is not None:
                 profile.bio = social_data["bio"]
 
+            country = social_data.get("country")
             department = social_data.get("department")
             city = social_data.get("city")
+            if country is not None:
+                country_value = normalize_country(country)
+                if country and not country_value:
+                    raise serializers.ValidationError({"social_profile": {"country": "País no válido."}})
+                profile.country = country_value
             if department is not None or city is not None:
                 dept_value = normalize_department(department)
                 city_value = normalize_city(city)
-                if dept_value or city_value:
-                    if not is_valid_location(dept_value, city_value):
-                        raise serializers.ValidationError(
-                            {
-                                "social_profile": {
-                                    "location": "Selecciona un departamento y municipio válidos de Colombia."
-                                }
+                # Apps viejas (Colombia con departamento): se sigue validando el par departamento/municipio.
+                # Las nuevas envían solo país + ciudad (texto libre) y las coordenadas.
+                if dept_value and (profile.country or "CO") == "CO" and not is_valid_location(dept_value, city_value):
+                    raise serializers.ValidationError(
+                        {
+                            "social_profile": {
+                                "location": "Selecciona un departamento y municipio válidos de Colombia."
                             }
-                        )
-                profile.department = dept_value
+                        }
+                    )
+                if department is not None:
+                    profile.department = dept_value
                 profile.city = city_value
 
             address_line = social_data.get("address_line")
@@ -173,16 +198,8 @@ class UserSerializerEdit(serializers.ModelSerializer):
                 profile.latitude = None
                 profile.longitude = None
 
-            if any(field is not None for field in (address_line, department, city)):
-                fragments = [
-                    (profile.address_line or "").strip(),
-                    profile.city or "",
-                    profile.department or "",
-                ]
-                fragments = [fragment for fragment in fragments if fragment]
-                if fragments:
-                    fragments.append("Colombia")
-                profile.location = ", ".join(fragments)
+            if any(field is not None for field in (address_line, department, city, country)):
+                profile.location = public_location(profile)
 
             profile.save()
 
@@ -384,18 +401,8 @@ class FollowListEntrySerializer(serializers.ModelSerializer):
         return profile.bio if profile else ""
 
     def get_location(self, obj):
-        profile = self._get_profile(obj)
-        if not profile:
-            return ""
-        # Solo mostrar ciudad, departamento y país (sin dirección exacta)
-        location_parts = []
-        if profile.city:
-            location_parts.append(profile.city)
-        if profile.department:
-            location_parts.append(profile.department)
-        if location_parts:
-            location_parts.append("Colombia")
-        return ", ".join(location_parts) if location_parts else ""
+        # Solo ciudad y país (sin dirección exacta)
+        return public_location(self._get_profile(obj))
 
     def get_avatar_url(self, obj):
         profile = self._get_profile(obj)

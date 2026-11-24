@@ -352,3 +352,51 @@ class MobileVersionTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["ios"]["latestVersion"], "1.1.0")
         self.assertIsNone(response.data["android"])
+
+
+class ProfileEditTests(APITestCase):
+    def setUp(self):
+        self.user = UserAccount.objects.create_user(
+            email="perfil@correo.com", password="x", first_name="Ana", last_name="Gil"
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_puede_pasar_a_vendedor_y_volver(self):
+        self.assertEqual(self.client.put("/api/edit/", {"rol": "vendor"}, format="json").status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.rol, "vendor")
+        self.assertEqual(self.client.put("/api/edit/", {"rol": "client"}, format="json").status_code, 200)
+
+    def test_no_puede_hacerse_admin(self):
+        response = self.client.put("/api/edit/", {"rol": "admin"}, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.rol, "client")
+
+    def test_no_cambia_correo(self):
+        self.client.put("/api/edit/", {"email": "otro@correo.com", "first_name": "Eva"}, format="json")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "perfil@correo.com")
+        self.assertEqual(self.user.first_name, "Eva")
+
+    def test_ubicacion_por_pais_ciudad_y_coordenadas(self):
+        payload = {"social_profile": {"country": "mx", "city": "Monterrey", "latitude": "25.686600", "longitude": "-100.316100"}}
+        response = self.client.put("/api/edit/", payload, format="json")
+        self.assertEqual(response.status_code, 200, response.data)
+        profile = self.user.social_profile
+        profile.refresh_from_db()
+        self.assertEqual((profile.country, profile.city, profile.department), ("MX", "Monterrey", ""))
+        self.assertEqual(profile.location, "Monterrey, México")
+        self.assertEqual(str(profile.latitude), "25.686600")
+
+    def test_pais_invalido(self):
+        response = self.client.put("/api/edit/", {"social_profile": {"country": "XX"}}, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_app_vieja_con_departamento_sigue_validando(self):
+        bad = {"social_profile": {"department": "Atlántico", "city": "Medellín"}}
+        self.assertEqual(self.client.put("/api/edit/", bad, format="json").status_code, 400)
+        ok = {"social_profile": {"department": "Atlántico", "city": "Barranquilla"}}
+        self.assertEqual(self.client.put("/api/edit/", ok, format="json").status_code, 200)
+        self.user.social_profile.refresh_from_db()
+        self.assertEqual(self.user.social_profile.location, "Barranquilla, Colombia")

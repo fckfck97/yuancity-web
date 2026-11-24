@@ -177,7 +177,9 @@ class ProductSerializer(serializers.ModelSerializer):
         
         # Procesar múltiples imágenes si existen
         request = self.context.get('request')
-        if request and request.data.get('media_count'):
+        if request and request.data.get('image_order') is not None:
+            self._apply_image_order(product, request)
+        elif request and request.data.get('media_count'):
             media_count = int(request.data.get('media_count', 0))
             
             # Determinar si se debe limpiar las imágenes existentes
@@ -199,6 +201,38 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         return product
     
+    def _apply_image_order(self, product, request):
+        """
+        Galería completa al editar: `image_order` = «id:<uuid>,new:0,id:<uuid>…» en el orden final.
+        Las fotos existentes que no aparecen se borran; las nuevas llegan como media_<n>. La primera es la principal.
+        """
+        tokens = [t.strip() for t in str(request.data.get('image_order') or '').split(',') if t.strip()]
+        existing = {str(img.id): img for img in product.images.all()}
+        keep_ids = {t[3:] for t in tokens if t.startswith('id:')}
+        for pk, img in existing.items():
+            if pk not in keep_ids:
+                img.image.delete(save=False)
+                img.delete()
+        position = 0
+        for token in tokens:
+            if token.startswith('id:'):
+                img = existing.get(token[3:])
+                if not img:
+                    continue
+                img.display_order = position
+                img.is_primary = position == 0
+                img.save(update_fields=['display_order', 'is_primary'])
+            elif token.startswith('new:'):
+                media_file = request.FILES.get(f'media_{token[4:]}')
+                if not media_file:
+                    continue
+                ProductImage.objects.create(
+                    product=product, image=media_file, display_order=position, is_primary=position == 0
+                )
+            else:
+                continue
+            position += 1
+
     def _process_media(self, product, request, append_mode=False):
         """Procesa múltiples imágenes del request
         

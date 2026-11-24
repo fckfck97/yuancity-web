@@ -8,9 +8,13 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 import uuid
+
+User = get_user_model()
 
 from .models import Order, OrderItem, OrderChatMessage
 from .serializers import OrderSerializer, OrderChatMessageSerializer
@@ -110,13 +114,52 @@ class OrderView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     
+ACTIVE_ORDER_STATUSES = (
+    Order.OrderStatus.not_processed,
+    Order.OrderStatus.processed,
+    Order.OrderStatus.shipping,
+)
+ORDERS_PAGE_SIZE = 15
+
+
+def order_page_params(request):
+    """
+    Paginación opcional (?p=1&page_size=15). Sin `p` se devuelve todo, como antes,
+    para no romper las versiones publicadas de la app.
+    """
+    raw_page = request.query_params.get('p')
+    if raw_page is None:
+        return None
+    try:
+        page = max(int(raw_page), 1)
+        size = min(max(int(request.query_params.get('page_size', ORDERS_PAGE_SIZE)), 1), 50)
+    except ValueError:
+        page, size = 1, ORDERS_PAGE_SIZE
+    return page, size
+
+
+def filter_orders_by_status(queryset, request, prefix=''):
+    status_value = request.query_params.get('status')
+    if request.query_params.get('active') in ('1', 'true'):
+        return queryset.filter(**{f'{prefix}status__in': ACTIVE_ORDER_STATUSES})
+    if status_value:
+        return queryset.filter(**{f'{prefix}status': status_value})
+    return queryset
+
+
 class ListOrdersView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         user = self.request.user
         try:
-            orders = Order.objects.order_by('-date_issued').filter(user=user)
+            orders = filter_orders_by_status(Order.objects.order_by('-date_issued').filter(user=user), request)
+            paging = order_page_params(request)
+            total = None
+            if paging:
+                page, size = paging
+                total = orders.count()
+                orders = orders[(page - 1) * size : page * size]
             result = []
 
             for order in orders:
@@ -132,11 +175,12 @@ class ListOrdersView(APIView):
                 item['state_province_region'] = order.state_province_region
 
                 result.append(item)
-            
-            return Response(
-                {'orders': result},
-                status=status.HTTP_200_OK
-            )
+
+            payload = {'orders': result}
+            if paging:
+                payload['count'] = total
+                payload['next_page'] = page + 1 if page * size < total else None
+            return Response(payload, status=status.HTTP_200_OK)
         except:
             return Response(
                 {'error': 'Something went wrong when retrieving orders'},
@@ -237,6 +281,19 @@ class VendorOrdersView(APIView):
         if status_filter:
             items_qs = items_qs.filter(order__status=status_filter)
 
+        # Paginación opcional por pedido (no por producto): se eligen los ids de la página primero.
+        paging = order_page_params(request)
+        total_orders = None
+        if paging:
+            page, size = paging
+            order_ids = list(
+                Order.objects.filter(id__in=items_qs.values('order_id'))
+                .order_by('-date_issued')
+                .values_list('id', flat=True)
+            )
+            total_orders = len(order_ids)
+            items_qs = items_qs.filter(order_id__in=order_ids[(page - 1) * size : page * size])
+
         orders_map = {}
 
         for order_item in items_qs:
@@ -310,7 +367,11 @@ class VendorOrdersView(APIView):
 
         orders_list.sort(key=lambda o: o['date_issued'], reverse=True)
 
-        return Response({'orders': orders_list}, status=status.HTTP_200_OK)
+        payload = {'orders': orders_list}
+        if paging:
+            payload['count'] = total_orders
+            payload['next_page'] = page + 1 if page * size < total_orders else None
+        return Response(payload, status=status.HTTP_200_OK)
 
 
 class VendorOrderStatusView(APIView):
@@ -443,6 +504,13 @@ class VendorOrderStatusView(APIView):
         )
 
 
+CHAT_CLOSED_STATUSES = (Order.OrderStatus.delivered, Order.OrderStatus.cancelled)
+
+
+def is_chat_open(order):
+    return order.status not in CHAT_CLOSED_STATUSES
+
+
 class OrderChatView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser, JSONParser)
@@ -463,6 +531,25 @@ class OrderChatView(APIView):
             product__vendor=user,
         ).exists()
 
+    def peer_for(self, user, order):
+        """La otra persona del pedido (para el encabezado del chat). Sin correo."""
+        if order.user_id == user.id:
+            vendor_id = (
+                OrderItem.objects.filter(order=order)
+                .values_list("product__vendor_id", flat=True)
+                .first()
+            )
+            peer = User.objects.filter(id=vendor_id).select_related("social_profile").first()
+        else:
+            peer = order.user
+        if not peer:
+            return None
+        avatar = None
+        profile = getattr(peer, "social_profile", None)
+        if profile and profile.avatar:
+            avatar = self.request.build_absolute_uri(profile.avatar.url)
+        return {"id": str(peer.id), "full_name": (peer.full_name or "").strip(), "avatar_url": avatar}
+
     def get(self, request, transaction_id):
         order = self.get_order(transaction_id)
         if not self.has_access(request.user, order):
@@ -473,16 +560,42 @@ class OrderChatView(APIView):
         messages = (
             order.chat_messages.select_related("sender").order_by("created_at")
         )
+        # ?after=<fecha ISO>: solo lo nuevo (la app consulta cada pocos segundos con el chat abierto).
+        after = parse_datetime(request.query_params.get("after") or "")
+        if after:
+            messages = messages.filter(created_at__gt=after)
         serializer = OrderChatMessageSerializer(
             messages, many=True, context={"request": request}
         )
-        return Response({"messages": serializer.data})
+        payload = {
+            "messages": serializer.data,
+            "chat_open": is_chat_open(order),
+            "status": order.status,
+        }
+        if not after:
+            payload["peer"] = self.peer_for(request.user, order)
+            # Leídos de mis mensajes (para ✓✓) solo hace falta al abrir; luego viajan con cada mensaje.
+        else:
+            payload["read_ids"] = [
+                str(pk)
+                for pk in order.chat_messages.filter(sender=request.user, read=True)
+                .order_by("-created_at")
+                .values_list("id", flat=True)[:50]
+            ]
+        return Response(payload)
 
     def post(self, request, transaction_id):
         order = self.get_order(transaction_id)
         if not self.has_access(request.user, order):
             return Response(
                 {"detail": "No tienes permiso para enviar mensajes en este chat."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # El chat sirve para cerrar la venta: solo mientras el pedido está en proceso.
+        if not is_chat_open(order):
+            return Response(
+                {"detail": "Este pedido ya terminó: el chat está cerrado.", "code": "chat_closed"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -542,6 +655,8 @@ class OrderChatView(APIView):
                     body=preview_short,
                     data={
                         "type": "order_chat",
+                        # Quién lo recibe: el vendedor abre el chat en vista de venta.
+                        "view": "seller" if is_buyer else "buyer",
                         "transaction_id": str(order.transaction_id),
                         "order_id": str(order.id),
                         "message_id": str(message.id),
@@ -554,6 +669,8 @@ class OrderChatView(APIView):
                     body=preview_short,
                     data={
                         "type": "order_chat",
+                        # Quién lo recibe: el vendedor abre el chat en vista de venta.
+                        "view": "seller" if is_buyer else "buyer",
                         "transaction_id": str(order.transaction_id),
                         "order_id": str(order.id),
                         "message_id": str(message.id),
@@ -567,6 +684,31 @@ class OrderChatView(APIView):
             message, context={"request": request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class OrderChatMessageDeleteView(APIView):
+    """Borra un mensaje propio del chat de un pedido en proceso."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, transaction_id, message_id):
+        message = (
+            OrderChatMessage.objects.select_related("order")
+            .filter(id=message_id, order__transaction_id=transaction_id, sender=request.user)
+            .first()
+        )
+        if not message:
+            return Response({"detail": "Mensaje no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        if not is_chat_open(message.order):
+            return Response(
+                {"detail": "Este pedido ya terminó: el chat está cerrado.", "code": "chat_closed"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if message.image:
+            message.image.delete(save=False)
+        if message.audio:
+            message.audio.delete(save=False)
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MarkChatMessagesReadView(APIView):

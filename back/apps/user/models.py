@@ -180,6 +180,8 @@ class UserProfile(models.Model):
     )
     username = models.SlugField(max_length=40, unique=True)
     bio = models.TextField(blank=True, default="")
+    # País (ISO 3166-1 alfa-2) + ciudad + coordenadas. «department» queda solo por compatibilidad con apps viejas.
+    country = models.CharField(max_length=2, blank=True, default="CO")
     department = models.CharField(max_length=80, blank=True, default="")
     city = models.CharField(max_length=120, blank=True, default="")
     location = models.CharField(max_length=160, blank=True, default="")

@@ -8,6 +8,7 @@ from .views import (
     ConfirmDeliveryView,
     OrderChatView,
     MarkChatMessagesReadView,
+    OrderChatMessageDeleteView,
 )
 
 app_name="orders"
@@ -21,6 +22,7 @@ urlpatterns = [
     path('confirm-delivery/<transactionId>/', ConfirmDeliveryView.as_view()),
     path('chat/<str:transaction_id>/', OrderChatView.as_view()),
     path('chat/<str:transaction_id>/mark-read/', MarkChatMessagesReadView.as_view()),
+    path('chat/<str:transaction_id>/<uuid:message_id>/', OrderChatMessageDeleteView.as_view()),
     path('vendor/orders', VendorOrdersView.as_view()),
     path('vendor/orders/<uuid:pk>/status', VendorOrderStatusView.as_view()),
 ]

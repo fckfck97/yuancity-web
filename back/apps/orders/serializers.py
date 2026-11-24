@@ -39,6 +39,8 @@ class OrderChatMessageSerializer(serializers.ModelSerializer):
             "audio_duration",
             "sender_id",
             "sender_name",
+            "read",
+            "read_at",
             "created_at",
         )
 
@@ -62,5 +64,5 @@ class OrderChatMessageSerializer(serializers.ModelSerializer):
         return obj.sender_id
 
     def get_sender_name(self, obj):
-        full_name = obj.sender.full_name
-        return full_name.strip() or obj.sender.email or obj.sender.username
+        # Nunca el correo: el chat lo ven comprador y vendedor.
+        return (obj.sender.full_name or "").strip() or "YuanCity"

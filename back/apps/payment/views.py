@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - entorno sin Stripe instalado
 
         pass
 
+from apps.user.data.countries import country_name
 from collections import defaultdict
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.conf import settings
@@ -197,11 +198,12 @@ def _resolve_shipping_address(user, data):
 
     address_line_1 = _val("address_line_1", "address_line")
     city = _val("city", "city")
-    state_province_region = _val("state_province_region", "department")
+    # El perfil ya no pide departamento (país + ciudad + coordenadas): si no llega, se usa la ciudad.
+    state_province_region = _val("state_province_region", "department") or city
     postal_zip_code = _val("postal_zip_code", None) or "000000"
     country_region = (
         _val("country_region", None)
-        or getattr(profile, "country", "")
+        or country_name(getattr(profile, "country", ""))
         or Order._meta.get_field("country_region").default
         or Countries.Colombia
     )
@@ -217,8 +219,6 @@ def _resolve_shipping_address(user, data):
         missing.append("dirección")
     if not city:
         missing.append("ciudad")
-    if not state_province_region:
-        missing.append("departamento")
 
     if missing:
         raise ValueError(

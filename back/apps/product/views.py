@@ -44,10 +44,31 @@ def annotate_reservations(queryset):
 
 
 def _is_authorized(user):
-    print(f"DEBUG AUTH: User={user.email}, Allowed={settings.WEB_ALLOWED_EMAILS}")
     if user.email and user.email.strip().lower() in settings.WEB_ALLOWED_EMAILS:
         return True
     return user.is_staff
+
+
+# ?ordering= de la lista pública (lo usan el home y el tab Comprar).
+PRODUCT_ORDERINGS = {
+  'new': ('-created_at',),
+  'price_asc': ('price', '-created_at'),
+  'price_desc': ('-price', '-created_at'),
+  'discount': ('-discount_percent', '-created_at'),
+}
+
+
+def apply_product_search(queryset, text):
+  """Cada palabra debe aparecer en el nombre, la descripción o la categoría (o su categoría padre)."""
+  terms = [term for term in text.split() if len(term) >= 2][:6]
+  for term in terms:
+    queryset = queryset.filter(
+      Q(name__icontains=term)
+      | Q(description__icontains=term)
+      | Q(category__name__icontains=term)
+      | Q(category__parent__name__icontains=term)
+    )
+  return queryset
 
 
 def _normalize_category_ids(category_ids):
@@ -218,11 +239,14 @@ class ProductListAPIView(APIView):
       vendor_id = request.query_params.get('vendor')
       qs = self.get_objects()
       if search:
-        qs = qs.filter(name__icontains=search)
+        qs = apply_product_search(qs, search)
       if category_ids:
         qs = apply_product_category_filter(qs, category_ids)
       if vendor_id:
         qs = qs.filter(vendor__id=vendor_id)
+      if request.query_params.get('on_sale') in ('1', 'true'):
+        qs = qs.filter(discount_percent__gt=0)
+      qs = qs.order_by(*PRODUCT_ORDERINGS.get(request.query_params.get('ordering'), ('-created_at',)))
       paginator = LargeSetPagination()
       page = paginator.paginate_queryset(qs, request, view=self)
       serializer = ProductMinimalSerializer(page, many=True, context={'request': request})
@@ -322,12 +346,17 @@ class ProductHighlightsAPIView(APIView):
       daily_offers_qs, many=True, context={'request': request}
     ).data
 
+    # Ofertas relámpago: solo productos con descuento, el mayor primero.
+    flash_qs = base_qs.filter(discount_percent__gt=0).order_by('-discount_percent', '-created_at')[:offers_limit]
+    flash_deals = ProductMinimalSerializer(flash_qs, many=True, context={'request': request}).data
+
     return Response({
       'top_classification': {
         'categories': top_categories,
         'products': top_products,
       },
       'daily_offers': daily_offers,
+      'flash_deals': flash_deals,
     })
 
 

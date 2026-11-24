@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import permissions
+from .data.countries import public_location
 from .serializers import (
     UserSerializerEdit,
     OTPRequestSerializer,
@@ -579,17 +580,10 @@ class SocialProfileView(APIView):
                 follower=request.user, following=target
             ).exists()
 
-        # Construir location segura (solo ciudad, departamento, país)
+        # Ubicación pública: solo ciudad y país (sin dirección exacta)
         department = profile_data.get("department") or ""
         city = profile_data.get("city") or ""
-        safe_location_parts = []
-        if city:
-            safe_location_parts.append(city)
-        if department:
-            safe_location_parts.append(department)
-        if safe_location_parts:
-            safe_location_parts.append("Colombia")
-        safe_location = ", ".join(safe_location_parts) if safe_location_parts else None
+        safe_location = public_location(getattr(target, "social_profile", None)) or None
 
         payload = {
             "id": target.id,
@@ -601,6 +595,7 @@ class SocialProfileView(APIView):
             "location": safe_location,
             "department": department,
             "city": city,
+            "country": getattr(getattr(target, "social_profile", None), "country", "") or "",
             "avatar_url": profile_data.get("avatar_url"),
             "cover_url": profile_data.get("cover_url"),
             "followers_count": target.followers.count(),
